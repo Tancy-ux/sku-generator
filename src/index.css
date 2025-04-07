@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+select {
+    @apply bg-black;
+}
+
+label {
+    @apply text-green-100;
+}
