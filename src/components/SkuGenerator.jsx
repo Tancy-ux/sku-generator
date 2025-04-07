@@ -9,6 +9,7 @@ import {
   getDesignCode,
 } from "../functions/api.js";
 import toast from "react-hot-toast";
+import { fetchCutleryColors } from "../functions/colors.js";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -61,6 +62,8 @@ export default function SKUGenerator() {
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [designCode, setDesignCode] = useState("");
 
+  const [cutleryColors, setCutleryColors] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -84,18 +87,27 @@ export default function SKUGenerator() {
       setIsLoadingProducts(true);
       const dbCategory = typeToCategoryMap[selectedType];
 
-      fetchProductsByType(dbCategory)
-        .then((data) => {
-          const products = data.products || data || [];
-          setProducts(products);
-          setSelectedProduct("");
-        })
-        .catch((e) => {
-          console.error("Error fetching products:", e);
-          toast.error("Failed to load products");
-          setProducts([]);
-        })
-        .finally(() => setIsLoadingProducts(false));
+      if (selectedType === "Cutlery") {
+        fetchCutleryColors().then((colors) => {
+          setCutleryColors(colors);
+          setOuterColors([]);
+          setInnerColors([]);
+          setRimColors([]);
+        });
+      } else {
+        fetchProductsByType(dbCategory)
+          .then((data) => {
+            const products = data.products || data || [];
+            setProducts(products);
+            setSelectedProduct("");
+          })
+          .catch((e) => {
+            console.error("Error fetching products:", e);
+            toast.error("Failed to load products");
+            setProducts([]);
+          })
+          .finally(() => setIsLoadingProducts(false));
+      }
     } else {
       setProducts([]);
       setSelectedProduct("");
@@ -258,74 +270,115 @@ export default function SKUGenerator() {
         </p>
       </div>
 
-      <h2 className="font-bold italic text-lg">Ceramic product Colours</h2>
-      <div className="flex gap-5 items-center">
-        <div className="mb-4">
-          <label>Outer Glaze: </label>
-          <select
-            value={outerColor}
-            onChange={(e) => setOuterColor(e.target.value)}
-            className="border rounded-2xl px-2 py-1"
-          >
-            <option value="">Select Outer Color</option>
-            {outerColors.map((col, idx) => (
-              <option key={idx} value={col}>
-                {col}
-              </option>
-            ))}
-          </select>
-        </div>
+      <h2 className="font-bold italic text-lg">
+        {selectedType === "Cutlery"
+          ? "Cutlery Colours"
+          : "Ceramic product Colours"}
+      </h2>
 
-        <div className="mb-4">
-          <label>Inner Glaze: </label>
-          <select
-            value={innerColor}
-            onChange={(e) => setInnerColor(e.target.value)}
-            className="border rounded-2xl px-2 py-1"
-          >
-            <option value="">Select Inner Color</option>
-            {innerColors.map((col, idx) => (
-              <option key={idx} value={col}>
-                {col}
-              </option>
-            ))}
-          </select>
-        </div>
+      {selectedType === "Cutlery" ? (
+        <div className="flex gap-5 items-center">
+          <div className="mb-4">
+            <label>Handle Color: </label>
+            <select
+              value={outerColor}
+              onChange={(e) => setOuterColor(e.target.value)}
+              className="border rounded-2xl px-2 py-1"
+            >
+              <option value="">Select Handle Color</option>
+              {cutleryColors.map((color, idx) => (
+                <option key={idx} value={color.handleColor}>
+                  {color.handleColor} (Code: {color.code})
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="mb-4">
-          <label>Rim Color: </label>
-          <select
-            value={rimColor}
-            onChange={(e) => setRimColor(e.target.value)}
-            className="border rounded-2xl px-2 py-1"
-          >
-            <option value="">Select Rim Color</option>
-            {rimColors.map((col, idx) => (
-              <option key={idx} value={col}>
-                {col}
-              </option>
-            ))}
-          </select>
+          <div className="mb-4">
+            <label>Finish Color: </label>
+            <select
+              value={innerColor}
+              onChange={(e) => setInnerColor(e.target.value)}
+              className="border rounded-2xl px-2 py-1"
+            >
+              <option value="">Select Finish Color</option>
+              {cutleryColors.map((color, idx) => (
+                <option key={idx} value={color.finishColor}>
+                  {color.finishColor} (Code: {color.code})
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+      ) : (
+        <div className="flex gap-5 items-center">
+          <div className="mb-4">
+            <label>Outer Glaze: </label>
+            <select
+              value={outerColor}
+              onChange={(e) => setOuterColor(e.target.value)}
+              className="border rounded-2xl px-2 py-1"
+            >
+              <option value="">Select Outer Color</option>
+              {outerColors.map((col, idx) => (
+                <option key={idx} value={col}>
+                  {col}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="mb-4 flex gap-3 items-center">
-          {/* <button
+          <div className="mb-4">
+            <label>Inner Glaze: </label>
+            <select
+              value={innerColor}
+              onChange={(e) => setInnerColor(e.target.value)}
+              className="border rounded-2xl px-2 py-1"
+            >
+              <option value="">Select Inner Color</option>
+              {innerColors.map((col, idx) => (
+                <option key={idx} value={col}>
+                  {col}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label>Rim Color: </label>
+            <select
+              value={rimColor}
+              onChange={(e) => setRimColor(e.target.value)}
+              className="border rounded-2xl px-2 py-1"
+            >
+              <option value="">Select Rim Color</option>
+              {rimColors.map((col, idx) => (
+                <option key={idx} value={col}>
+                  {col}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4 flex gap-3 items-center">
+            {/* <button
             onClick={handleGetColorCode}
             className="bg-green-700 text-white px-4 btn btn-sm my-2"
           >
             Get Color Code
           </button> */}
 
-          {colorCode && (
-            <p className="text-sm text-gray-400 mt-1">
-              Color Code:{" "}
-              <span className="text-pink-300">
-                <strong>{colorCode}</strong>
-              </span>
-            </p>
-          )}
+            {colorCode && (
+              <p className="text-sm text-gray-400 mt-1">
+                Color Code:{" "}
+                <span className="text-pink-300">
+                  <strong>{colorCode}</strong>
+                </span>
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="my-4 flex gap-2 items-center">
         <button
