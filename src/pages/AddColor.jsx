@@ -3,6 +3,8 @@ import React from "react";
 const AddColor = () => {
   return (
     <div>
+      <div>Make new Colour codes</div>
+      <hr />
       <h1>Add new Colour combinations</h1>
       <p>
         Add colour for Ceramic(outer, inner, rim), Marble, Cement, Mats, Cutlery

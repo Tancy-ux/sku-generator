@@ -250,13 +250,6 @@ export default function SKUGenerator() {
           )}
         </div>
 
-        {/* <button
-          onClick={handleDesignCode}
-          className="bg-green-700 text-white px-4 btn btn-sm my-2"
-        >
-          Get Design Code
-        </button> */}
-
         <p className="text-sm text-gray-400 mt-1">
           Design Code:{" "}
           <span className="text-pink-300">
@@ -265,7 +258,7 @@ export default function SKUGenerator() {
         </p>
       </div>
 
-      <h2>Colour for Ceramic products</h2>
+      <h2 className="font-bold italic text-lg">Ceramic product Colours</h2>
       <div className="flex gap-5 items-center">
         <div className="mb-4">
           <label>Outer Glaze: </label>
