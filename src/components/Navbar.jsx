@@ -1,14 +1,12 @@
 const Navbar = () => {
   return (
-    <div className="flex justify-around my-10">
-      <a href="/" className="text-4xl font-mono font-bold text-green-100">
+    <div className="flex justify-between items-center my-10 mx-6 text-pink-300">
+      <a href="/" className="text-4xl font-mono font-bold">
         SKU Generator
       </a>
-      <div className="hidden flex-row gap-8">
-        <div>Material Codes</div>
-        <div>Products</div>
-        <div>Colour Codes</div>
-        <div>Etc...</div>
+      <div className="flex flex-row gap-16">
+        <a href="/products">Add Products</a>
+        <a href="/color">Add Colour Combinations</a>
       </div>
     </div>
   );

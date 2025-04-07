@@ -97,3 +97,16 @@ export const generateSKU = async (
     toast.error("Something went wrong");
   }
 };
+
+export const addProduct = async (name, category) => {
+  try {
+    const res = await axios.post(`${BASE_URI}/add-product`, {
+      name,
+      category
+    });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
