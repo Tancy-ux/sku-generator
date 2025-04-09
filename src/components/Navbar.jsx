@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Navbar = () => {
   return (
     <div className="flex justify-between items-center my-10 md:mx-6 text-pink-300">
@@ -5,9 +7,9 @@ const Navbar = () => {
         SKU Generator
       </a>
       <div className="flex flex-row gap-5 md:gap-12">
-        <a href="/viewall">View All</a>
-        <a href="/products">Add Products</a>
-        <a href="/color">Add Colour Combinations</a>
+        <Link to="/viewall">View All</Link>
+        <Link to="/products">Add Products</Link>
+        <Link to="/color">Add Colour Combinations</Link>
       </div>
     </div>
   );

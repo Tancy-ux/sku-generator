@@ -63,3 +63,5 @@ export const getMaterialCode = async (material, color) => {
         console.log(error);
     }
 }
+
+export const addNewColor = async (material, color) => {}
