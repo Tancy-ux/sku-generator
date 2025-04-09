@@ -45,3 +45,21 @@ export const addColorByMaterial = async (material, color) => {
       return null;
   }
 };
+
+export const getCutleryCode = async (handle, finish) => {
+    try {
+        const res = await axios.post(`${BASE_URI}/c-code`, { handle, finish });
+        return res.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getMaterialCode = async (material, color) => {
+    try {
+        const res = await axios.post(`${BASE_URI}/m-code`, { material, color });
+        return res.data;
+    } catch (error) {
+        console.log(error);
+    }
+}

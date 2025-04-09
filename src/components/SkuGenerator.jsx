@@ -9,7 +9,10 @@ import {
   getDesignCode,
 } from "../functions/api.js";
 import toast from "react-hot-toast";
-import { fetchCutleryColors } from "../functions/colors.js";
+import {
+  fetchColorsByMaterial,
+  fetchCutleryColors,
+} from "../functions/colors.js";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -63,6 +66,7 @@ export default function SKUGenerator() {
   const [designCode, setDesignCode] = useState("");
 
   const [cutleryColors, setCutleryColors] = useState([]);
+  const [materialColors, setMaterialColors] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,6 +87,28 @@ export default function SKUGenerator() {
   }, [designCode]);
 
   useEffect(() => {
+    setIsLoading(true);
+    if (material) {
+      fetchColorsByMaterial(material)
+        .then((colors) => {
+          setMaterialColors(colors);
+          setInnerColors([]);
+          setOuterColors([]);
+          setRimColors([]);
+          setColorCode("");
+        })
+        .catch((e) => {
+          console.error("Error fetching colors by material:", e);
+          toast.error("Failed to load colors");
+          setMaterialColors([]);
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      setMaterialColors([]);
+    }
+  }, [material]);
+
+  useEffect(() => {
     if (selectedType) {
       setIsLoadingProducts(true);
       const dbCategory = typeToCategoryMap[selectedType];
@@ -94,20 +120,19 @@ export default function SKUGenerator() {
           setInnerColors([]);
           setRimColors([]);
         });
-      } else {
-        fetchProductsByType(dbCategory)
-          .then((data) => {
-            const products = data.products || data || [];
-            setProducts(products);
-            setSelectedProduct("");
-          })
-          .catch((e) => {
-            console.error("Error fetching products:", e);
-            toast.error("Failed to load products");
-            setProducts([]);
-          })
-          .finally(() => setIsLoadingProducts(false));
       }
+      fetchProductsByType(dbCategory)
+        .then((data) => {
+          const products = data.products || data || [];
+          setProducts(products);
+          setSelectedProduct("");
+        })
+        .catch((e) => {
+          console.error("Error fetching products:", e);
+          toast.error("Failed to load products");
+          setProducts([]);
+        })
+        .finally(() => setIsLoadingProducts(false));
     } else {
       setProducts([]);
       setSelectedProduct("");
@@ -154,14 +179,26 @@ export default function SKUGenerator() {
       setIsLoading(true);
     }
     try {
-      if (
-        !material ||
-        !selectedType ||
-        !selectedProduct ||
-        !outerColor ||
-        !innerColor ||
-        !rimColor
-      ) {
+      if (!material || !selectedType) {
+        toast.error(
+          "Please select a material and typology before generating SKU."
+        );
+        return;
+      }
+      if (selectedType === "Cutlery") {
+        if (!outerColor || !innerColor) {
+          toast.error("Please select handle and finish for Cutlery.");
+          return;
+        }
+      }
+      // marble, mats, cement
+      if (!selectedProduct || !outerColor) {
+        toast.error("Please select all options before generating SKU.");
+        return;
+      }
+
+      // for ceramic
+      if (!selectedProduct || !outerColor || !innerColor || !rimColor) {
         toast.error("Please select all options before generating SKU.");
         return;
       }
