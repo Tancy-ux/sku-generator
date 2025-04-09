@@ -60,7 +60,6 @@ export default function SKUGenerator() {
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
-  const [designCode, setDesignCode] = useState("");
 
   const [cutleryColors, setCutleryColors] = useState([]);
 
@@ -77,10 +76,6 @@ export default function SKUGenerator() {
       setRimColors(rimColors);
     });
   }, []);
-
-  useEffect(() => {
-    console.log("Design code changed:", designCode);
-  }, [designCode]);
 
   useEffect(() => {
     if (selectedType) {
@@ -127,27 +122,6 @@ export default function SKUGenerator() {
   //   }
   // };
 
-  // const handleDesignCode = async () => {
-  //   if (!selectedProduct) {
-  //     toast.error("Please select a product to get the design code.");
-  //     return;
-  //   }
-  //   try {
-  //     const code = await getDesignCode(selectedProduct);
-  //     if (code) {
-  //       setDesignCode(code);
-  //       console.log("Design code:", code);
-  //       toast.success("Design code fetched successfully!");
-  //     } else {
-  //       toast.error("No design code found for the selected product.");
-  //       setDesignCode("");
-  //     }
-  //   } catch (error) {
-  //     toast.error("Error fetching design code");
-  //     console.error("Error fetching design code:", error);
-  //   }
-  // };
-
   const handleGenerateSKU = async () => {
     if (!isLoading) {
       setIsLoading(true);
@@ -159,8 +133,6 @@ export default function SKUGenerator() {
         );
         return;
       }
-
-      // for ceramic
       if (!selectedProduct || !outerColor || !innerColor || !rimColor) {
         toast.error("Please select all options before generating SKU.");
         return;
@@ -191,12 +163,12 @@ export default function SKUGenerator() {
         <select
           value={material}
           onChange={(e) => setMaterial(e.target.value)}
-          className="border rounded-2xl px-2 py-1"
+          className="border rounded-2xl px-2 py-1 w-50"
         >
           <option value="">Select Material</option>
           {materials.map((material, idx) => (
             <option key={idx} value={material.name}>
-              {material.name}
+              {material.name} - {material.code}
             </option>
           ))}
         </select>
@@ -208,12 +180,12 @@ export default function SKUGenerator() {
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="border rounded-2xl px-2 py-1"
+            className="border rounded-2xl px-2 py-1 w-50"
           >
             <option value="">Select Type</option>
             {types.map((type, idx) => (
               <option key={idx} value={type.name}>
-                {type.name}
+                {type.name} - {type.code}
               </option>
             ))}
           </select>
@@ -237,7 +209,7 @@ export default function SKUGenerator() {
             ) : (
               products.map((product, idx) => (
                 <option key={idx} value={product.name}>
-                  {product.name}
+                  {product.name} - {product.design_code}
                 </option>
               ))
             )}
@@ -248,13 +220,6 @@ export default function SKUGenerator() {
             </p>
           )}
         </div>
-
-        <p className="text-sm text-gray-400 mt-1">
-          Design Code:{" "}
-          <span className="text-pink-300">
-            <strong>{designCode || "Select a product"}</strong>
-          </span>
-        </p>
       </div>
 
       <h2 className="font-bold italic text-lg">

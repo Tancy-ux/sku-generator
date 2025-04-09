@@ -9,7 +9,7 @@ const Navbar = () => {
       <div className="flex flex-row gap-5 md:gap-12">
         <Link to="/viewall">View All</Link>
         <Link to="/products">Add Products</Link>
-        <Link to="/color">Add Colour Combinations</Link>
+        <Link to="/color">Add Colour Combos</Link>
       </div>
     </div>
   );
