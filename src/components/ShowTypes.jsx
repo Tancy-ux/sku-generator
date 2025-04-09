@@ -48,7 +48,7 @@ const ShowTypes = () => {
         </button>
       </div>
       {showTable && (
-        <div className="p-6 w-sm mx-auto">
+        <div className="p-6 mx-auto">
           <div className="overflow-x-auto">
             <table className="min-w-full  border border-gray-600">
               {/* Table headers remain the same */}

@@ -5,12 +5,10 @@ import ShowTypes from "../components/ShowTypes";
 
 const ViewAll = () => {
   return (
-    <div className="flex flex-col justify-around">
-      <div className="flex justify-around">
-        <ShowMaterial />
-        <ShowTypes />
-        <ShowCeramic />
-      </div>
+    <div className="flex overflow-x-auto py-4 gap-4">
+      <ShowMaterial />
+      <ShowTypes />
+      <ShowCeramic />
       <ShowProducts />
     </div>
   );
