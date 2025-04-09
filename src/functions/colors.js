@@ -64,9 +64,31 @@ export const getMaterialCode = async (material, color) => {
     }
 }
 
-export const addNewColor = async (color) => {
+export const addNewColor = async (outerColor, innerColor, rimColor) => {
     try {
-        const res = await axios.post(`${BASE_URI}/add-color`, color);
+        const res = await axios.post(`${BASE_URI}/add-color`, {
+            outerColor,
+            innerColor,
+            rimColor
+        });
+        return res.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const addBaseColor = async (color) => {
+    try {
+        const res = await axios.post(`${BASE_URI}/add-base`, color);
+        return res.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getBaseColors = async () => {
+    try {
+        const res = await axios.get(`${BASE_URI}/get-base`);
         return res.data;
     } catch (error) {
         console.log(error);
