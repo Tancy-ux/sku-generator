@@ -42,7 +42,7 @@ const ShowCeramic = () => {
       <h3 className="text-2xl text-center font-bold mt-10 mb-5">
         All Ceramic Colours
       </h3>
-      <div className="p-6 max-w-4xl mx-auto">
+      <div className="p-6 max-w-3xl mx-auto">
         <div className="overflow-x-auto">
           <table className="min-w-full  border border-gray-600">
             {/* Table headers remain the same */}
