@@ -93,31 +93,6 @@ const AddColor = () => {
             {isSubmitting ? "Adding..." : "Add New Colour Combination"}
           </button>
         </form>
-
-        {generatedCode && (
-          <div className="mt-6 p-4 border rounded-lg bg-gray-50">
-            <h4 className="font-bold text-lg mb-2">Generated Color Code:</h4>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-6 h-6 rounded-full border border-gray-300"
-                  style={{ backgroundColor: outerColor }}
-                />
-                <div
-                  className="w-6 h-6 rounded-full border border-gray-300"
-                  style={{ backgroundColor: innerColor }}
-                />
-                <div
-                  className="w-6 h-6 rounded-full border border-gray-300"
-                  style={{ backgroundColor: rimColor }}
-                />
-              </div>
-              <span className="font-mono font-bold text-xl">
-                #{generatedCode}
-              </span>
-            </div>
-          </div>
-        )}
       </div>
       <ShowCeramic />
     </div>
