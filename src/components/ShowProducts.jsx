@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchProductsByType, fetchTypes } from "../functions/api";
+import { updateProduct } from "../functions/colors";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -29,6 +30,7 @@ const ShowProducts = () => {
   const [types, setTypes] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedType, setSelectedType] = useState("");
+  const [editingProduct, setEditingProduct] = useState(null);
 
   useEffect(() => {
     fetchTypes().then(setTypes);
@@ -46,6 +48,16 @@ const ShowProducts = () => {
     };
     fetch();
   }, [selectedType]);
+
+  const handleEditClick = (product) => {
+    setEditingProduct(product);
+  };
+
+  const handleSaveProduct = async (updatedProduct) => {
+    try {
+      await updateProduct(updatedProduct.id, updatedProduct);
+    } catch (error) {}
+  };
 
   return (
     <div>
