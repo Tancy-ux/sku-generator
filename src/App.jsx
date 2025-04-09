@@ -4,6 +4,8 @@ import SKUGenerator from "./components/SkuGenerator";
 import AddProduct from "./pages/AddProduct";
 import { Route, Routes } from "react-router-dom";
 import AddColor from "./pages/AddColor";
+import Error from "./pages/Error";
+import ViewAll from "./pages/ViewAll";
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Route path="/" element={<SKUGenerator />} />
         <Route path="/products" element={<AddProduct />} />
         <Route path="/color" element={<AddColor />} />
+        <Route path="/viewall" element={<ViewAll />} />
+        <Route path="*" element={<Error />} />
       </Routes>
       <Toaster />
     </div>

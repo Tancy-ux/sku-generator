@@ -5,6 +5,7 @@ const Navbar = () => {
         SKU Generator
       </a>
       <div className="flex flex-row gap-5 md:gap-12">
+        <a href="/viewall">View All</a>
         <a href="/products">Add Products</a>
         <a href="/color">Add Colour Combinations</a>
       </div>

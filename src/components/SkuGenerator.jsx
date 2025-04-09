@@ -9,10 +9,7 @@ import {
   getDesignCode,
 } from "../functions/api.js";
 import toast from "react-hot-toast";
-import {
-  fetchColorsByMaterial,
-  fetchCutleryColors,
-} from "../functions/colors.js";
+import { fetchCutleryColors } from "../functions/colors.js";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -66,7 +63,6 @@ export default function SKUGenerator() {
   const [designCode, setDesignCode] = useState("");
 
   const [cutleryColors, setCutleryColors] = useState([]);
-  const [materialColors, setMaterialColors] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -85,28 +81,6 @@ export default function SKUGenerator() {
   useEffect(() => {
     console.log("Design code changed:", designCode);
   }, [designCode]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    if (material) {
-      fetchColorsByMaterial(material)
-        .then((colors) => {
-          setMaterialColors(colors);
-          setInnerColors([]);
-          setOuterColors([]);
-          setRimColors([]);
-          setColorCode("");
-        })
-        .catch((e) => {
-          console.error("Error fetching colors by material:", e);
-          toast.error("Failed to load colors");
-          setMaterialColors([]);
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setMaterialColors([]);
-    }
-  }, [material]);
 
   useEffect(() => {
     if (selectedType) {
@@ -185,36 +159,12 @@ export default function SKUGenerator() {
         );
         return;
       }
-      if (selectedType === "Cutlery") {
-        if (!outerColor || !innerColor) {
-          toast.error("Please select handle and finish for Cutlery.");
-          return;
-        }
-      }
-      // marble, mats, cement
-      if (!selectedProduct || !outerColor) {
-        toast.error("Please select all options before generating SKU.");
-        return;
-      }
 
       // for ceramic
       if (!selectedProduct || !outerColor || !innerColor || !rimColor) {
         toast.error("Please select all options before generating SKU.");
         return;
       }
-      const code = await getColorCode(outerColor, innerColor, rimColor);
-      if (!code) {
-        toast.error("Error generating color code for SKU.");
-        return;
-      }
-      setColorCode(code);
-
-      const designCode = await getDesignCode(selectedProduct);
-      if (!designCode) {
-        toast.error("Error generating design code for SKU.");
-        return;
-      }
-      setDesignCode(designCode);
 
       const skuCode = await generateSKU(
         material,
