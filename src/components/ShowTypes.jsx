@@ -74,7 +74,7 @@ const ShowTypes = () => {
                       <div className="flex items-center">{m.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-center">
+                      <div className="flex items-center text-pink-400">
                         {m.code}
                       </div>
                     </td>

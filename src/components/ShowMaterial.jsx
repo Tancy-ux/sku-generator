@@ -74,7 +74,7 @@ const ShowMaterial = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-center">
+                      <div className="flex items-center text-pink-300">
                         {m.code}
                       </div>
                     </td>
