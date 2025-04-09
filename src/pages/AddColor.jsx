@@ -45,7 +45,12 @@ const AddColor = () => {
       toast.success(`Added base color: ${newBaseColor}`);
       setNewBaseColor("");
       // Refresh base colors list
-      const colors = await getBaseColors();
+      const response = await getBaseColors();
+      const colors = Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
       setBaseColors(colors);
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to add base color");
