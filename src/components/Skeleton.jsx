@@ -1,8 +1,6 @@
-import React from "react";
-
 const Skeleton = () => {
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center mt-30">
       <span className="loading loading-ring loading-xs"></span>
       <span className="loading loading-ring loading-sm"></span>
       <span className="loading loading-ring loading-md"></span>

@@ -110,3 +110,12 @@ export const addProduct = async (name, category) => {
     console.log(error);
   }
 }
+
+export const fetchAllColorEntries = async () => {
+  try {
+    const res = await axios.get(`${BASE_URI}/color-entries`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+}

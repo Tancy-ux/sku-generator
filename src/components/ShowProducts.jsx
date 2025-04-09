@@ -49,12 +49,10 @@ const ShowProducts = () => {
 
   return (
     <div>
-      <h3 className="text-2xl text-center font-bold my-8">
-        View All Products by Typology
-      </h3>
-
-      <div className="mb-10 text-center">
-        <label className="mr-2 font-semibold">Filter by Typology:</label>
+      <div className="my-10 text-center">
+        <label className="mr-4 mb-10 text-2xl font-semibold">
+          View All Products by Typology:
+        </label>
         <select
           value={selectedType}
           onChange={(e) => setSelectedType(e.target.value)}
@@ -63,7 +61,7 @@ const ShowProducts = () => {
           <option value="">-- Select a Type --</option>
           {types.map((type, idx) => (
             <option key={idx} value={type.name}>
-              {type.name}
+              {type.name} - {type.code}
             </option>
           ))}
         </select>
@@ -73,11 +71,11 @@ const ShowProducts = () => {
         {products.map((prod, idx) => (
           <div
             key={idx}
-            className="border p-4 rounded shadow flex flex-col justify-between"
+            className="border border-gray-500 p-4 rounded shadow flex flex-col justify-between"
           >
-            <div>
-              <p className="font-semibold">{prod.name}</p>
-              <p className="text-sm text-gray-500">{prod.category}</p>
+            <div className="flex justify-between gap-3">
+              <p>{prod.name}</p>
+              <p className="text-pink-400">{prod.design_code}</p>
             </div>
           </div>
         ))}

@@ -16,7 +16,7 @@ function App() {
         <Route path="/products" element={<AddProduct />} />
         <Route path="/color" element={<AddColor />} />
         <Route path="/viewall" element={<ViewAll />} />
-        <Route path="*" element={<Error />} />
+        <Route path="/*" element={<Error />} />
       </Routes>
       <Toaster />
     </div>
