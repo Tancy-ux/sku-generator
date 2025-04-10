@@ -143,8 +143,9 @@ export const getMaterialSku = async (material, color, typology, product) => {
       typology,
       productName: product
     });
-    if(res.data?.skuCode) {
-      return res.data.skuCode;
+    if(res.data) {
+      console.log(res.data.data);
+      return res.data.data;
     } else {
       return "Failed to get skucode";
     }
