@@ -17,7 +17,7 @@ const ShowSkuCodes = () => {
       <h1 className="text-2xl font-bold mb-4">SKU Code List</h1>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto border border-gray-200 shadow-md rounded-xl">
-          <thead className="bg-gray-100 text-gray-700">
+          <thead>
             <tr>
               <th className="px-6 py-3 text-left">Product Name</th>
               <th className="px-6 py-3 text-left">Color</th>
