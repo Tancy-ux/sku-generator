@@ -9,6 +9,7 @@ import {
 } from "../functions/api.js";
 import toast from "react-hot-toast";
 import { fetchColorsByMaterial } from "../functions/colors.js";
+import ShowSkuCodes from "./ShowSkuCodes.jsx";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -32,6 +33,11 @@ const typeToCategoryMap = {
   "Trinket Set": "trinket_set",
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
+};
+
+const normalizeMaterial = (input) => {
+  if (input === "Cork") return "Mats"; // Treat Cork as Mats
+  return input;
 };
 
 export default function SKUGenerator() {
@@ -133,7 +139,7 @@ export default function SKUGenerator() {
     setInnerColor("");
     setRimColor("");
 
-    if (material && ["Marble", "Cement"].includes(material)) {
+    if (material && ["Marble", "Cork", "Cement"].includes(material)) {
       fetchColorsByMaterial(material)
         .then(setMaterialColors) // Expecting array of { color, code }
         .catch((e) => {
@@ -164,7 +170,9 @@ export default function SKUGenerator() {
       }
 
       let generatedSkuCode;
-      const isMaterialSpecificColor = ["Marble", "Cement"].includes(material);
+      const isMaterialSpecificColor = ["Marble", "Cork", "Cement"].includes(
+        material
+      );
 
       // --- Branching Logic ---
       if (isMaterialSpecificColor) {
@@ -175,7 +183,7 @@ export default function SKUGenerator() {
         }
         console.log(`Calling getMaterialSku for ${material}`);
         generatedSkuCode = await getMaterialSku(
-          material,
+          normalizeMaterial(material),
           materialColor, // The selected color name
           selectedType,
           selectedProduct
@@ -213,7 +221,9 @@ export default function SKUGenerator() {
   };
 
   // --- JSX Return ---
-  const isMaterialSpecificColor = ["Marble", "Cement"].includes(material);
+  const isMaterialSpecificColor = ["Marble", "Cork", "Cement"].includes(
+    material
+  );
 
   return (
     <div className="p-5 flex justify-center flex-col gap-5">
@@ -396,6 +406,7 @@ export default function SKUGenerator() {
           </p>
         )}
       </div>
+      <ShowSkuCodes />
     </div>
   );
 }
