@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchTypes } from "../functions/api";
-import Skeleton from "./Skeleton";
+import Skeleton from "./common/Skeleton";
 
 const ShowTypes = () => {
   const [types, setTypes] = useState([]);
@@ -14,7 +14,7 @@ const ShowTypes = () => {
         const data = await fetchTypes();
         setTypes(data);
       } catch (err) {
-        setError("Failed to load materials");
+        setError("Failed to load types");
         console.error(err);
       } finally {
         setLoading(false);

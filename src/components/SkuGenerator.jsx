@@ -196,7 +196,7 @@ export default function SKUGenerator() {
           <select
             value={selectedProduct}
             onChange={(e) => setSelectedProduct(e.target.value)}
-            className="border rounded-2xl px-2 py-1"
+            className="border rounded-2xl px-2 py-1 w-40"
             disabled={
               !selectedType || isLoadingProducts || products.length === 0
             }

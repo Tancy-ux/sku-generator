@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { fetchAllColorEntries } from "../functions/api";
-import Skeleton from "../components/Skeleton";
+import Skeleton from "./common/Skeleton";
 
 const ShowCeramic = () => {
   const [colors, setColors] = useState([]);

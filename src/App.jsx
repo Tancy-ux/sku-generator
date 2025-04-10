@@ -1,5 +1,5 @@
 import { Toaster } from "react-hot-toast";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/common/Navbar";
 import SKUGenerator from "./components/SkuGenerator";
 import AddProduct from "./pages/AddProduct";
 import { Route, Routes } from "react-router-dom";
@@ -9,7 +9,7 @@ import ViewAll from "./pages/ViewAll";
 
 function App() {
   return (
-    <div className="mx-10 my-5">
+    <div className="px-10 py-5 bg-img">
       <Navbar />
       <Routes>
         <Route path="/" element={<SKUGenerator />} />

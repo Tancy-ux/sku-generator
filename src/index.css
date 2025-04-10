@@ -8,3 +8,11 @@ select {
 label {
     @apply text-green-100;
 }
+
+.bg-img{
+    background-image: url("/bg.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    @apply min-h-screen;
+}

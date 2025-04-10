@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchMaterials } from "../functions/api";
-import Skeleton from "./Skeleton";
+import Skeleton from "./common/Skeleton";
 
 const ShowMaterial = () => {
   const [materials, setMaterials] = useState([]);

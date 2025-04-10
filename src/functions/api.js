@@ -134,3 +134,21 @@ export const fetchAllColorEntries = async () => {
     console.error(error);
   }
 }
+
+export const getMaterialSku = async (material, color, typology, product) => {
+  try {
+    const res = await axios.post(`${BASE_URI}/get-msku`, {
+      materialName: material,
+      colour: color,
+      typology,
+      productName: product
+    });
+    if(res.data?.skuCode) {
+      return res.data.skuCode;
+    } else {
+      return "Failed to get skucode";
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
