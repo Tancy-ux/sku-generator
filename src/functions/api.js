@@ -31,6 +31,21 @@ export const fetchColors = async () => {
   return { outerColors, innerColors, rimColors };
 };
 
+export const addMaterial = async (material, code) => {
+  try {
+    if(!material || !code) {
+      toast.error("Material and code are required");
+      return null;
+    }
+    const res = await axios.post(`${BASE_URI}/add-material`, {
+      material,
+      code,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 export const getColorCode = async (outerColor, innerColor, rimColor) => {
   try {

@@ -2,6 +2,7 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { addProduct, fetchTypes } from "../functions/api";
 import ShowProducts from "../components/ShowProducts";
+import AddMaterial from "../components/AddMaterial";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -71,70 +72,72 @@ const AddProduct = () => {
   };
   return (
     <div>
-      <h3 className="text-lg font-bold my-6">Add New Products</h3>
+      <div className="flex justify-around">
+        <div className="flex flex-col my-4 gap-5 justify-center items-center">
+          <h3 className="text-2xl font-bold my-5">Add New Products</h3>
+          <div>
+            <label>Typology: </label>
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="border rounded-lg px-2 py-1 w-64"
+            >
+              <option value="">Select Type of Product</option>
+              {types.map((type, idx) => (
+                <option key={idx} value={type.name}>
+                  {type.name} - {type.code}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex gap-2 items-center">
+            <label>Product name: </label>
+            <input
+              type="text"
+              value={product}
+              onChange={(e) => setProduct(e.target.value)}
+              className="border rounded-lg px-2 py-1 w-60"
+            />
+          </div>
 
-      <div className="flex flex-col my-4 gap-5 justify-center items-start">
-        <div>
-          <label>Typology: </label>
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="border rounded-lg px-2 py-1"
+          <button
+            disabled={isLoading}
+            onClick={confirmModal}
+            className="bg-green-700 text-white px-4 btn btn-sm my-2"
           >
-            <option value="">Select Type of Product</option>
-            {types.map((type, idx) => (
-              <option key={idx} value={type.name}>
-                {type.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex gap-2 items-center">
-          <label>Product name: </label>
-          <input
-            type="text"
-            value={product}
-            onChange={(e) => setProduct(e.target.value)}
-            className="border rounded-lg px-2 py-1"
-          />
-        </div>
+            {isLoading ? "Adding..." : "Add Product"}
+          </button>
 
-        <button
-          disabled={isLoading}
-          onClick={confirmModal}
-          className="bg-green-700 text-white px-4 btn btn-sm my-2"
-        >
-          {isLoading ? "Adding..." : "Add Product"}
-        </button>
-
-        {showModal && (
-          <div className="fixed inset-0 flex justify-center items-center z-50">
-            <div className="p-6 bg-gray-700 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg  font-semibold mb-4">
-                Confirm Product Addition
-              </h2>
-              <p className="mb-4 text-sm font-light">
-                Are you sure you want to add <strong>{product}</strong> under{" "}
-                <strong>{selectedType}</strong>?
-              </p>
-              <div className="flex justify-end gap-4">
-                <button
-                  className="btn btn-sm btn-ghost"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-sm btn-success btn-outline"
-                  onClick={handleAddProduct}
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Adding..." : "Yes, Add Product"}
-                </button>
+          {showModal && (
+            <div className="fixed inset-0 flex justify-center items-center z-50">
+              <div className="p-6 bg-gray-700 rounded-lg shadow-lg w-96">
+                <h2 className="text-lg  font-semibold mb-4">
+                  Confirm Product Addition
+                </h2>
+                <p className="mb-4 text-sm font-light">
+                  Are you sure you want to add <strong>{product}</strong> under{" "}
+                  <strong>{selectedType}</strong>?
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn btn-sm btn-success btn-outline"
+                    onClick={handleAddProduct}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Adding..." : "Yes, Add Product"}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+        <AddMaterial />
       </div>
       <ShowProducts />
     </div>

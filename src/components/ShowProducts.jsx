@@ -93,7 +93,9 @@ const ShowProducts = () => {
           onChange={(e) => setSelectedType(e.target.value)}
           className="border rounded-lg mt-2 px-2 py-1"
         >
-          <option value="">-- Select a Type --</option>
+          <option value="" className="text-center">
+            -- Select a Type --
+          </option>
           {types.map((type, idx) => (
             <option key={idx} value={type.name}>
               {type.name} - {type.code}
