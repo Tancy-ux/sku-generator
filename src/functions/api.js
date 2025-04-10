@@ -157,8 +157,8 @@ export const getMaterialSku = async (material, color, typology, product) => {
 export const fetchAllCodes = async () => {
   try {
     const res = await axios.get(`${BASE_URI}/all-codes`);
-    console.log(res.data);
-    return res.data;
+    console.log(res.data.data);
+    return res.data.data;
   } catch (error) {
     console.error(error);
   }
