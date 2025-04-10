@@ -132,7 +132,7 @@ const ShowProducts = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex justify-between items-center gap-3">
+              <div className="flex justify-between items-center gap-2">
                 <p>{prod.name}</p>
                 <div className="flex items-center gap-2">
                   <p className="text-pink-400">{prod.design_code}</p>

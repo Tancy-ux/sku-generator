@@ -7,9 +7,11 @@ const ViewAll = () => {
   return (
     <div className="flex justify-around">
       <ShowMaterial />
-      <ShowTypes />
+      <div>
+        <ShowTypes />
+        <ShowProducts />
+      </div>
       <ShowCeramic />
-      <ShowProducts />
     </div>
   );
 };
