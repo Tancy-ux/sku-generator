@@ -1,7 +1,9 @@
+import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
+
 import { fetchProductsByType, fetchTypes } from "../functions/api";
 import { updateProduct } from "../functions/colors";
-import toast from "react-hot-toast";
+import Skeleton from "./common/Skeleton";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -33,6 +35,7 @@ const ShowProducts = () => {
   const [selectedType, setSelectedType] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
   const [editedName, setEditedName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchTypes().then(setTypes);
@@ -40,16 +43,32 @@ const ShowProducts = () => {
 
   useEffect(() => {
     const fetch = async () => {
+      setIsLoading(true);
+
       if (!selectedType) {
         setProducts([]);
+        setIsLoading(false);
         return;
       }
-      const category = typeToCategoryMap[selectedType];
-      const data = await fetchProductsByType(category);
-      setProducts(data.products);
+
+      try {
+        const category = typeToCategoryMap[selectedType];
+        const data = await fetchProductsByType(category);
+        setProducts(data.products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
     };
+
     fetch();
   }, [selectedType]);
+
+  if (isLoading) {
+    return <Skeleton />;
+  }
 
   const handleEditClick = (product) => {
     setEditingProduct(product);
@@ -63,10 +82,7 @@ const ShowProducts = () => {
 
   const handleSaveProduct = async () => {
     try {
-      const updatedProduct = await updateProduct(
-        editingProduct._id,
-        editedName
-      );
+      await updateProduct(editingProduct._id, editedName);
       setProducts(
         products.map((p) =>
           p._id === editingProduct._id ? { ...p, name: editedName } : p

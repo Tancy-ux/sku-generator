@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; // Added React import
 import {
   fetchMaterials,
   fetchTypes,
-  getColorCode,
-  generateSKU,
-  fetchColors,
+  generateSKU, // For Ceramic/Other Glazes
+  fetchColors, // For default Ceramic Outer/Inner/Rim options
   fetchProductsByType,
-  getDesignCode,
+  getMaterialSku, // For Marble/Cement
 } from "../functions/api.js";
 import toast from "react-hot-toast";
-import { fetchCutleryColors } from "../functions/colors.js";
+import { fetchColorsByMaterial } from "../functions/colors.js";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -33,131 +32,192 @@ const typeToCategoryMap = {
   "Trinket Set": "trinket_set",
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
-
-  // "Box": "boxes",
-  // "Bags": "bags",
-  // "Stainless Steel": "stainless_steel",
-  // "Foam": "foamcuts",
-  // "Envelopes": "envelopes",
-  // "Ribbons": "ribbons"
 };
 
 export default function SKUGenerator() {
+  // --- State ---
   const [materials, setMaterials] = useState([]);
   const [types, setTypes] = useState([]);
-  const [outerColor, setOuterColor] = useState("");
-  const [innerColor, setInnerColor] = useState("");
-  const [rimColor, setRimColor] = useState("");
-  const [material, setMaterial] = useState("");
-  const [colorCode, setColorCode] = useState("");
-  const [sku, setSKU] = useState("");
+  const [material, setMaterial] = useState(""); // Selected material name
 
-  const [outerColors, setOuterColors] = useState([]);
-  const [innerColors, setInnerColors] = useState([]);
-  const [rimColors, setRimColors] = useState([]);
+  const [outerColor, setOuterColor] = useState(""); // For Ceramic Outer Glaze
+  const [innerColor, setInnerColor] = useState(""); // For Ceramic Inner Glaze
+  const [rimColor, setRimColor] = useState(""); // For Ceramic Rim Glaze
+
+  const [materialColor, setMaterialColor] = useState(""); // For selected Marble/Cement color name
+  const [materialColors, setMaterialColors] = useState([]); // Options for Marble/Cement colors { color, code }
+
+  const [outerColors, setOuterColors] = useState([]); // Options for Ceramic Outer
+  const [innerColors, setInnerColors] = useState([]); // Options for Ceramic Inner
+  const [rimColors, setRimColors] = useState([]); // Options for Ceramic Rim
 
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(""); // Selected product name
+  const [selectedType, setSelectedType] = useState(""); // Selected type name
+
+  const [sku, setSKU] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // For SKU generation button
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  const [cutleryColors, setCutleryColors] = useState([]);
-
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
-    fetchMaterials().then((data) => {
-      setMaterials(data);
-    });
-    fetchTypes().then(setTypes);
-    fetchColors().then(({ outerColors, innerColors, rimColors }) => {
-      setOuterColors(outerColors);
-      setInnerColors(innerColors);
-      setRimColors(rimColors);
-    });
+    fetchMaterials()
+      .then(setMaterials)
+      .catch((e) => console.error("Failed to fetch materials", e));
+    fetchTypes()
+      .then(setTypes)
+      .catch((e) => console.error("Failed to fetch types", e));
+    // Fetch default colors (assuming these are primarily for Ceramic)
+    fetchColors()
+      .then(({ outerColors, innerColors, rimColors }) => {
+        setOuterColors(outerColors || []);
+        setInnerColors(innerColors || []);
+        setRimColors(rimColors || []);
+      })
+      .catch((e) => console.error("Failed to fetch default colors", e));
   }, []);
 
+  // Fetch products when type changes
   useEffect(() => {
-    if (selectedType) {
+    // Clear dependent state
+    setProducts([]);
+    setSelectedProduct("");
+    setSKU(""); // Clear old SKU
+
+    // Reset colors relevant to the OTHER material type when type changes,
+    // as the material itself might not change but the required colors will.
+    setOuterColor("");
+    setInnerColor("");
+    setRimColor("");
+    setMaterialColor(""); // Also clear specific material color selection
+
+    if (selectedType && selectedType !== "Cutlery") {
+      // Ignore Cutlery type if present in list
       setIsLoadingProducts(true);
       const dbCategory = typeToCategoryMap[selectedType];
 
-      if (selectedType === "Cutlery") {
-        fetchCutleryColors().then((colors) => {
-          setCutleryColors(colors);
-          setOuterColors([]);
-          setInnerColors([]);
-          setRimColors([]);
-        });
+      if (!dbCategory) {
+        console.error(`No DB category mapping for type: ${selectedType}`);
+        toast.error(`Configuration error for type: ${selectedType}`);
+        setIsLoadingProducts(false);
+        return; // Stop if type is invalid
       }
+
+      // Fetch products for the selected type category
       fetchProductsByType(dbCategory)
         .then((data) => {
-          const products = data.products || data || [];
-          setProducts(products);
-          setSelectedProduct("");
+          const productList = data?.products || data || [];
+          setProducts(Array.isArray(productList) ? productList : []);
         })
         .catch((e) => {
           console.error("Error fetching products:", e);
           toast.error("Failed to load products");
-          setProducts([]);
+          setProducts([]); // Ensure empty on error
         })
         .finally(() => setIsLoadingProducts(false));
     } else {
-      setProducts([]);
+      setIsLoadingProducts(false); // Ensure loading stops if type is cleared or is Cutlery
+      setProducts([]); // Explicitly clear products if type is empty or Cutlery
       setSelectedProduct("");
     }
-  }, [selectedType]);
+  }, [selectedType]); // Dependency: selectedType
 
-  // const handleGetColorCode = async () => {
-  //   if (!outerColor || !innerColor || !rimColor) {
-  //     toast.error("Please select all colors for the code.");
-  //     return;
-  //   }
-  //   const code = await getColorCode(outerColor, innerColor, rimColor);
-  //   if (code !== null && code !== undefined) {
-  //     setColorCode(code);
-  //   } else {
-  //     console.error("No valid color code received.");
-  //     toast.error("No valid color code received.");
-  //   }
-  // };
+  // Fetch material-specific colors (Marble/Cement) when material changes
+  useEffect(() => {
+    // Clear dependent state
+    setMaterialColors([]);
+    setMaterialColor("");
+    setSKU(""); // Clear old SKU
 
-  const handleGenerateSKU = async () => {
-    if (!isLoading) {
-      setIsLoading(true);
+    // Also clear Ceramic colors when material changes, as they become irrelevant
+    setOuterColor("");
+    setInnerColor("");
+    setRimColor("");
+
+    if (material && ["Marble", "Cement"].includes(material)) {
+      fetchColorsByMaterial(material)
+        .then(setMaterialColors) // Expecting array of { color, code }
+        .catch((e) => {
+          console.error("Error fetching colors by material:", e);
+          toast.error(`Failed to load ${material} colors`);
+          setMaterialColors([]); // Ensure empty on error
+        });
     }
+    // No else needed, state is cleared at the start of the effect
+  }, [material]); // Dependency: material
+
+  // --- SKU Generation Handler ---
+  const handleGenerateSKU = async () => {
+    setIsLoading(true);
+    setSKU(""); // Clear previous SKU
+
     try {
-      if (!material || !selectedType) {
-        toast.error(
-          "Please select a material and typology before generating SKU."
-        );
-        return;
-      }
-      if (!selectedProduct || !outerColor || !innerColor || !rimColor) {
-        toast.error("Please select all options before generating SKU.");
-        return;
+      // --- Base Validation ---
+      if (!material || !selectedType || !selectedProduct) {
+        toast.error("Please select Material, Typology, and Product Name.");
+        throw new Error("Missing required fields"); // Use throw to prevent further execution
       }
 
-      const skuCode = await generateSKU(
-        material,
-        outerColor,
-        innerColor,
-        rimColor,
-        selectedType,
-        selectedProduct
-      );
-      setSKU(skuCode);
-      console.log("Generated SKU:", skuCode);
+      // Exclude Cutlery explicitly if it's still in the type list but unsupported
+      if (selectedType === "Cutlery") {
+        toast.error("Cutlery SKU generation is not currently supported.");
+        throw new Error("Unsupported type: Cutlery");
+      }
+
+      let generatedSkuCode;
+      const isMaterialSpecificColor = ["Marble", "Cement"].includes(material);
+
+      // --- Branching Logic ---
+      if (isMaterialSpecificColor) {
+        // --- Material SKU Path (Marble/Cement) ---
+        if (!materialColor) {
+          toast.error(`Please select a ${material} color.`);
+          throw new Error("Missing material color");
+        }
+        console.log(`Calling getMaterialSku for ${material}`);
+        generatedSkuCode = await getMaterialSku(
+          material,
+          materialColor, // The selected color name
+          selectedType,
+          selectedProduct
+        );
+      } else {
+        // --- General/Ceramic SKU Path ---
+        if (!outerColor || !innerColor || !rimColor) {
+          toast.error("Please select Outer, Inner, and Rim colors.");
+          throw new Error("Missing Ceramic colors");
+        }
+        console.log(`Calling generateSKU for ${material}/${selectedType}`);
+        generatedSkuCode = await generateSKU(
+          material,
+          outerColor,
+          innerColor,
+          rimColor,
+          selectedType,
+          selectedProduct
+        );
+      }
+
+      // --- Update State on Success ---
+      setSKU(generatedSkuCode);
+      console.log("Successfully generated SKU:", generatedSkuCode);
+      toast.success(`SKU Generated: ${generatedSkuCode}`);
     } catch (error) {
-      toast.error("Error generating SKU");
-      console.error("Error generating SKU:", error);
+      // --- Error Handling ---
+      console.error("Error in handleGenerateSKU:", error);
+
+      setSKU(""); // Ensure SKU is cleared
     } finally {
+      // --- Cleanup ---
       setIsLoading(false);
     }
   };
 
+  // --- JSX Return ---
+  const isMaterialSpecificColor = ["Marble", "Cement"].includes(material);
+
   return (
     <div className="p-5 flex justify-center flex-col gap-5">
+      {/* Material Dropdown */}
       <div className="my-4">
         <label>Material: </label>
         <select
@@ -166,46 +226,50 @@ export default function SKUGenerator() {
           className="border rounded-2xl px-2 py-1 w-50"
         >
           <option value="">Select Material</option>
-          {materials.map((material, idx) => (
-            <option key={idx} value={material.name}>
-              {material.name} - {material.code}
+          {materials.map((mat, idx) => (
+            <option key={idx} value={mat.name}>
+              {mat.name} - {mat.code}
             </option>
           ))}
         </select>
       </div>
-
-      <div className="flex my-4 gap-5 items-center">
+      {/* Typology and Product Dropdowns */}
+      <div className="flex my-4 gap-5 items-center flex-wrap">
+        {" "}
+        {/* Added flex-wrap */}
         <div>
           <label>Typology: </label>
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="border rounded-2xl px-2 py-1 w-50"
+            className="border rounded-2xl px-2 py-1 w-64"
           >
             <option value="">Select Type</option>
-            {types.map((type, idx) => (
-              <option key={idx} value={type.name}>
-                {type.name} - {type.code}
-              </option>
-            ))}
+            {types
+              .filter((type) => type.name !== "Cutlery") // Filter out Cutlery from options
+              .map((type, idx) => (
+                <option key={idx} value={type.name}>
+                  {type.name} - {type.code}
+                </option>
+              ))}
           </select>
         </div>
-
         <div className="flex gap-2 items-center">
           <label>Product Name: </label>
           <select
             value={selectedProduct}
             onChange={(e) => setSelectedProduct(e.target.value)}
-            className="border rounded-2xl px-2 py-1 w-40"
+            className="border rounded-2xl px-2 py-1 w-68"
             disabled={
-              !selectedType || isLoadingProducts || products.length === 0
+              !selectedType ||
+              isLoadingProducts ||
+              products.length === 0 ||
+              selectedType === "Cutlery"
             }
           >
             <option value="">Select Product</option>
             {isLoadingProducts ? (
-              <option className="border-gray-400" disabled>
-                Loading...
-              </option>
+              <option disabled>Loading...</option>
             ) : (
               products.map((product, idx) => (
                 <option key={idx} value={product.name}>
@@ -214,139 +278,121 @@ export default function SKUGenerator() {
               ))
             )}
           </select>
-          {!isLoadingProducts && selectedType && products.length === 0 && (
-            <p className="text-sm text-gray-400 mt-1">
-              No products available for "{selectedType}"
-            </p>
-          )}
-        </div>
-      </div>
-
-      <h2 className="font-bold italic text-lg">
-        {selectedType === "Cutlery"
-          ? "Cutlery Colours"
-          : "Ceramic product Colours"}
-      </h2>
-
-      {selectedType === "Cutlery" ? (
-        <div className="flex gap-5 items-center">
-          <div className="mb-4">
-            <label>Handle Color: </label>
-            <select
-              value={outerColor}
-              onChange={(e) => setOuterColor(e.target.value)}
-              className="border rounded-2xl px-2 py-1"
-            >
-              <option value="">Select Handle Color</option>
-              {cutleryColors.map((color, idx) => (
-                <option key={idx} value={color.handleColor}>
-                  {color.handleColor} (Code: {color.code})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label>Finish Color: </label>
-            <select
-              value={innerColor}
-              onChange={(e) => setInnerColor(e.target.value)}
-              className="border rounded-2xl px-2 py-1"
-            >
-              <option value="">Select Finish Color</option>
-              {cutleryColors.map((color, idx) => (
-                <option key={idx} value={color.finishColor}>
-                  {color.finishColor} (Code: {color.code})
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      ) : (
-        <div className="flex gap-5 items-center">
-          <div className="mb-4">
-            <label>Outer Glaze: </label>
-            <select
-              value={outerColor}
-              onChange={(e) => setOuterColor(e.target.value)}
-              className="border rounded-2xl px-2 py-1"
-            >
-              <option value="">Select Outer Color</option>
-              {outerColors.map((col, idx) => (
-                <option key={idx} value={col}>
-                  {col}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label>Inner Glaze: </label>
-            <select
-              value={innerColor}
-              onChange={(e) => setInnerColor(e.target.value)}
-              className="border rounded-2xl px-2 py-1"
-            >
-              <option value="">Select Inner Color</option>
-              {innerColors.map((col, idx) => (
-                <option key={idx} value={col}>
-                  {col}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label>Rim Color: </label>
-            <select
-              value={rimColor}
-              onChange={(e) => setRimColor(e.target.value)}
-              className="border rounded-2xl px-2 py-1"
-            >
-              <option value="">Select Rim Color</option>
-              {rimColors.map((col, idx) => (
-                <option key={idx} value={col}>
-                  {col}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-4 flex gap-3 items-center">
-            {/* <button
-            onClick={handleGetColorCode}
-            className="bg-green-700 text-white px-4 btn btn-sm my-2"
-          >
-            Get Color Code
-          </button> */}
-
-            {colorCode && (
-              <p className="text-sm text-gray-400 mt-1">
-                Color Code:{" "}
-                <span className="text-pink-300">
-                  <strong>{colorCode}</strong>
-                </span>
+          {/* Optional: Show 'No products' message */}
+          {!isLoadingProducts &&
+            selectedType &&
+            selectedType !== "Cutlery" &&
+            products.length === 0 && (
+              <p className="text-sm text-red-600 ml-2">
+                No products for "{selectedType}"
               </p>
             )}
-          </div>
         </div>
-      )}
+      </div>
+      {/* --- Conditional Color Selection --- */}
+      {/* Show only if material and type are selected, and type is not Cutlery */}
+      {material && selectedType && selectedType !== "Cutlery" && (
+        <>
+          <h2 className="font-bold italic text-lg">
+            {isMaterialSpecificColor ? `${material} Colour` : "Product Colours"}
+          </h2>
 
+          {isMaterialSpecificColor ? (
+            // --- Marble/Cement Color Picker ---
+            <div className="mb-4">
+              <label>{material} Color: </label>
+              <select
+                value={materialColor}
+                onChange={(e) => setMaterialColor(e.target.value)}
+                className="border rounded-2xl px-2 py-1 w-60"
+              >
+                <option value="">Select {material} Color</option>
+                {materialColors.map((colorObj, idx) => (
+                  <option key={idx} value={colorObj.color}>
+                    {" "}
+                    {/* Value is the color name */}
+                    {colorObj.color} - {colorObj.code}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            // --- Ceramic/Other Color Pickers ---
+            <div className="flex gap-5 items-center flex-wrap">
+              {" "}
+              {/* Added flex-wrap */}
+              <div>
+                <label>Outer Glaze: </label>
+                <select
+                  value={outerColor}
+                  onChange={(e) => setOuterColor(e.target.value)}
+                  className="border rounded-2xl px-2 py-1"
+                >
+                  <option value="">Select Outer Color</option>
+                  {outerColors.map((col, idx) => (
+                    <option key={idx} value={col}>
+                      {col}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label>Inner Glaze: </label>
+                <select
+                  value={innerColor}
+                  onChange={(e) => setInnerColor(e.target.value)}
+                  className="border rounded-2xl px-2 py-1"
+                >
+                  <option value="">Select Inner Color</option>
+                  {innerColors.map((col, idx) => (
+                    <option key={idx} value={col}>
+                      {col}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label>Rim Color: </label>
+                <select
+                  value={rimColor}
+                  onChange={(e) => setRimColor(e.target.value)}
+                  className="border rounded-2xl px-2 py-1"
+                >
+                  <option value="">Select Rim Color</option>
+                  {rimColors.map((col, idx) => (
+                    <option key={idx} value={col}>
+                      {col}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+        </>
+      )}{" "}
+      {/* End Conditional Color Selection */}
+      {/* Generate Button and SKU Display */}
       <div className="my-4 flex gap-2 items-center">
         <button
           onClick={handleGenerateSKU}
-          disabled={isLoading}
-          className="bg-green-700 text-white px-4 btn my-2"
+          // Disable button if loading OR if required fields for the current path aren't met
+          disabled={
+            isLoading ||
+            !material ||
+            !selectedType ||
+            !selectedProduct ||
+            selectedType === "Cutlery" || // Disable if Cutlery selected
+            (isMaterialSpecificColor && !materialColor) || // Disable if Marble/Cement color missing
+            (!isMaterialSpecificColor &&
+              (!outerColor || !innerColor || !rimColor)) // Disable if Ceramic colors missing
+          }
+          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed" // Added padding/rounding/hover/disabled styles
         >
           {isLoading ? "Generating..." : "Generate SKU"}
         </button>
-
         {sku && (
           <p>
-            Generated SKU:{" "}
-            <span className="text-pink-300">
-              <strong>{sku}</strong>
-            </span>
+            Generated SKU: <strong className="text-pink-300">{sku}</strong>
           </p>
         )}
       </div>
