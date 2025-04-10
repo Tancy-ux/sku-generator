@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchProductsByType, fetchTypes } from "../functions/api";
 import { updateProduct } from "../functions/colors";
+import toast from "react-hot-toast";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -31,6 +32,7 @@ const ShowProducts = () => {
   const [products, setProducts] = useState([]);
   const [selectedType, setSelectedType] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
+  const [editedName, setEditedName] = useState("");
 
   useEffect(() => {
     fetchTypes().then(setTypes);
@@ -51,12 +53,33 @@ const ShowProducts = () => {
 
   const handleEditClick = (product) => {
     setEditingProduct(product);
+    setEditedName(product.name);
   };
 
-  const handleSaveProduct = async (updatedProduct) => {
+  const handleCancelEdit = () => {
+    setEditingProduct(null);
+    setEditedName("");
+  };
+
+  const handleSaveProduct = async () => {
     try {
-      await updateProduct(updatedProduct.id, updatedProduct);
-    } catch (error) {}
+      const updatedProduct = await updateProduct(
+        editingProduct._id,
+        editedName
+      );
+      setProducts(
+        products.map((p) =>
+          p._id === editingProduct._id ? { ...p, name: editedName } : p
+        )
+      );
+      toast.success("Product updated successfully!");
+      setEditingProduct(null);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error(
+        error.message || "Something went wrong while updating product."
+      );
+    }
   };
 
   return (
@@ -85,10 +108,43 @@ const ShowProducts = () => {
             key={idx}
             className="border border-gray-500 p-4 rounded shadow flex flex-col justify-between"
           >
-            <div className="flex justify-between gap-3">
-              <p>{prod.name}</p>
-              <p className="text-pink-400">{prod.design_code}</p>
-            </div>
+            {editingProduct?._id === prod._id ? (
+              <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="border rounded px-2 py-1"
+                />
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={handleSaveProduct}
+                    className="btn btn-sm btn-success"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="btn btn-sm btn-neutral"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-between items-center gap-3">
+                <p>{prod.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-pink-400">{prod.design_code}</p>
+                  <button
+                    onClick={() => handleEditClick(prod)}
+                    className="btn btn-sm btn-primary btn-outline"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

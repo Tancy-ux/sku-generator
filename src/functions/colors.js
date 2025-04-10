@@ -96,7 +96,7 @@ export const getBaseColors = async () => {
 };
 
 export const updateProduct = async (productId, updatedName) => {
-  const response = await fetch(`/update-products/${productId}`, {
+  const response = await fetch(`${BASE_URI}/update-product/${productId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
