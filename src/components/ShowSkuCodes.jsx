@@ -49,9 +49,9 @@ const ShowSkuCodes = () => {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between gap-8 items-center mb-8">
         <h1 className="text-3xl font-bold">SKU Code List</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center mt-3 gap-2">
           <label htmlFor="type-filter" className="text-sm font-medium">
             Filter by Type:
           </label>
