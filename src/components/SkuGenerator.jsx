@@ -35,11 +35,6 @@ const typeToCategoryMap = {
   Cutlery: "cutlery",
 };
 
-const normalizeMaterial = (input) => {
-  if (input === "Cork") return "Mats"; // Treat Cork as Mats
-  return input;
-};
-
 export default function SKUGenerator() {
   // --- State ---
   const [materials, setMaterials] = useState([]);
@@ -183,7 +178,7 @@ export default function SKUGenerator() {
         }
         console.log(`Calling getMaterialSku for ${material}`);
         generatedSkuCode = await getMaterialSku(
-          normalizeMaterial(material),
+          material,
           materialColor, // The selected color name
           selectedType,
           selectedProduct

@@ -13,22 +13,26 @@ const ShowSkuCodes = () => {
         console.error("Failed to fetch SKU codes:", error);
       }
     };
-    getData();
+
+    getData(); // initial fetch
+    const interval = setInterval(getData, 3000); // fetch every 3 seconds
+
+    return () => clearInterval(interval); // cleanup on unmount
   }, []);
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">SKU Code List</h1>
       <div className="overflow-x-auto">
-        <table className="min-w-full table-auto border border-gray-500 shadow-md rounded-xl">
-          <thead>
+        <table className="min-w-full table-auto border border-gray-600 shadow-md rounded-xl">
+          <thead className="bg-gray-900">
             <tr>
               <th className="px-6 py-3 text-left">Product Name</th>
               <th className="px-6 py-3 text-left">Inner Glaze Color</th>
               <th className="px-6 py-3 text-left">SKU Code</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-600">
+          <tbody className="divide-y divide-gray-700">
             {skus.length === 0 ? (
               <tr>
                 <td className="px-6 py-4 text-center text-gray-500">
@@ -38,9 +42,9 @@ const ShowSkuCodes = () => {
             ) : (
               skus.map((sku, idx) => (
                 <tr key={idx}>
-                  <td className="px-6 py-4">{sku.productName}</td>
-                  <td className="px-6 py-4">{sku.color}</td>
-                  <td className="px-6 py-4 font-mono">{sku.skuCode}</td>
+                  <td className="px-6 py-3">{sku.productName}</td>
+                  <td className="px-6 py-3">{sku.color}</td>
+                  <td className="px-6 py-3 font-mono">{sku.skuCode}</td>
                 </tr>
               ))
             )}
