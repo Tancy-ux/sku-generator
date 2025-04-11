@@ -8,7 +8,7 @@ import {
   getMaterialSku, // For Marble/Cement
 } from "../functions/api.js";
 import toast from "react-hot-toast";
-import { fetchColorsByMaterial } from "../functions/colors.js";
+import { fetchColorsByMaterial, getBaseColors } from "../functions/colors.js";
 import ShowSkuCodes from "./ShowSkuCodes.jsx";
 
 const typeToCategoryMap = {
@@ -48,9 +48,7 @@ export default function SKUGenerator() {
   const [materialColor, setMaterialColor] = useState(""); // For selected Marble/Cement color name
   const [materialColors, setMaterialColors] = useState([]); // Options for Marble/Cement colors { color, code }
 
-  const [outerColors, setOuterColors] = useState([]); // Options for Ceramic Outer
-  const [innerColors, setInnerColors] = useState([]); // Options for Ceramic Inner
-  const [rimColors, setRimColors] = useState([]); // Options for Ceramic Rim
+  const [baseColors, setBaseColors] = useState([]);
 
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(""); // Selected product name
@@ -67,14 +65,23 @@ export default function SKUGenerator() {
     fetchTypes()
       .then(setTypes)
       .catch((e) => console.error("Failed to fetch types", e));
-    // Fetch default colors (assuming these are primarily for Ceramic)
-    fetchColors()
-      .then(({ outerColors, innerColors, rimColors }) => {
-        setOuterColors(outerColors || []);
-        setInnerColors(innerColors || []);
-        setRimColors(rimColors || []);
-      })
-      .catch((e) => console.error("Failed to fetch default colors", e));
+  }, []);
+
+  useEffect(() => {
+    const fetchBaseColors = async () => {
+      try {
+        const response = await getBaseColors();
+        const colors = Array.isArray(response?.name)
+          ? response.name
+          : Array.isArray(response)
+          ? response
+          : [];
+        setBaseColors(colors);
+      } catch (error) {
+        toast.error("Failed to load base colors");
+      }
+    };
+    fetchBaseColors();
   }, []);
 
   // Fetch products when type changes
@@ -335,9 +342,9 @@ export default function SKUGenerator() {
                     className="border rounded-2xl px-2 py-1"
                   >
                     <option value="">Select Outer Color</option>
-                    {outerColors.map((col, idx) => (
-                      <option key={idx} value={col}>
-                        {col}
+                    {baseColors.map((col, idx) => (
+                      <option key={idx} value={col.name}>
+                        {col.name}
                       </option>
                     ))}
                   </select>
@@ -350,9 +357,9 @@ export default function SKUGenerator() {
                     className="border rounded-2xl px-2 py-1"
                   >
                     <option value="">Select Inner Color</option>
-                    {innerColors.map((col, idx) => (
-                      <option key={idx} value={col}>
-                        {col}
+                    {baseColors.map((col, idx) => (
+                      <option key={idx} value={col.name}>
+                        {col.name}
                       </option>
                     ))}
                   </select>
@@ -365,9 +372,9 @@ export default function SKUGenerator() {
                     className="border rounded-2xl px-2 py-1"
                   >
                     <option value="">Select Rim Color</option>
-                    {rimColors.map((col, idx) => (
-                      <option key={idx} value={col}>
-                        {col}
+                    {baseColors.map((col, idx) => (
+                      <option key={idx} value={col.name}>
+                        {col.name}
                       </option>
                     ))}
                   </select>

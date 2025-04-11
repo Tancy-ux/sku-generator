@@ -89,7 +89,8 @@ export const addBaseColor = async (color) => {
 export const getBaseColors = async () => {
   try {
     const res = await axios.get(`${BASE_URI}/get-base`);
-    return res.data;
+    console.log(res.data.data);
+    return res.data.data;
   } catch (error) {
     console.log(error);
   }
