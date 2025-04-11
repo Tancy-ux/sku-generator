@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // Added React import
+import { useState, useEffect } from "react";
 import {
   fetchMaterials,
   fetchTypes,
@@ -146,75 +146,73 @@ export default function SKUGenerator() {
     // No else needed, state is cleared at the start of the effect
   }, [material]); // Dependency: material
 
-  // --- SKU Generation Handler ---
   const handleGenerateSKU = async () => {
+    // Immediately set loading state and clear SKU
     setIsLoading(true);
-    setSKU(""); // Clear previous SKU
+    setSKU("");
 
+    // Force a microtask delay to ensure state updates are processed
+    await Promise.resolve();
+
+    // Validate inputs first (synchronous checks)
+    if (!material || !selectedType || !selectedProduct) {
+      setIsLoading(false);
+      toast.error("Please select Material, Typology, and Product Name.");
+      return;
+    }
+
+    if (selectedType === "Cutlery") {
+      setIsLoading(false);
+      toast.error("Cutlery SKU generation is not currently supported.");
+      return;
+    }
+
+    const isMaterialSpecificColor = ["Marble", "Cork", "Cement"].includes(
+      material
+    );
+
+    // Validate color selections
+    if (isMaterialSpecificColor && !materialColor) {
+      setIsLoading(false);
+      toast.error(`Please select a ${material} color.`);
+      return;
+    } else if (
+      !isMaterialSpecificColor &&
+      (!outerColor || !innerColor || !rimColor)
+    ) {
+      setIsLoading(false);
+      toast.error("Please select Outer, Inner, and Rim colors.");
+      return;
+    }
+
+    // Now perform the async operation
     try {
-      // --- Base Validation ---
-      if (!material || !selectedType || !selectedProduct) {
-        toast.error("Please select Material, Typology, and Product Name.");
-        throw new Error("Missing required fields"); // Use throw to prevent further execution
-      }
+      const generatedSkuCode = isMaterialSpecificColor
+        ? await getMaterialSku(
+            material,
+            materialColor,
+            selectedType,
+            selectedProduct
+          )
+        : await generateSKU(
+            material,
+            outerColor,
+            innerColor,
+            rimColor,
+            selectedType,
+            selectedProduct
+          );
 
-      // Exclude Cutlery explicitly if it's still in the type list but unsupported
-      if (selectedType === "Cutlery") {
-        toast.error("Cutlery SKU generation is not currently supported.");
-        throw new Error("Unsupported type: Cutlery");
-      }
-
-      let generatedSkuCode;
-      const isMaterialSpecificColor = ["Marble", "Cork", "Cement"].includes(
-        material
-      );
-
-      // --- Branching Logic ---
-      if (isMaterialSpecificColor) {
-        // --- Material SKU Path (Marble/Cement) ---
-        if (!materialColor) {
-          toast.error(`Please select a ${material} color.`);
-          throw new Error("Missing material color");
-        }
-        console.log(`Calling getMaterialSku for ${material}`);
-        generatedSkuCode = await getMaterialSku(
-          material,
-          materialColor, // The selected color name
-          selectedType,
-          selectedProduct
-        );
-      } else {
-        // --- General/Ceramic SKU Path ---
-        if (!outerColor || !innerColor || !rimColor) {
-          toast.error("Please select Outer, Inner, and Rim colors.");
-          throw new Error("Missing Ceramic colors");
-        }
-        console.log(`Calling generateSKU for ${material}/${selectedType}`);
-        generatedSkuCode = await generateSKU(
-          material,
-          outerColor,
-          innerColor,
-          rimColor,
-          selectedType,
-          selectedProduct
-        );
-      }
-
-      // --- Update State on Success ---
       setSKU(generatedSkuCode);
-      console.log("Successfully generated SKU:", generatedSkuCode);
       toast.success(`SKU Generated: ${generatedSkuCode}`);
     } catch (error) {
-      // --- Error Handling ---
       console.error("Error in handleGenerateSKU:", error);
-
-      setSKU(""); // Ensure SKU is cleared
+      toast.error("Failed to generate SKU");
+      setSKU("");
     } finally {
-      // --- Cleanup ---
       setIsLoading(false);
     }
   };
-
   // --- JSX Return ---
   const isMaterialSpecificColor = ["Marble", "Cork", "Cement"].includes(
     material
