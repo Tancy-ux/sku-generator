@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchAllCodes, fetchTypes } from "../functions/api";
+// Add the copy icon (using react-icons)
+import { FiCopy } from "react-icons/fi";
 
 const getBadgeColor = (typeCode) => {
   const hash = Array.from(typeCode).reduce(
@@ -22,6 +24,8 @@ const ShowSkuCodes = () => {
   const [skus, setSkus] = useState([]);
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState("all");
+  // Add state to track copied status for each SKU
+  const [copiedIndex, setCopiedIndex] = useState(null);
 
   useEffect(() => {
     const getInitialData = async () => {
@@ -46,6 +50,19 @@ const ShowSkuCodes = () => {
     selectedType === "all"
       ? skus
       : skus.filter((sku) => sku.typeCode === selectedType);
+
+  // Copy function
+  const handleCopy = (text, index) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopiedIndex(index);
+        setTimeout(() => setCopiedIndex(null), 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+      });
+  };
 
   return (
     <div className="p-6">
@@ -97,7 +114,22 @@ const ShowSkuCodes = () => {
                     <span className="text-gray-300 text-md">{sku.color}</span>
                   </td>
                   <td className="px-6 py-3 text-center font-mono">
-                    {sku.skuCode}
+                    <div className="flex items-center justify-center gap-2">
+                      {sku.skuCode}
+                      <button
+                        onClick={() => handleCopy(sku.skuCode, idx)}
+                        className="p-1 text-gray-400 hover:text-white rounded transition-colors cursor-pointer"
+                        title="Copy to clipboard"
+                      >
+                        {copiedIndex === idx ? (
+                          <span className="text-green-400 text-xs">
+                            Copied!
+                          </span>
+                        ) : (
+                          <FiCopy size={12} />
+                        )}
+                      </button>
+                    </div>
                   </td>
                   <td
                     className={`px-4 py-2.5 mx-2 text-center mt-3 badge-sm badge ${getBadgeColor(

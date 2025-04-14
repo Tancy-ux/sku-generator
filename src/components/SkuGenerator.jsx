@@ -225,6 +225,17 @@ export default function SKUGenerator() {
     material
   );
 
+  if (isLoadingProducts) {
+    return (
+      <div className="p-5 flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-lg">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-5 flex flex-row justify-between">
       <div className="p-5 flex flex-col gap-5">
