@@ -154,11 +154,9 @@ export default function SKUGenerator() {
   }, [material]); // Dependency: material
 
   const handleGenerateSKU = async () => {
-    // Immediately set loading state and clear SKU
     setIsLoading(true);
     setSKU("");
 
-    // Force a microtask delay to ensure state updates are processed
     await Promise.resolve();
 
     // Validate inputs first (synchronous checks)
@@ -194,7 +192,7 @@ export default function SKUGenerator() {
 
     // Now perform the async operation
     try {
-      const generatedSkuCode = isMaterialSpecificColor
+      const response = isMaterialSpecificColor
         ? await getMaterialSku(
             material,
             materialColor,
@@ -210,11 +208,27 @@ export default function SKUGenerator() {
             selectedProduct
           );
 
+      if (response.message && response.message.includes("Color")) {
+        throw new Error(response.message);
+      }
+
+      const generatedSkuCode = response.skuCode || response.newSKU?.skuCode;
+
       setSKU(generatedSkuCode);
       toast.success(`SKU Generated: ${generatedSkuCode}`);
     } catch (error) {
       console.error("Error in handleGenerateSKU:", error);
-      toast.error("Failed to generate SKU");
+      if (
+        error.response?.data?.message?.includes("Color") ||
+        error.message?.includes("Color") ||
+        error.response?.status === 400
+      ) {
+        toast.error(
+          "Invalid color combination - please select different colors"
+        );
+      } else {
+        toast.error("Failed to generate SKU");
+      }
       setSKU("");
     } finally {
       setIsLoading(false);
@@ -227,10 +241,14 @@ export default function SKUGenerator() {
 
   if (isLoadingProducts) {
     return (
-      <div className="p-5 flex items-center justify-center h-screen">
-        <div className="text-center">
+      <div className="p-5 flex items-center justify-center mt-10">
+        <div className="text-center flex items-center justify-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-lg">Loading products...</p>
+          <p className="text-lg">Loading products... </p>
+
+          <span className="loading loading-bars loading-xs"></span>
+          <span className="loading loading-bars loading-sm"></span>
+          <span className="loading loading-bars loading-md"></span>
         </div>
       </div>
     );

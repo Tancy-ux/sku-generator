@@ -132,7 +132,7 @@ const ShowSkuCodes = () => {
                     </div>
                   </td>
                   <td
-                    className={`px-4 py-2.5 mx-2 text-center mt-3 badge-sm badge ${getBadgeColor(
+                    className={`px-4 py-2.5 mx-2 text-center mt-3 badge-xs badge ${getBadgeColor(
                       sku.typeCode
                     )}`}
                   >
