@@ -89,30 +89,6 @@ export const getDesignCode = async (productName) => {
   }
 }
 
-export const generateSKU = async (
-  material,
-  outerColor,
-  innerColor,
-  rimColor,
-  typology,
-  productName
-) => {
-  try {
-    const res = await axios.post(`${BASE_URI}/get-sku`, {
-      materialName: material,
-      outerColor,
-      innerColor,
-      rimColor,
-      typology,
-      productName
-    });
-    return res.data.skuCode;
-  } catch (error) {
-    console.error(error);
-    toast.error("Something went wrong");
-  }
-};
-
 export const addProduct = async (name, category) => {
   try {
     const res = await axios.post(`${BASE_URI}/add-product`, {
@@ -135,25 +111,6 @@ export const fetchAllColorEntries = async () => {
   }
 }
 
-export const getMaterialSku = async (material, color, typology, product) => {
-  try {
-    const res = await axios.post(`${BASE_URI}/get-msku`, {
-      materialName: material,
-      colour: color,
-      typology,
-      productName: product
-    });
-    if(res.data) {
-      console.log(res.data.data);
-      return res.data.data;
-    } else {
-      return "Failed to get skucode";
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 export const fetchAllCodes = async () => {
   try {
     const res = await axios.get(`${BASE_URI}/all-codes`);
@@ -163,3 +120,86 @@ export const fetchAllCodes = async () => {
     console.error(error);
   }
 }
+
+export const getMaterialSku = async (material, color, typology, product) => {
+  try {
+    const res = await axios.post(`${BASE_URI}/get-msku`, {
+      materialName: material,
+      colour: color,
+      typology,
+      productName: product
+    });
+
+    // Validate response structure
+    if (!res.data) {
+      throw new Error('No data received from server');
+    }
+
+    // Handle both possible success responses
+    const skuData = res.data.data || res.data;
+    if (!skuData.skuCode && !skuData.newSKU?.skuCode) {
+      throw new Error('Invalid SKU data structure');
+    }
+
+    // Return consistent structure
+    return {
+      success: true,
+      skuCode: skuData.skuCode || skuData.newSKU.skuCode,
+      data: skuData
+    };
+
+  } catch (error) {
+    console.error('getMaterialSku error:', error);
+    // Return error information instead of string
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message,
+      status: error.response?.status
+    };
+  }
+};
+
+export const generateSKU = async (
+  material,
+  outerColor,
+  innerColor,
+  rimColor,
+  typology,
+  productName
+) => {
+  try {
+    const res = await axios.post(`${BASE_URI}/get-sku`, {
+      materialName: material,
+      outerColor,
+      innerColor,
+      rimColor,
+      typology,
+      productName
+    });
+
+    // Validate response
+    if (!res.data) {
+      throw new Error('No data received from server');
+    }
+
+    // Handle both possible success responses
+    const skuCode = res.data.skuCode || res.data.newSKU?.skuCode;
+    if (!skuCode) {
+      throw new Error('No SKU code in response');
+    }
+
+    return {
+      success: true,
+      skuCode,
+      data: res.data
+    };
+
+  } catch (error) {
+    console.error('generateSKU error:', error);
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message,
+      status: error.response?.status
+    };
+  }
+};

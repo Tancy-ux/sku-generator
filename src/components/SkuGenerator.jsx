@@ -89,7 +89,6 @@ export default function SKUGenerator() {
     // Clear dependent state
     setProducts([]);
     setSelectedProduct("");
-    setSKU(""); // Clear old SKU
 
     // Reset colors relevant to the OTHER material type when type changes,
     // as the material itself might not change but the required colors will.
@@ -134,7 +133,6 @@ export default function SKUGenerator() {
     // Clear dependent state
     setMaterialColors([]);
     setMaterialColor("");
-    setSKU(""); // Clear old SKU
 
     // Also clear Ceramic colors when material changes, as they become irrelevant
     setOuterColor("");
@@ -155,8 +153,6 @@ export default function SKUGenerator() {
 
   const handleGenerateSKU = async () => {
     setIsLoading(true);
-    setSKU("");
-
     await Promise.resolve();
 
     // Validate inputs first (synchronous checks)
@@ -208,8 +204,8 @@ export default function SKUGenerator() {
             selectedProduct
           );
 
-      if (response.message && response.message.includes("Color")) {
-        throw new Error(response.message);
+      if (!response.success) {
+        throw new Error(response.error || "Failed to generate SKU");
       }
 
       const generatedSkuCode = response.skuCode || response.newSKU?.skuCode;
