@@ -9,10 +9,12 @@ label {
     @apply text-green-100;
 }
 
-.bg-img{
-    background-image: url("/bg.jpg");
+.bg-img {
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
+        url("/bg2.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    @apply min-h-screen;
+    min-height: 100vh;
 }

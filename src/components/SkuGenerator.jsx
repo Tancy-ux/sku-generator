@@ -424,7 +424,7 @@ export default function SKUGenerator() {
               (!isMaterialSpecificColor &&
                 (!outerColor || !innerColor || !rimColor)) // Disable if Ceramic colors missing
             }
-            className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed" // Added padding/rounding/hover/disabled styles
+            className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 disabled:opacity-70 disabled:cursor-not-allowed" // Added padding/rounding/hover/disabled styles
           >
             {isLoading ? "Generating..." : "Generate SKU"}
           </button>
