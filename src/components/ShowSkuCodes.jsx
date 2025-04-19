@@ -103,7 +103,7 @@ const ShowSkuCodes = () => {
               onChange={(e) => setSelectedType(e.target.value)}
               className="select select-bordered select-sm w-40"
             >
-              <option value="all">All Types</option>
+              {!showLegacy && <option value="all">All Types</option>}
               {types.map((type, idx) => (
                 <option key={idx} value={type.code}>
                   {type.name}
@@ -127,7 +127,8 @@ const ShowSkuCodes = () => {
             {filteredSkus.length === 0 ? (
               <tr>
                 <td colSpan={3} className="text-center text-gray-500">
-                  No {showLegacy ? "legacy" : "current"} SKUs found
+                  No {showLegacy ? "legacy" : "current"} SKUs found for selected
+                  type.
                 </td>
               </tr>
             ) : (
