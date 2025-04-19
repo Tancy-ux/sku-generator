@@ -57,13 +57,19 @@ const ShowSkuCodes = () => {
   };
 
   // Modified filter logic
-  const filteredSkus = showLegacy
-    ? oldSkus.filter((sku) =>
-        selectedType === "all" ? true : sku.typeCode === selectedType
-      )
-    : selectedType === "all"
-    ? skus
-    : skus.filter((sku) => sku.typeCode === selectedType);
+  const filteredSkus = (
+    showLegacy
+      ? oldSkus.filter((sku) =>
+          selectedType === "all" ? true : sku.typeCode === selectedType
+        )
+      : selectedType === "all"
+      ? skus
+      : skus.filter((sku) => sku.typeCode === selectedType)
+  ).sort((a, b) => {
+    const nameA = (a.productName || a.name || "").toLowerCase();
+    const nameB = (b.productName || b.name || "").toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
 
   const handleCopy = (text, index) => {
     const codeToCopy = text.skuCode || text.code || text;
@@ -71,7 +77,7 @@ const ShowSkuCodes = () => {
       .writeText(codeToCopy)
       .then(() => {
         setCopiedIndex(index);
-        setTimeout(() => setCopiedIndex(null), 2000);
+        setTimeout(() => setCopiedIndex(null), 1000);
       })
       .catch((err) => {
         console.error("Failed to copy text: ", err);
@@ -150,7 +156,7 @@ const ShowSkuCodes = () => {
                         {copiedIndex === idx ? (
                           <span className="text-success">Copied!</span>
                         ) : (
-                          <FiCopy size={14} />
+                          <FiCopy size={13} />
                         )}
                       </button>
                     </div>
