@@ -66,8 +66,9 @@ const ShowSkuCodes = () => {
     : skus.filter((sku) => sku.typeCode === selectedType);
 
   const handleCopy = (text, index) => {
+    const codeToCopy = text.skuCode || text.code || text;
     navigator.clipboard
-      .writeText(text)
+      .writeText(codeToCopy)
       .then(() => {
         setCopiedIndex(index);
         setTimeout(() => setCopiedIndex(null), 2000);
@@ -142,7 +143,7 @@ const ShowSkuCodes = () => {
                     <div className="flex items-center justify-center">
                       {sku.skuCode || sku.code}
                       <button
-                        onClick={() => handleCopy(sku.skuCode, idx)}
+                        onClick={() => handleCopy(sku, idx)}
                         className="btn btn-ghost btn-xs"
                         title="Copy to clipboard"
                       >
