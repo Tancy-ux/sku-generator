@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchAllCodes, fetchTypes } from "../functions/api";
-// Add the copy icon (using react-icons)
 import { FiCopy } from "react-icons/fi";
+import { fetchOldSkuCodes } from "../functions/colors";
 
 const getBadgeColor = (typeCode) => {
   const hash = Array.from(typeCode).reduce(
@@ -13,8 +13,8 @@ const getBadgeColor = (typeCode) => {
     "text-yellow-400 border-yellow-400",
     "text-purple-400 border-purple-400",
     "text-pink-400 border-pink-400",
-    " text-green-400 border-green-400",
-    " text-indigo-400 border-indigo-400",
+    "text-green-400 border-green-400",
+    "text-indigo-400 border-indigo-400",
   ];
 
   return colors[Math.abs(hash) % colors.length];
@@ -22,21 +22,24 @@ const getBadgeColor = (typeCode) => {
 
 const ShowSkuCodes = () => {
   const [skus, setSkus] = useState([]);
+  const [oldSkus, setOldSkus] = useState([]);
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState("all");
-  // Add state to track copied status for each SKU
+  const [showLegacy, setShowLegacy] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
   useEffect(() => {
     const getInitialData = async () => {
       try {
-        const [skuData, typeData] = await Promise.all([
+        const [skuData, typeData, oldSkuData] = await Promise.all([
           fetchAllCodes(),
           fetchTypes(),
+          fetchOldSkuCodes(),
         ]);
 
         if (skuData) setSkus(skuData);
         if (typeData) setTypes(typeData);
+        if (oldSkuData) setOldSkus(oldSkuData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -45,13 +48,23 @@ const ShowSkuCodes = () => {
     getInitialData();
   }, []);
 
-  // Filter SKUs based on selected type
-  const filteredSkus =
-    selectedType === "all"
-      ? skus
-      : skus.filter((sku) => sku.typeCode === selectedType);
+  const handleLegacyToggle = () => {
+    // Reset to first available type when switching to legacy
+    if (!showLegacy && selectedType === "all") {
+      setSelectedType(types[0]?.code || "AE");
+    }
+    setShowLegacy(!showLegacy);
+  };
 
-  // Copy function
+  // Modified filter logic
+  const filteredSkus = showLegacy
+    ? oldSkus.filter((sku) =>
+        selectedType === "all" ? true : sku.typeCode === selectedType
+      )
+    : selectedType === "all"
+    ? skus
+    : skus.filter((sku) => sku.typeCode === selectedType);
+
   const handleCopy = (text, index) => {
     navigator.clipboard
       .writeText(text)
@@ -67,78 +80,84 @@ const ShowSkuCodes = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between gap-8 items-center mb-8">
-        <h1 className="text-3xl font-bold">SKU Code List</h1>
-        <div className="flex items-center mt-3 gap-2">
-          <label htmlFor="type-filter" className="text-sm font-medium">
-            Filter by Type:
-          </label>
-          <select
-            id="type-filter"
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="py-1 px-2 w-40 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="all">All Types</option>
-            {types.map((type) => (
-              <option key={type.code} value={type.code}>
-                {type.name}
-              </option>
-            ))}
-          </select>
+        <h1 className="text-3xl font-bold">
+          {showLegacy ? "Legacy SKU Codes" : "Current SKU Codes"}
+        </h1>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium">Show Legacy:</label>
+            <input
+              type="checkbox"
+              checked={showLegacy}
+              onChange={handleLegacyToggle}
+              className="toggle toggle-primary"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="type-filter" className="text-sm font-medium">
+              Filter by Type:
+            </label>
+            <select
+              id="type-filter"
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="select select-bordered select-sm w-40"
+            >
+              <option value="all">All Types</option>
+              {types.map((type, idx) => (
+                <option key={idx} value={type.code}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full table-auto border border-gray-600 shadow-md rounded-xl">
-          <thead className="bg-gray-900">
+        <table className="table table-zebra w-full">
+          <thead>
             <tr>
-              <th className="px-6 py-3 text-center">
-                Product Name - Inner Glaze
-              </th>
-              <th className="px-6 py-3 text-center">SKU Code</th>
-              <th className="px-6 py-3 text-center">Type</th>
+              <th className="text-center">Product Name - Inner Glaze</th>
+              <th className="text-center">SKU Code</th>
+              <th className="text-center">Type</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700">
+          <tbody>
             {filteredSkus.length === 0 ? (
               <tr>
-                <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
-                  No data available
+                <td colSpan={3} className="text-center text-gray-500">
+                  No {showLegacy ? "legacy" : "current"} SKUs found
                 </td>
               </tr>
             ) : (
               filteredSkus.map((sku, idx) => (
-                <tr key={idx} className="text-center">
-                  <td className="px-6 text-sm text-center py-3">
-                    {sku.productName}{" "}
-                    <span className="text-gray-300 text-md">{sku.color}</span>
+                <tr key={idx}>
+                  <td className="text-center">
+                    {sku.productName || sku.name}{" "}
+                    <span className="text-gray-400">{sku.color}</span>
                   </td>
-                  <td className="px-6 py-3 text-center font-mono">
-                    <div className="flex items-center justify-center gap-2">
-                      {sku.skuCode}
+                  <td className="text-center font-mono">
+                    <div className="flex items-center justify-center">
+                      {sku.skuCode || sku.code}
                       <button
                         onClick={() => handleCopy(sku.skuCode, idx)}
-                        className="p-1 text-gray-400 hover:text-white rounded transition-colors cursor-pointer"
+                        className="btn btn-ghost btn-xs"
                         title="Copy to clipboard"
                       >
                         {copiedIndex === idx ? (
-                          <span className="text-green-400 text-xs">
-                            Copied!
-                          </span>
+                          <span className="text-success">Copied!</span>
                         ) : (
-                          <FiCopy size={12} />
+                          <FiCopy size={14} />
                         )}
                       </button>
                     </div>
                   </td>
-                  <td
-                    className={`px-4 py-2.5 mx-2 text-center mt-3 badge-xs badge ${getBadgeColor(
-                      sku.typeCode
-                    )}`}
-                  >
-                    {types.find((t) => t.code === sku.typeCode)?.name ||
-                      sku.typeCode}{" "}
-                    - {sku.typeCode}
+                  <td className="text-center">
+                    <span className={`badge ${getBadgeColor(sku.typeCode)}`}>
+                      {types.find((t) => t.code === sku.typeCode)?.name ||
+                        sku.typeCode}
+                    </span>
                   </td>
                 </tr>
               ))

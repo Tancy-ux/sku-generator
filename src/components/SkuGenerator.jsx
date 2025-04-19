@@ -235,20 +235,20 @@ export default function SKUGenerator() {
     material
   );
 
-  if (isLoadingProducts) {
-    return (
-      <div className="p-5 flex items-center justify-center mt-10">
-        <div className="text-center flex items-center justify-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-lg">Loading products... </p>
+  // if (isLoadingProducts || isLoading) {
+  //   return (
+  //     <div className="p-5 flex items-center justify-center mt-10">
+  //       <div className="text-center flex items-center justify-center gap-4">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+  //         <p className="text-lg">Loading... </p>
 
-          <span className="loading loading-bars loading-xs"></span>
-          <span className="loading loading-bars loading-sm"></span>
-          <span className="loading loading-bars loading-md"></span>
-        </div>
-      </div>
-    );
-  }
+  //         <span className="loading loading-bars loading-xs"></span>
+  //         <span className="loading loading-bars loading-sm"></span>
+  //         <span className="loading loading-bars loading-md"></span>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="p-5 flex flex-row justify-between">
@@ -305,7 +305,7 @@ export default function SKUGenerator() {
             >
               <option value="">Select Product</option>
               {isLoadingProducts ? (
-                <option disabled>Loading...</option>
+                <div>Loading...</div>
               ) : (
                 products.map((product, idx) => (
                   <option key={idx} value={product.name}>

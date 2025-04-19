@@ -89,7 +89,6 @@ export const addBaseColor = async (color) => {
 export const getBaseColors = async () => {
   try {
     const res = await axios.get(`${BASE_URI}/get-base`);
-    console.log(res.data.data);
     return res.data.data;
   } catch (error) {
     console.log(error);
@@ -111,4 +110,13 @@ export const updateProduct = async (productId, updatedName) => {
   }
 
   return response.json();
+};
+
+export const fetchOldSkuCodes = async () => {
+  try {
+    const res = await axios.get(`${BASE_URI}/oldsku`);
+    return res.data.data;
+  } catch (error) {
+    console.log(error);
+  }
 };
