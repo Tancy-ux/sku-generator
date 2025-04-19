@@ -360,13 +360,13 @@ export default function SKUGenerator() {
                 {" "}
                 {/* Added flex-wrap */}
                 <div>
-                  <label>Outer Glaze: </label>
+                  <label>Inner Glaze: </label>
                   <select
-                    value={outerColor}
-                    onChange={(e) => setOuterColor(e.target.value)}
+                    value={innerColor}
+                    onChange={(e) => setInnerColor(e.target.value)}
                     className="border rounded-2xl px-2 py-1"
                   >
-                    <option value="">Select Outer Color</option>
+                    <option value="">Select Inner Color</option>
                     {baseColors.map((col, idx) => (
                       <option key={idx} value={col.name}>
                         {col.name}
@@ -375,13 +375,13 @@ export default function SKUGenerator() {
                   </select>
                 </div>
                 <div>
-                  <label>Inner Glaze: </label>
+                  <label>Outer Glaze: </label>
                   <select
-                    value={innerColor}
-                    onChange={(e) => setInnerColor(e.target.value)}
+                    value={outerColor}
+                    onChange={(e) => setOuterColor(e.target.value)}
                     className="border rounded-2xl px-2 py-1"
                   >
-                    <option value="">Select Inner Color</option>
+                    <option value="">Select Outer Color</option>
                     {baseColors.map((col, idx) => (
                       <option key={idx} value={col.name}>
                         {col.name}
