@@ -228,7 +228,11 @@ const ShowSkuCodes = () => {
                     </div>
                   </td>
                   <td className="text-center">
-                    <span className={`badge ${getBadgeColor(sku.typeCode)}`}>
+                    <span
+                      className={`badge badge-sm ${getBadgeColor(
+                        sku.typeCode
+                      )}`}
+                    >
                       {types.find((t) => t.code === sku.typeCode)?.name ||
                         sku.typeCode}
                     </span>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <div className="flex justify-between items-center my-10 md:mx-6 text-pink-300">
+    <div className="flex justify-between items-center my-10 md:mx-6 text-indigo-400">
       <a href="/" className="text-4xl font-mono font-bold">
         SKU Generator
       </a>
