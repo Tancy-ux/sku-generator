@@ -137,6 +137,12 @@ const ShowSkuCodes = () => {
                 setSearchTerm(e.target.value);
                 setActiveSearch(false);
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && searchTerm.trim().length >= 2) {
+                  e.preventDefault();
+                  setActiveSearch(true);
+                }
+              }}
             />
           </div>
           <button
