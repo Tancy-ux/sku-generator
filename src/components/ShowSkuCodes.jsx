@@ -5,18 +5,18 @@ import { fetchOldSkuCodes } from "../functions/colors";
 import { SiZincsearch } from "react-icons/si";
 
 const getBadgeColor = (typeCode = "") => {
-  if (!typeCode) return "text-gray-400 border-gray-400";
+  if (!typeCode) return "text-gray-500 border-gray-500";
   const hash = Array.from(typeCode).reduce(
     (hash, char) => char.charCodeAt(0) + (hash << 5) - hash,
     0
   );
   const colors = [
-    "text-blue-400 border-blue-400",
-    "text-yellow-400 border-yellow-400",
-    "text-purple-400 border-purple-400",
-    "text-pink-400 border-pink-400",
-    "text-green-400 border-green-400",
-    "text-indigo-400 border-indigo-400",
+    "text-blue-500 border-blue-500",
+    "text-yellow-500 border-yellow-500",
+    "text-purple-600 border-purple-600",
+    "text-pink-700 border-pink-700",
+    "text-green-700 border-green-700",
+    "text-indigo-500 border-indigo-500",
   ];
 
   return colors[Math.abs(hash) % colors.length];
@@ -126,7 +126,7 @@ const ShowSkuCodes = () => {
           {/* Add search bar */}
           <div className="relative w-84">
             <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-3">
-              <SiZincsearch size={12} className="text-gray-400" />
+              <SiZincsearch size={12} className="text-gray-500" />
             </div>
             <input
               type="text"
@@ -211,7 +211,7 @@ const ShowSkuCodes = () => {
                 <tr key={idx}>
                   <td className="text-center">
                     {sku.productName || sku.name}{" "}
-                    <span className="text-gray-400">{sku.color}</span>
+                    <span className="text-gray-500">{sku.color}</span>
                   </td>
                   <td className="text-center font-mono">
                     <div className="flex items-center justify-center">
