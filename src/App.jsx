@@ -10,17 +10,19 @@ import ShowSkuCodes from "./components/ShowSkuCodes";
 
 function App() {
   return (
-    <div className="px-10 py-5 bg-img">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<SKUGenerator />} />
-        <Route path="/products" element={<AddProduct />} />
-        <Route path="/color" element={<AddColor />} />
-        <Route path="/viewall" element={<ViewAll />} />
-        <Route path="/skus" element={<ShowSkuCodes />} />
-        <Route path="/*" element={<Error />} />
-      </Routes>
-      <Toaster />
+    <div className="min-h-screen transition-colors duration-200">
+      <div className="px-10 py-5">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<SKUGenerator />} />
+          <Route path="/products" element={<AddProduct />} />
+          <Route path="/color" element={<AddColor />} />
+          <Route path="/viewall" element={<ViewAll />} />
+          <Route path="/skus" element={<ShowSkuCodes />} />
+          <Route path="/*" element={<Error />} />
+        </Routes>
+        <Toaster />
+      </div>
     </div>
   );
 }

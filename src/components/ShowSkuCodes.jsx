@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchAllCodes, fetchTypes } from "../functions/api";
 import { FiCopy, FiSearch } from "react-icons/fi";
 import { fetchOldSkuCodes } from "../functions/colors";
+import { SiZincsearch } from "react-icons/si";
 
-const getBadgeColor = (typeCode) => {
+const getBadgeColor = (typeCode = "") => {
+  if (!typeCode) return "text-gray-400 border-gray-400";
   const hash = Array.from(typeCode).reduce(
     (hash, char) => char.charCodeAt(0) + (hash << 5) - hash,
     0
@@ -115,21 +117,21 @@ const ShowSkuCodes = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 w-4/5 mx-auto">
       <div className="flex justify-between gap-8 items-center mb-8">
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-semibold">
           {showLegacy ? "Legacy SKU Codes" : "Current SKU Codes"}
         </h1>
         <div className="flex items-center">
           {/* Add search bar */}
           <div className="relative w-84">
             <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-3">
-              <FiSearch className="text-gray-400" />
+              <SiZincsearch size={12} className="text-gray-400" />
             </div>
             <input
               type="text"
               placeholder="Enter 2 letters to search products..."
-              className="input input-bordered pl-10"
+              className="input input-bordered pl-8"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -247,7 +249,9 @@ const ShowSkuCodes = () => {
           <div className="text-center mt-4">
             <button
               className="btn btn-primary"
-              onClick={() => setVisibleCount((c) => c + 12)}
+              onClick={() =>
+                setVisibleCount((c) => Math.min(c + 20, filteredSkus.length))
+              }
             >
               Load more
             </button>

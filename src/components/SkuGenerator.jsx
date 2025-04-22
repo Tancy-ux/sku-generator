@@ -3,7 +3,6 @@ import {
   fetchMaterials,
   fetchTypes,
   generateSKU, // For Ceramic/Other Glazes
-  fetchColors, // For default Ceramic Outer/Inner/Rim options
   fetchProductsByType,
   getMaterialSku, // For Marble/Cement
 } from "../functions/api.js";

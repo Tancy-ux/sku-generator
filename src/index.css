@@ -1,18 +1,23 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* In your global CSS */
 select {
-    @apply bg-black;
+    @apply bg-white dark:bg-gray-800 dark:text-gray-200 rounded-lg px-2 py-1;
+}
+
+select option {
+    @apply bg-white dark:bg-gray-800 text-gray-950 dark:text-gray-200;
 }
 
 label {
-    @apply text-green-100;
+    @apply text-gray-600 dark:text-gray-400;
 }
 
 .bg-img {
-    background-image: 
+    /* background-image: 
         linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
-        url("/bg2.jpg");
+        url("/bg2.jpg"); */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
