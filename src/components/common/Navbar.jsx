@@ -7,7 +7,8 @@ const Navbar = () => {
         SKU Generator
       </a>
       <div className="flex flex-row gap-5 md:gap-12">
-        <Link to="/viewall">View All</Link>
+        <Link to="/viewall">Abbreviations</Link>
+        <Link to="/skus">View All SKUs</Link>
         <Link to="/products">Add Products | Add Materials</Link>
         <Link to="/color">Add Colour Combos</Link>
       </div>

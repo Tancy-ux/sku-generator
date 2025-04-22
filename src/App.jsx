@@ -6,6 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import AddColor from "./pages/AddColor";
 import Error from "./pages/Error";
 import ViewAll from "./pages/ViewAll";
+import ShowSkuCodes from "./components/ShowSkuCodes";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/products" element={<AddProduct />} />
         <Route path="/color" element={<AddColor />} />
         <Route path="/viewall" element={<ViewAll />} />
+        <Route path="/skus" element={<ShowSkuCodes />} />
         <Route path="/*" element={<Error />} />
       </Routes>
       <Toaster />

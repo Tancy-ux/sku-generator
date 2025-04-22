@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchAllCodes, fetchTypes } from "../functions/api";
-import { FiCopy } from "react-icons/fi";
+import { FiCopy, FiSearch } from "react-icons/fi";
 import { fetchOldSkuCodes } from "../functions/colors";
 
 const getBadgeColor = (typeCode) => {
@@ -28,6 +28,13 @@ const ShowSkuCodes = () => {
   const [showLegacy, setShowLegacy] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeSearch, setActiveSearch] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(15);
+
+  const isLoading =
+    skus.length === 0 && oldSkus.length === 0 && types.length === 0;
+
   useEffect(() => {
     const getInitialData = async () => {
       try {
@@ -48,28 +55,51 @@ const ShowSkuCodes = () => {
     getInitialData();
   }, []);
 
+  useEffect(() => {
+    setVisibleCount(15);
+  }, [searchTerm, activeSearch, showLegacy, selectedType]);
+
   const handleLegacyToggle = () => {
+    setActiveSearch(false);
+    setSearchTerm("");
     // Reset to first available type when switching to legacy
     if (!showLegacy && selectedType === "all") {
       setSelectedType(types[0]?.code || "AE");
     }
     setShowLegacy(!showLegacy);
   };
-
   // Modified filter logic
-  const filteredSkus = (
-    showLegacy
-      ? oldSkus.filter((sku) =>
-          selectedType === "all" ? true : sku.typeCode === selectedType
-        )
-      : selectedType === "all"
-      ? skus
-      : skus.filter((sku) => sku.typeCode === selectedType)
-  ).sort((a, b) => {
-    const nameA = (a.productName || a.name || "").toLowerCase();
-    const nameB = (b.productName || b.name || "").toLowerCase();
-    return nameA.localeCompare(nameB);
-  });
+
+  const filteredSkus = useMemo(() => {
+    const txt = searchTerm.trim().toLowerCase();
+    const base = showLegacy ? oldSkus : skus;
+    const source =
+      activeSearch && txt
+        ? [...skus, ...oldSkus]
+        : base.filter(
+            (s) => selectedType === "all" || s.typeCode === selectedType
+          );
+
+    return source
+      .filter((sku) => {
+        if (!txt) return true;
+        const hay = [
+          sku.productName || sku.name,
+          sku.color,
+          sku.skuCode || sku.code,
+        ].map((str) => (str || "").toLowerCase());
+        return hay.some((part) => part.includes(txt));
+      })
+      .sort((a, b) => {
+        const nameA = (a.productName || a.name || "").toLowerCase();
+        const nameB = (b.productName || b.name || "").toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+  }, [searchTerm, activeSearch, showLegacy, selectedType, skus, oldSkus]);
+
+  const visibleSkus = filteredSkus.slice(0, visibleCount);
+
+  const noResults = searchTerm.trim() && filteredSkus.length === 0;
 
   const handleCopy = (text, index) => {
     const codeToCopy = text.skuCode || text.code || text;
@@ -90,6 +120,31 @@ const ShowSkuCodes = () => {
         <h1 className="text-3xl font-bold">
           {showLegacy ? "Legacy SKU Codes" : "Current SKU Codes"}
         </h1>
+        <div className="flex items-center">
+          {/* Add search bar */}
+          <div className="relative w-84">
+            <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-3">
+              <FiSearch className="text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Enter 2 letters to search products..."
+              className="input input-bordered pl-10"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setActiveSearch(false);
+              }}
+            />
+          </div>
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={searchTerm.trim().length < 2}
+            onClick={() => setActiveSearch(true)}
+          >
+            Search
+          </button>
+        </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium">Show Legacy:</label>
@@ -131,15 +186,26 @@ const ShowSkuCodes = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredSkus.length === 0 ? (
+            {visibleSkus.length === 0 ? (
               <tr>
                 <td colSpan={3} className="text-center text-gray-500">
-                  No {showLegacy ? "legacy" : "current"} SKUs found for selected
-                  type.
+                  {noResults ? (
+                    "No results found"
+                  ) : (
+                    <p>
+                      {isLoading
+                        ? "Loading…"
+                        : noResults
+                        ? "No results found"
+                        : `No ${
+                            showLegacy ? "legacy" : "current"
+                          } SKUs found for selected type.`}
+                    </p>
+                  )}
                 </td>
               </tr>
             ) : (
-              filteredSkus.map((sku, idx) => (
+              visibleSkus.map((sku, idx) => (
                 <tr key={idx}>
                   <td className="text-center">
                     {sku.productName || sku.name}{" "}
@@ -172,6 +238,17 @@ const ShowSkuCodes = () => {
             )}
           </tbody>
         </table>
+
+        {filteredSkus.length > visibleCount && (
+          <div className="text-center mt-4">
+            <button
+              className="btn btn-primary"
+              onClick={() => setVisibleCount((c) => c + 12)}
+            >
+              Load more
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
