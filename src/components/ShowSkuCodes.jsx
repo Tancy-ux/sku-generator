@@ -27,7 +27,6 @@ const ShowSkuCodes = () => {
   const [oldSkus, setOldSkus] = useState([]);
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState("all");
-  const [showLegacy, setShowLegacy] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,26 +58,17 @@ const ShowSkuCodes = () => {
 
   useEffect(() => {
     setVisibleCount(15);
-  }, [searchTerm, activeSearch, showLegacy, selectedType]);
+  }, [searchTerm, activeSearch, selectedType]);
 
-  const handleLegacyToggle = () => {
-    setActiveSearch(false);
-    setSearchTerm("");
-    // Reset to first available type when switching to legacy
-    if (!showLegacy && selectedType === "all") {
-      setSelectedType(types[0]?.code || "AE");
-    }
-    setShowLegacy(!showLegacy);
-  };
   // Modified filter logic
 
   const filteredSkus = useMemo(() => {
     const txt = searchTerm.trim().toLowerCase();
-    const base = showLegacy ? oldSkus : skus;
+    const all = [...skus, ...oldSkus];
     const source =
       activeSearch && txt
-        ? [...skus, ...oldSkus]
-        : base.filter(
+        ? all
+        : all.filter(
             (s) => selectedType === "all" || s.typeCode === selectedType
           );
 
@@ -97,7 +87,7 @@ const ShowSkuCodes = () => {
         const nameB = (b.productName || b.name || "").toLowerCase();
         return nameA.localeCompare(nameB);
       });
-  }, [searchTerm, activeSearch, showLegacy, selectedType, skus, oldSkus]);
+  }, [searchTerm, activeSearch, selectedType, skus, oldSkus]);
 
   const visibleSkus = filteredSkus.slice(0, visibleCount);
 
@@ -119,9 +109,7 @@ const ShowSkuCodes = () => {
   return (
     <div className="p-6 w-4/5 mx-auto">
       <div className="flex justify-between gap-8 items-center mb-8">
-        <h1 className="text-3xl font-semibold">
-          {showLegacy ? "Legacy SKU Codes" : "Current SKU Codes"}
-        </h1>
+        <h1 className="text-3xl font-semibold">Current SKU Codes</h1>
         <div className="flex items-center">
           {/* Add search bar */}
           <div className="relative w-84">
@@ -155,15 +143,6 @@ const ShowSkuCodes = () => {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Show Legacy:</label>
-            <input
-              type="checkbox"
-              checked={showLegacy}
-              onChange={handleLegacyToggle}
-              className="toggle toggle-primary"
-            />
-          </div>
-          <div className="flex items-center gap-2">
             <label htmlFor="type-filter" className="text-sm font-medium">
               Filter by Type:
             </label>
@@ -173,7 +152,7 @@ const ShowSkuCodes = () => {
               onChange={(e) => setSelectedType(e.target.value)}
               className="select select-bordered select-sm w-40"
             >
-              {!showLegacy && <option value="all">All Types</option>}
+              <option value="all">All Types</option>
               {types.map((type, idx) => (
                 <option key={idx} value={type.code}>
                   {type.name}
@@ -205,9 +184,7 @@ const ShowSkuCodes = () => {
                         ? "Loading…"
                         : noResults
                         ? "No results found"
-                        : `No ${
-                            showLegacy ? "legacy" : "current"
-                          } SKUs found for selected type.`}
+                        : `No current SKUs found for selected type.`}
                     </p>
                   )}
                 </td>

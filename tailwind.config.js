@@ -1,11 +1,10 @@
+// tailwind.config.js
 export default {
-    darkMode: 'class',   // now .dark in your DOM will flip variants
-    content: [
-      './src/**/*.{js,jsx,ts,tsx}',
-    ],
-    theme: {
-      extend: {},
-    },
-    plugins: [require("daisyui")],
-  }
-  
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  theme: { extend: {} },
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: ['light','dark'],
+    darkTheme: 'dark',
+  },
+}

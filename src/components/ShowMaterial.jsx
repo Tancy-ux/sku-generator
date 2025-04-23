@@ -54,27 +54,27 @@ const ShowMaterial = () => {
             <table className="min-w-full border border-gray-600">
               <thead className="text-center">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left font-medium text-gray-400 uppercase tracking-wider">
                     Material
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left font-medium text-gray-400 uppercase tracking-wider">
                     Code
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-400 text-gray-200 text-center">
+              <tbody className="divide-y divide-gray-400 text-base-content text-center">
                 {materials.map((m, index) => (
                   <tr
                     key={index}
-                    className={index % 2 === 0 ? "bg-gray-950" : ""}
+                    className={index % 2 === 0 ? "bg-base-200" : ""}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-center">
+                      <div className="flex items-center text-sm text-center">
                         {m.name}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-pink-300">
+                      <div className="flex items-center text-sm font-semibold text-pink-400">
                         {m.code}
                       </div>
                     </td>

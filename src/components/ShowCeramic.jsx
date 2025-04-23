@@ -62,11 +62,11 @@ const ShowCeramic = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-400 text-gray-200 text-center">
+            <tbody className="divide-y divide-gray-400 text-base-content text-center text-sm">
               {colors.map((color, index) => (
                 <tr
                   key={index}
-                  className={index % 2 === 0 ? "bg-gray-950" : ""}
+                  className={index % 2 === 0 ? "bg-base-200" : ""}
                 >
                   {/* Table cells remain the same */}
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -84,7 +84,7 @@ const ShowCeramic = () => {
                       {color.rimColor}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-pink-300 font-mono font-bold">
+                  <td className="px-6 py-4 whitespace-nowrap text-pink-400 font-mono font-bold">
                     {color.code}
                   </td>
                 </tr>

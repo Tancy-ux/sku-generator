@@ -213,7 +213,10 @@ const AddColor = () => {
               <h4 className="font-bold mb-2">Existing Base Colors:</h4>
               <div className="grid grid-cols-3 gap-2">
                 {baseColors.map((color, index) => (
-                  <div key={index} className="badge badge-primary">
+                  <div
+                    key={index}
+                    className="badge badge-primary badge-outline"
+                  >
                     {color.name}
                   </div>
                 ))}
