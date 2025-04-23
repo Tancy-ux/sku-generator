@@ -42,7 +42,7 @@ const ShowTypes = () => {
         <h3 className="text-2xl font-bold mb-4">Typology</h3>
         <button
           onClick={toggleTable}
-          className="px-8 py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition-colors"
+          className="px-6 text-sm py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition-colors"
         >
           {showTable ? "Hide Typology" : "Show Typology"}
         </button>

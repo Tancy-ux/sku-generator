@@ -201,13 +201,13 @@ const ShowSkuCodes = () => {
                       {sku.skuCode || sku.code}
                       <button
                         onClick={() => handleCopy(sku, idx)}
-                        className="btn btn-ghost btn-xs"
+                        className="badge badge-sm ml-1 cursor-pointer"
                         title="Copy to clipboard"
                       >
                         {copiedIndex === idx ? (
                           <span className="text-success">Copied!</span>
                         ) : (
-                          <FiCopy size={13} />
+                          <FiCopy size={12} />
                         )}
                       </button>
                     </div>
