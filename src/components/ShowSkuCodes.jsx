@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchAllCodes, fetchTypes } from "../functions/api";
-import { FiCopy, FiSearch } from "react-icons/fi";
-import { fetchOldSkuCodes } from "../functions/colors";
+import { FiCopy, FiTrash2 } from "react-icons/fi";
+import { deleteSku, fetchOldSkuCodes } from "../functions/colors";
 import { SiZincsearch } from "react-icons/si";
 
 const getBadgeColor = (typeCode = "") => {
@@ -32,6 +32,10 @@ const ShowSkuCodes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSearch, setActiveSearch] = useState(false);
   const [visibleCount, setVisibleCount] = useState(15);
+
+  const [deleteError, setDeleteError] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [skuToDelete, setSkuToDelete] = useState(null);
 
   const isLoading =
     skus.length === 0 && oldSkus.length === 0 && types.length === 0;
@@ -104,6 +108,36 @@ const ShowSkuCodes = () => {
       .catch((err) => {
         console.error("Failed to copy text: ", err);
       });
+  };
+
+  const openDeleteModal = (skuCode) => {
+    setSkuToDelete(skuCode);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setSkuToDelete(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const confirmDelete = async () => {
+    if (skuToDelete) {
+      try {
+        await deleteSku(skuToDelete);
+        const updatedSkus = skus.filter((sku) => sku.skuCode !== skuToDelete);
+        const updatedOldSkus = oldSkus.filter(
+          (sku) => sku.code !== skuToDelete
+        );
+        setSkus(updatedSkus);
+        setOldSkus(updatedOldSkus);
+        setDeleteError(null);
+      } catch (error) {
+        console.error("Error deleting SKU:", error);
+        setDeleteError("Failed to delete SKU. Please try again.");
+      } finally {
+        closeDeleteModal(); // Close the modal after the operation
+      }
+    }
   };
 
   return (
@@ -210,6 +244,13 @@ const ShowSkuCodes = () => {
                           <FiCopy size={12} />
                         )}
                       </button>
+                      <button
+                        onClick={() => openDeleteModal(sku.skuCode || sku.code)}
+                        className="badge badge-sm ml-1 cursor-pointer text-red-700"
+                        title="Delete SKU"
+                      >
+                        <FiTrash2 size={12} />
+                      </button>
                     </div>
                   </td>
                   <td className="text-center">
@@ -227,6 +268,35 @@ const ShowSkuCodes = () => {
             )}
           </tbody>
         </table>
+
+        {/* Delete Confirmation Modal */}
+        {isDeleteModalOpen && (
+          <dialog id="delete_modal" className="modal" open>
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Confirm Delete</h3>
+              <p className="py-4">
+                Are you sure you want to delete SKU:{" "}
+                <span className="font-mono">{skuToDelete}</span>?
+              </p>
+              <div className="modal-action">
+                <form method="dialog" className="flex gap-2">
+                  <button className="btn btn-sm" onClick={closeDeleteModal}>
+                    Cancel
+                  </button>
+                  <button
+                    className="btn btn-sm btn-error"
+                    onClick={confirmDelete}
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+        )}
+        {deleteError && (
+          <div className="text-red-500 text-sm mt-2">{deleteError}</div>
+        )}
 
         {filteredSkus.length > visibleCount && (
           <div className="text-center mt-4">

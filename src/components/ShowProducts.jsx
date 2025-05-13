@@ -2,8 +2,9 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
 import { fetchProductsByType, fetchTypes } from "../functions/api";
-import { updateProduct } from "../functions/colors";
+import { deleteProduct, updateProduct } from "../functions/colors";
 import Skeleton from "./common/Skeleton";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 const typeToCategoryMap = {
   Accessories: "Accessories",
@@ -36,6 +37,9 @@ const ShowProducts = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDeleteId, setProductToDeleteId] = useState(null);
 
   useEffect(() => {
     fetchTypes().then(setTypes);
@@ -98,6 +102,32 @@ const ShowProducts = () => {
     }
   };
 
+  const handleDeleteProduct = (productId) => {
+    setProductToDeleteId(productId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteProduct(productToDeleteId);
+      setProducts(products.filter((p) => p._id !== productToDeleteId));
+      toast.success("Product deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error(
+        error.message || "Something went wrong while deleting product."
+      );
+    } finally {
+      setShowDeleteModal(false);
+      setProductToDeleteId(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setProductToDeleteId(null);
+  };
+
   return (
     <div>
       <div className="my-10 text-center">
@@ -153,12 +183,18 @@ const ShowProducts = () => {
               <div className="flex justify-between items-center gap-2">
                 <p>{prod.name}</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-pink-400">{prod.design_code}</p>
+                  <p className="text-green-400">{prod.design_code}</p>
                   <button
                     onClick={() => handleEditClick(prod)}
                     className="btn btn-sm btn-primary btn-outline"
                   >
-                    Edit
+                    <FiEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteProduct(prod._id)}
+                    className="btn btn-sm btn-soft btn-error btn-outline"
+                  >
+                    <FiTrash2 />
                   </button>
                 </div>
               </div>
@@ -171,6 +207,33 @@ const ShowProducts = () => {
         <p className="text-gray-400 text-center text-lg mt-4">
           No products found for this type.
         </p>
+      )}
+
+      {showDeleteModal && (
+        <dialog className="modal" open>
+          <div className="modal-box">
+            <h3 className="font-bold text-lg mb-4">Confirm Delete</h3>
+            <p className="mb-4">
+              Are you sure you want to delete this product?
+            </p>
+            <div className="modal-action">
+              <form method="dialog" className="flex gap-2">
+                <button
+                  onClick={confirmDelete}
+                  className="btn btn-sm btn-error btn-outline"
+                >
+                  Yes, Delete
+                </button>
+                <button
+                  onClick={cancelDelete}
+                  className="btn btn-sm btn-neutral"
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
+          </div>
+        </dialog>
       )}
     </div>
   );

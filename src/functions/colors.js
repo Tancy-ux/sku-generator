@@ -112,10 +112,32 @@ export const updateProduct = async (productId, updatedName) => {
   return response.json();
 };
 
+export const deleteProduct = async (productId) => {
+  const response = await fetch(`${BASE_URI}/del-product/${productId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to delete product");
+  }
+
+  return response.json();
+};
+
 export const fetchOldSkuCodes = async () => {
   try {
     const res = await axios.get(`${BASE_URI}/oldsku`);
     return res.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteSku = async (skuCode) => {
+  try {
+    const res = await axios.delete(`${BASE_URI}/del-sku`, { data: { skuCode } });
+    return res.data;
   } catch (error) {
     console.log(error);
   }
