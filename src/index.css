@@ -3,7 +3,7 @@
 
 /* In your global CSS */
 select {
-    @apply bg-base-100;
+    @apply bg-base-100 border-amber-100;
 }
 
 select option {
@@ -15,9 +15,9 @@ label {
 }
 
 .bg-img {
-    /* background-image: 
+    background-image: 
         linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
-        url("/bg2.jpg"); */
+        url("/bg2.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;

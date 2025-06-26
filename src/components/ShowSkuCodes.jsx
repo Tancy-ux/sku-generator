@@ -280,14 +280,14 @@ const ShowSkuCodes = () => {
               </p>
               <div className="modal-action">
                 <form method="dialog" className="flex gap-2">
-                  <button className="btn btn-sm" onClick={closeDeleteModal}>
-                    Cancel
-                  </button>
                   <button
-                    className="btn btn-sm btn-error"
+                    className="btn btn-sm btn-outline btn-error"
                     onClick={confirmDelete}
                   >
                     Delete
+                  </button>
+                  <button className="btn btn-sm" onClick={closeDeleteModal}>
+                    Cancel
                   </button>
                 </form>
               </div>

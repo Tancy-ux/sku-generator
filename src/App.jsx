@@ -7,6 +7,7 @@ import AddColor from "./pages/AddColor";
 import Error from "./pages/Error";
 import ViewAll from "./pages/ViewAll";
 import ShowSkuCodes from "./components/ShowSkuCodes";
+import ProductDetails from "./pages/ProductDetails";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/color" element={<AddColor />} />
           <Route path="/viewall" element={<ViewAll />} />
           <Route path="/skus" element={<ShowSkuCodes />} />
+          <Route path="/pdetails" element={<ProductDetails />} />
           <Route path="/*" element={<Error />} />
         </Routes>
         <Toaster />

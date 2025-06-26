@@ -29,6 +29,12 @@ const Navbar = () => {
       </a>
       <div className="flex flex-row gap-5 md:gap-10 items-center">
         <Link
+          to="/pdetails"
+          className="hover:text-teal-700  dark:hover:text-teal-500"
+        >
+          Product Details
+        </Link>
+        <Link
           to="/viewall"
           className="hover:text-teal-700  dark:hover:text-teal-500"
         >

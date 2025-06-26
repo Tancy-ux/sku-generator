@@ -142,3 +142,27 @@ export const deleteSku = async (skuCode) => {
     console.log(error);
   }
 };
+
+export const savePricing = async ({ skuCode, cp, dc, sp }) => {
+  try {
+    const res = await axios.post(`${BASE_URI}/pdetails`, {
+      skuCode,
+      makingPriceExclGst: parseFloat(cp),
+      deliveryCharges: parseFloat(dc),
+      sellingPriceExclGst: parseFloat(sp),
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    alert(error.response?.data?.message || "Failed to save pricing.");
+  }
+};
+
+export const fetchPricing = async () => {
+  try {
+    const res = await axios.get(`${BASE_URI}/get-price`);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
