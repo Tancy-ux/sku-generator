@@ -1,18 +1,26 @@
 import { useEffect, useState } from "react";
 import { fetchPricing, updatePricing } from "../functions/colors.js";
 import toast from "react-hot-toast";
+import { fetchAllSkus } from "../functions/sku.js";
 
 const AllPricing = () => {
   const [pricingList, setPricingList] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [editData, setEditData] = useState({});
+  const [skuMap, setSkuMap] = useState({});
 
   useEffect(() => {
-    const loadPricing = async () => {
-      const data = await fetchPricing();
-      setPricingList(data);
+    const loadAll = async () => {
+      const [pricing, skuInfo] = await Promise.all([
+        fetchPricing(),
+        fetchAllSkus(),
+      ]);
+
+      setPricingList(pricing);
+      setSkuMap(skuInfo);
     };
-    loadPricing();
+
+    loadAll();
   }, []);
 
   const handleEditClick = (index, item) => {
@@ -46,18 +54,32 @@ const AllPricing = () => {
   };
 
   const calc = {
-    inclGst: (x) => (x * 1.18).toFixed(2),
-    total: (cp, dc) => (cp + dc).toFixed(2),
-    cogs: (cp, sp) => ((cp / sp) * 100).toFixed(1),
+    inclGst: (x) => {
+      const value = parseFloat(x) || 0;
+      return (value * 1.18).toFixed(2);
+    },
+
+    total: (cp, dc) => {
+      const cleanCp = parseFloat(cp) || 0;
+      const cleanDc = parseFloat(dc) || 0;
+      return (cleanCp + cleanDc).toFixed(2);
+    },
+
+    cogs: (cp, sp) => {
+      const cleanCp = parseFloat(cp) || 0;
+      const cleanSp = parseFloat(sp) || 1; // avoid division by 0
+      return ((cleanCp / cleanSp) * 100).toFixed(1);
+    },
   };
 
   return (
     <div className="overflow-x-auto border border-base-content/5 bg-base-100 my-8">
-      <h2 className="text-xl font-bold mb-2">Saved Pricing Records</h2>
+      <h2 className="text-xl font-bold m-2">Saved Pricing Records</h2>
       <table className="table table-zebra w-full">
         <thead>
           <tr>
             <th>SKU Code</th>
+            <th>Product Name</th>
             <th>Making Price (excl GST)</th>
             <th>Making Price (incl GST)</th>
             <th>Delivery</th>
@@ -82,12 +104,20 @@ const AllPricing = () => {
               : item.deliveryCharges;
             const sp = isEditing
               ? // @ts-ignore
-                parseFloat(editData.sp) || 0
+                parseFloat(editData.sp) || 1
               : item.sellingPriceExclGst;
 
             return (
               <tr key={item._id}>
                 <td>{item.skuCode}</td>
+                <td>
+                  <p>
+                    {skuMap[item.skuCode]?.productName || "—"}{" "}
+                    <span className="text-gray-500 text-sm">
+                      {skuMap[item.skuCode]?.color || ""}
+                    </span>
+                  </p>
+                </td>
 
                 <td>
                   {isEditing ? (

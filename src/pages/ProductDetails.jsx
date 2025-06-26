@@ -8,23 +8,24 @@ const ProductDetails = () => {
   const [skuCode, setSkuCode] = useState("");
   const [cp, setCp] = useState(""); // makingPriceExclGst
   const [sp, setSp] = useState(""); // sellingPriceExclGst
-  const [dc, setDeliveryCharges] = useState("");
+  const [dc, setDeliveryCharges] = useState(0);
+  const [gstRate, setGstRate] = useState(1.18);
 
-  const makingInclGst = cp ? (parseFloat(cp) * 1.18).toFixed(2) : "";
+  const makingInclGst = cp ? (parseFloat(cp) * gstRate).toFixed(2) : "";
   const sellingInclGst = sp ? (parseFloat(sp) * 1.18).toFixed(2) : "";
-  const totalCost =
-    cp && dc ? (parseFloat(cp) + parseFloat(dc)).toFixed(2) : "";
+  const totalCost = cp && dc ? (parseFloat(cp) + dc).toFixed(2) : "";
   const cogs =
     cp && sp ? ((parseFloat(cp) / parseFloat(sp)) * 100).toFixed(2) : "";
 
   return (
     <div className="overflow-x-auto border border-base-content/5 bg-base-100">
-      <h2 className="text-xl font-bold mb-2">Add Pricing</h2>
+      <h2 className="text-xl font-bold m-2">Add Pricing</h2>
       <table className="table table-zebra w-full">
         <thead>
           <tr>
             <th className="text-center">SKU Code</th>
             <th className="text-center">Product Name - Inner Glaze</th>
+            <th className="text-center">GST Rate</th>
             <th className="text-center">Making Price (excl gst)</th>
             <th className="text-center">Making Price (incl gst)</th>
             <th className="text-center">Delivery Charges</th>
@@ -48,6 +49,16 @@ const ProductDetails = () => {
             <td>
               <p>{productName}</p>
             </td>
+            <td className="flex items-center gap-2 m-2">
+              <select
+                className="select select-bordered select-sm w-20"
+                value={gstRate}
+                onChange={(e) => setGstRate(parseFloat(e.target.value))}
+              >
+                <option value={1.18}>18%</option>
+                <option value={1.12}>12%</option>
+              </select>
+            </td>
 
             <td>
               <input
@@ -66,7 +77,7 @@ const ProductDetails = () => {
               <input
                 type="number"
                 value={dc}
-                onChange={(e) => setDeliveryCharges(e.target.value)}
+                onChange={(e) => setDeliveryCharges(parseFloat(e.target.value))}
                 placeholder="Delivery charges"
                 className="input input-bordered"
               />
@@ -93,7 +104,7 @@ const ProductDetails = () => {
             <td>
               <button
                 className="btn btn-xs btn-primary mt-4"
-                onClick={() => savePricing({ skuCode, cp, dc, sp })}
+                onClick={() => savePricing({ skuCode, cp, dc, sp, gstRate })}
               >
                 Save
               </button>
