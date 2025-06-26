@@ -143,6 +143,8 @@ export const deleteSku = async (skuCode) => {
   }
 };
 
+// CRUD operations for pricing
+
 export const savePricing = async ({ skuCode, cp, dc, sp }) => {
   try {
     const res = await axios.post(`${BASE_URI}/pdetails`, {
@@ -151,6 +153,7 @@ export const savePricing = async ({ skuCode, cp, dc, sp }) => {
       deliveryCharges: parseFloat(dc),
       sellingPriceExclGst: parseFloat(sp),
     });
+    toast.success("Pricing saved successfully!");
     return res.data;
   } catch (error) {
     console.log(error);
@@ -164,5 +167,25 @@ export const fetchPricing = async () => {
     return res.data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const updatePricing = async (id, data) => {
+  try {
+    const res = await axios.put(`${BASE_URI}/update-price/${id}`, data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating pricing:", error);
+    throw error;
+  }
+};
+
+export const deletePricing = async (id) => {
+  try {
+    const res = await axios.delete(`${BASE_URI}/del-price/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting pricing:", error);
+    throw error;
   }
 };

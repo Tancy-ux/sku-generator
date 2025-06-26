@@ -19,6 +19,7 @@ const ProductDetails = () => {
 
   return (
     <div className="overflow-x-auto border border-base-content/5 bg-base-100">
+      <h2 className="text-xl font-bold mb-2">Add Pricing</h2>
       <table className="table table-zebra w-full">
         <thead>
           <tr>
@@ -66,7 +67,7 @@ const ProductDetails = () => {
                 type="number"
                 value={dc}
                 onChange={(e) => setDeliveryCharges(e.target.value)}
-                placeholder="Delivery"
+                placeholder="Delivery charges"
                 className="input input-bordered"
               />
             </td>
