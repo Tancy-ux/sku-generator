@@ -83,7 +83,7 @@ const AllPricing = () => {
             <th>Total Cost</th>
             <th>Selling Price (excl GST)</th>
             <th>Selling Price (incl GST)</th>
-            <th>GST Rate</th>
+            {/* <th>GST Rate</th> */}
             <th>COGS</th>
             <th>Actions</th>
           </tr>
@@ -175,7 +175,7 @@ const AllPricing = () => {
 
                 <td>{(sp * gstRate).toFixed(2)}</td>
 
-                <td>
+                {/* <td>
                   {isEditing ? (
                     <select
                       className="select select-xs"
@@ -194,7 +194,7 @@ const AllPricing = () => {
                   ) : (
                     `${((gstRate - 1) * 100).toFixed(0)}%`
                   )}
-                </td>
+                </td> */}
 
                 <td>{calc.cogs(cp, sp)}%</td>
 
