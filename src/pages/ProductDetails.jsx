@@ -28,7 +28,7 @@ const ProductDetails = () => {
 
   // These calculations correctly use gstRate for makingInclGst
   const makingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
-  const sellingInclGst = sp ? (parsedSp * 1.18).toFixed(2) : ""; // This is hardcoded to 1.18
+  const sellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : ""; // This is hardcoded to 1.18
 
   const totalCost = cp && dc ? (parsedCp + dc).toFixed(2) : "";
   const cogs = cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
@@ -36,7 +36,7 @@ const ProductDetails = () => {
   const handleSave = async () => {
     // These calculations also correctly use gstRate for computedMakingInclGst
     const computedMakingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
-    const computedSellingInclGst = sp ? (parsedSp * 1.18).toFixed(2) : ""; // This is hardcoded to 1.18
+    const computedSellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : ""; // This is hardcoded to 1.18
     const computedTotalCost = cp && dc ? (parsedCp + dc).toFixed(2) : "";
     const computedCogs =
       cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
