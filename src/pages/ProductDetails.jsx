@@ -37,7 +37,7 @@ const ProductDetails = () => {
     // These calculations also correctly use gstRate for computedMakingInclGst
     const computedMakingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
     const computedSellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : ""; // This is hardcoded to 1.18
-    const computedTotalCost = cp && dc ? (parsedCp + dc).toFixed(2) : "";
+    const computedTotalCost = cp ? (parsedCp + dc).toFixed(2) : "";
     const computedCogs =
       cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
 
