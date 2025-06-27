@@ -1,10 +1,10 @@
-// ProductDetails.jsx
-
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { savePricing } from "../functions/colors";
 import AllPricing from "../components/AllPricing";
+import { fetchAllSkus } from "../functions/sku";
 
 const ProductDetails = () => {
+  const allPricingRef = useRef(null);
   const [productName, setProductName] = useState(""); // to be filled later
 
   const [skuCode, setSkuCode] = useState("");
@@ -16,6 +16,16 @@ const ProductDetails = () => {
   const parsedCp = parseFloat(cp) || 0;
   const parsedSp = parseFloat(sp) || 0;
 
+  const [skuMap, setSkuMap] = useState({});
+
+  useEffect(() => {
+    const loadSkus = async () => {
+      const data = await fetchAllSkus();
+      setSkuMap(data); // expected format: { SKU123: { productName, ... } }
+    };
+    loadSkus();
+  }, []);
+
   // These calculations correctly use gstRate for makingInclGst
   const makingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
   const sellingInclGst = sp ? (parsedSp * 1.18).toFixed(2) : ""; // This is hardcoded to 1.18
@@ -23,7 +33,7 @@ const ProductDetails = () => {
   const totalCost = cp && dc ? (parsedCp + dc).toFixed(2) : "";
   const cogs = cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // These calculations also correctly use gstRate for computedMakingInclGst
     const computedMakingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
     const computedSellingInclGst = sp ? (parsedSp * 1.18).toFixed(2) : ""; // This is hardcoded to 1.18
@@ -31,26 +41,27 @@ const ProductDetails = () => {
     const computedCogs =
       cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
 
-    savePricing({
+    await savePricing({
       skuCode,
       cp,
       dc,
       sp,
-      makingInclGst: computedMakingInclGst, // This correctly passes the value based on selected gstRate
-      sellingInclGst: computedSellingInclGst, // This will always be based on 1.18
+      makingInclGst: computedMakingInclGst,
+      sellingInclGst: computedSellingInclGst,
       totalCost: computedTotalCost,
       cogs: computedCogs,
     });
+    allPricingRef.current?.refresh();
   };
 
   return (
     <div className="overflow-x-auto border border-base-content/5 bg-base-100">
-      <h2 className="text-xl font-bold m-2">Add Pricing</h2>
+      <h2 className="text-xl font-bold m-3">Add Pricing</h2>
       <table className="table table-zebra w-full">
         <thead>
           <tr>
             <th className="text-center">SKU Code</th>
-            <th className="text-center">Product Name - Inner Glaze</th>
+            <th className="text-center">Product Name</th>
             <th className="text-center">GST Rate</th>
             <th className="text-center">Making Price (excl gst)</th>
             <th className="text-center">Making Price (incl gst)</th>
@@ -66,7 +77,12 @@ const ProductDetails = () => {
             <td>
               <input
                 value={skuCode}
-                onChange={(e) => setSkuCode(e.target.value)}
+                onChange={(e) => {
+                  const code = e.target.value.toUpperCase();
+                  setSkuCode(code);
+                  const match = skuMap[code];
+                  setProductName(match ? match.productName : "");
+                }}
                 className="input input-bordered"
                 placeholder="SKU"
               />
@@ -137,7 +153,7 @@ const ProductDetails = () => {
           </tr>
         </tbody>
       </table>
-      <AllPricing />
+      <AllPricing ref={allPricingRef} />
     </div>
   );
 };
