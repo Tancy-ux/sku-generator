@@ -198,7 +198,7 @@ const AllPricing = forwardRef((props, ref) => {
                     )}
                   </td>
 
-                  <td>{(sp * gstRate).toFixed(2)}</td>
+                  <td>{Math.round(item.sellingPriceInclGst)}</td>
 
                   {/* <td>
                   {isEditing ? (
