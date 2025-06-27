@@ -52,6 +52,12 @@ const ProductDetails = () => {
       cogs: computedCogs,
     });
     allPricingRef.current?.refresh();
+
+    setSkuCode("");
+    setCp("");
+    setDeliveryCharges(0);
+    setSp("");
+    setProductName("");
   };
 
   return (

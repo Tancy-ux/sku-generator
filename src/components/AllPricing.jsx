@@ -82,10 +82,10 @@ const AllPricing = forwardRef((props, ref) => {
         <h2 className="text-xl font-bold m-2">Saved Pricing Records</h2>
         <input
           type="text"
-          placeholder="Search by SKU Code or Product Name.."
+          placeholder="🔍︎  Search by SKU Code or Product Name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="input input-bordered w-full max-w-xs"
+          className="input input-bordered w-full max-w-md"
         />
       </div>
       <table className="table table-zebra w-full">
