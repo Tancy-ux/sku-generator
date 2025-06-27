@@ -1,11 +1,13 @@
 import { fetchAllCodes } from "./api";
+import { fetchOldSkuCodes } from "./colors";
 
 export const fetchAllSkus = async () => {
   try {
-    const all = await fetchAllCodes();
+    const [all, old] = await Promise.all([fetchAllCodes(), fetchOldSkuCodes()]);
+    const combined = [...all, ...old];
 
     const map = {};
-    all.forEach((sku) => {
+    combined.forEach((sku) => {
       const code = sku.skuCode || sku.code;
       map[code] = {
         productName: sku.productName || sku.name || "Unknown",
@@ -19,3 +21,4 @@ export const fetchAllSkus = async () => {
     return {};
   }
 };
+
