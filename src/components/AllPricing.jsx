@@ -31,18 +31,20 @@ const AllPricing = () => {
       cp: item.makingPriceExclGst,
       sp: item.sellingPriceExclGst,
       dc: item.deliveryCharges,
+      gstRate: item.gstRate || 1.18,
     });
   };
 
   const handleSave = async () => {
     // @ts-ignore
-    const { id, cp, sp, dc } = editData;
+    const { id, cp, sp, dc, gstRate } = editData;
 
     try {
       await updatePricing(id, {
         makingPriceExclGst: parseFloat(cp),
         deliveryCharges: parseFloat(dc),
         sellingPriceExclGst: parseFloat(sp),
+        gstRate: parseFloat(gstRate),
       });
 
       const updated = await fetchPricing();
@@ -54,11 +56,6 @@ const AllPricing = () => {
   };
 
   const calc = {
-    inclGst: (x) => {
-      const value = parseFloat(x) || 0;
-      return (value * 1.18).toFixed(2);
-    },
-
     total: (cp, dc) => {
       const cleanCp = parseFloat(cp) || 0;
       const cleanDc = parseFloat(dc) || 0;
@@ -67,7 +64,7 @@ const AllPricing = () => {
 
     cogs: (cp, sp) => {
       const cleanCp = parseFloat(cp) || 0;
-      const cleanSp = parseFloat(sp) || 1; // avoid division by 0
+      const cleanSp = parseFloat(sp) || 1;
       return ((cleanCp / cleanSp) * 100).toFixed(1);
     },
   };
@@ -86,6 +83,7 @@ const AllPricing = () => {
             <th>Total Cost</th>
             <th>Selling Price (excl GST)</th>
             <th>Selling Price (incl GST)</th>
+            <th>GST Rate</th>
             <th>COGS</th>
             <th>Actions</th>
           </tr>
@@ -104,8 +102,12 @@ const AllPricing = () => {
               : item.deliveryCharges;
             const sp = isEditing
               ? // @ts-ignore
-                parseFloat(editData.sp) || 1
+                parseFloat(editData.sp) || 0
               : item.sellingPriceExclGst;
+            const gstRate = isEditing
+              ? // @ts-ignore
+                parseFloat(editData.gstRate) || 1.18
+              : item.gstRate || 1.18;
 
             return (
               <tr key={item._id}>
@@ -135,7 +137,7 @@ const AllPricing = () => {
                   )}
                 </td>
 
-                <td>{calc.inclGst(cp)}</td>
+                <td>{item.makingPriceInclGst.toFixed(2)}</td>
 
                 <td>
                   {isEditing ? (
@@ -171,7 +173,29 @@ const AllPricing = () => {
                   )}
                 </td>
 
-                <td>{calc.inclGst(sp)}</td>
+                <td>{(sp * gstRate).toFixed(2)}</td>
+
+                <td>
+                  {isEditing ? (
+                    <select
+                      className="select select-xs"
+                      // @ts-ignore
+                      value={editData.gstRate}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          gstRate: parseFloat(e.target.value),
+                        })
+                      }
+                    >
+                      <option value={1.12}>12%</option>
+                      <option value={1.18}>18%</option>
+                    </select>
+                  ) : (
+                    `${((gstRate - 1) * 100).toFixed(0)}%`
+                  )}
+                </td>
+
                 <td>{calc.cogs(cp, sp)}%</td>
 
                 <td>

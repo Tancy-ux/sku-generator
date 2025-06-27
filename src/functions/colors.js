@@ -145,20 +145,24 @@ export const deleteSku = async (skuCode) => {
 
 // CRUD operations for pricing
 
-export const savePricing = async ({ skuCode, cp, dc, sp, gstRate }) => {
+export const savePricing = async ({ skuCode, cp, dc, sp, makingInclGst, sellingInclGst, totalCost, cogs }) => {
   try {
     const res = await axios.post(`${BASE_URI}/pdetails`, {
       skuCode,
       makingPriceExclGst: parseFloat(cp),
+      makingPriceInclGst: parseFloat(makingInclGst),
       deliveryCharges: parseFloat(dc),
+      totalCost: parseFloat(totalCost),
       sellingPriceExclGst: parseFloat(sp),
-      gstRate: parseFloat(gstRate)
+      sellingPriceInclGst: parseFloat(sellingInclGst),
+      cogs: parseFloat(cogs),
     });
     toast.success("Pricing saved!");
+    console.log(res.data);
     return res.data;
   } catch (error) {
     console.log(error);
-    alert(error.response?.data?.message || "Failed to save pricing.");
+    toast.error(error.response?.data?.message || "Failed to save pricing.");
   }
 };
 

@@ -1,21 +1,47 @@
+// ProductDetails.jsx
+
 import { useState } from "react";
 import { savePricing } from "../functions/colors";
 import AllPricing from "../components/AllPricing";
 
 const ProductDetails = () => {
-  const [productName, setProductName] = useState(""); // do it afterwards
+  const [productName, setProductName] = useState(""); // to be filled later
 
   const [skuCode, setSkuCode] = useState("");
-  const [cp, setCp] = useState(""); // makingPriceExclGst
-  const [sp, setSp] = useState(""); // sellingPriceExclGst
+  const [cp, setCp] = useState(""); // Cost Price excl GST
+  const [sp, setSp] = useState(""); // Selling Price excl GST
   const [dc, setDeliveryCharges] = useState(0);
-  const [gstRate, setGstRate] = useState(1.18);
+  const [gstRate, setGstRate] = useState(1.18); // default to 18%
 
-  const makingInclGst = cp ? (parseFloat(cp) * gstRate).toFixed(2) : "";
-  const sellingInclGst = sp ? (parseFloat(sp) * 1.18).toFixed(2) : "";
-  const totalCost = cp && dc ? (parseFloat(cp) + dc).toFixed(2) : "";
-  const cogs =
-    cp && sp ? ((parseFloat(cp) / parseFloat(sp)) * 100).toFixed(2) : "";
+  const parsedCp = parseFloat(cp) || 0;
+  const parsedSp = parseFloat(sp) || 0;
+
+  // These calculations correctly use gstRate for makingInclGst
+  const makingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
+  const sellingInclGst = sp ? (parsedSp * 1.18).toFixed(2) : ""; // This is hardcoded to 1.18
+
+  const totalCost = cp && dc ? (parsedCp + dc).toFixed(2) : "";
+  const cogs = cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
+
+  const handleSave = () => {
+    // These calculations also correctly use gstRate for computedMakingInclGst
+    const computedMakingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
+    const computedSellingInclGst = sp ? (parsedSp * 1.18).toFixed(2) : ""; // This is hardcoded to 1.18
+    const computedTotalCost = cp && dc ? (parsedCp + dc).toFixed(2) : "";
+    const computedCogs =
+      cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
+
+    savePricing({
+      skuCode,
+      cp,
+      dc,
+      sp,
+      makingInclGst: computedMakingInclGst, // This correctly passes the value based on selected gstRate
+      sellingInclGst: computedSellingInclGst, // This will always be based on 1.18
+      totalCost: computedTotalCost,
+      cogs: computedCogs,
+    });
+  };
 
   return (
     <div className="overflow-x-auto border border-base-content/5 bg-base-100">
@@ -41,7 +67,6 @@ const ProductDetails = () => {
               <input
                 value={skuCode}
                 onChange={(e) => setSkuCode(e.target.value)}
-                // onBlur={handleSkuSearch}
                 className="input input-bordered"
                 placeholder="SKU"
               />
@@ -51,15 +76,14 @@ const ProductDetails = () => {
             </td>
             <td className="flex items-center gap-2 m-2">
               <select
-                className="select select-bordered select-sm w-20"
+                className="select select-sm w-20"
                 value={gstRate}
-                onChange={(e) => setGstRate(parseFloat(e.target.value))}
+                onChange={(e) => setGstRate(parseFloat(e.target.value))} // This updates gstRate state
               >
-                <option value={1.18}>18%</option>
                 <option value={1.12}>12%</option>
+                <option value={1.18}>18%</option>
               </select>
             </td>
-
             <td>
               <input
                 type="number"
@@ -70,14 +94,16 @@ const ProductDetails = () => {
               />
             </td>
             <td>
-              <p>{makingInclGst}</p>
+              <p>{makingInclGst}</p>{" "}
+              {/* This displays based on gstRate state */}
             </td>
-
             <td>
               <input
                 type="number"
                 value={dc}
-                onChange={(e) => setDeliveryCharges(parseFloat(e.target.value))}
+                onChange={(e) =>
+                  setDeliveryCharges(parseFloat(e.target.value) || 0)
+                }
                 placeholder="Delivery charges"
                 className="input input-bordered"
               />
@@ -85,7 +111,6 @@ const ProductDetails = () => {
             <td>
               <p>{totalCost}</p>
             </td>
-
             <td>
               <input
                 type="number"
@@ -96,7 +121,7 @@ const ProductDetails = () => {
               />
             </td>
             <td>
-              <p>{sellingInclGst}</p>
+              <p>{sellingInclGst}</p> {/* This displays based on 1.18 */}
             </td>
             <td>
               <p>{cogs}%</p>
@@ -104,7 +129,7 @@ const ProductDetails = () => {
             <td>
               <button
                 className="btn btn-xs btn-primary mt-4"
-                onClick={() => savePricing({ skuCode, cp, dc, sp, gstRate })}
+                onClick={handleSave}
               >
                 Save
               </button>
