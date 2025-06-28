@@ -23,11 +23,11 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between font-mono items-center my-10 md:mx-6 text-[#009191] dark:text-teal-400">
+    <div className="flex justify-between font-mono items-center my-10 md:mx-2 text-[#009191] dark:text-teal-400">
       <a href="/" className="text-4xl font-semibold">
         SKU Generator
       </a>
-      <div className="flex flex-row gap-5 md:gap-10 items-center">
+      <div className="flex flex-row gap-3 lg:gap-10 items-center text-xs md:text-base">
         <Link
           to="/pdetails"
           className="hover:text-teal-700  dark:hover:text-teal-500"

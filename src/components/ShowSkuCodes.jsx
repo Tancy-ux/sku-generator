@@ -158,8 +158,8 @@ const ShowSkuCodes = () => {
   };
 
   return (
-    <div className="p-6 w-4/5 mx-auto">
-      <div className="flex justify-between gap-8 items-center mb-8">
+    <div className="p-6 w-full lg:w-4/5 mx-auto">
+      <div className="flex flex-col md:flex-row justify-between gap-8 items-center mb-8">
         <h1 className="text-3xl font-semibold">Current SKU Codes</h1>
         <div className="flex items-center">
           {/* Add search bar */}
@@ -256,6 +256,11 @@ const ShowSkuCodes = () => {
                             className="input input-sm input-bordered w-32"
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                handleSaveEdit(sku);
+                              }
+                            }}
                           />
                           <button
                             className="btn btn-xs btn-success"
