@@ -69,12 +69,21 @@ const ProductDetails = () => {
             <th className="text-center">SKU Code</th>
             <th className="text-center">Product Name</th>
             <th className="text-center">GST Rate</th>
-            <th className="text-center">Making Price (excl gst)</th>
-            <th className="text-center">Making Price (incl gst)</th>
+            <th className="text-center">
+              Making Price <br />
+              (excl gst)
+            </th>
+            <th className="text-center">
+              Making Price <br /> (incl gst)
+            </th>
             <th className="text-center">Delivery Charges</th>
             <th className="text-center">Total Cost</th>
-            <th className="text-center">Selling Price (excl gst)</th>
-            <th className="text-center">Selling Price (incl gst)</th>
+            <th className="text-center">
+              Selling Price <br /> (excl gst)
+            </th>
+            <th className="text-center">
+              Selling Price <br /> (incl gst)
+            </th>
             <th className="text-center">COGS</th>
           </tr>
         </thead>

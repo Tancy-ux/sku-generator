@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchAllCodes, fetchTypes } from "../functions/api";
-import { FiCopy, FiTrash2 } from "react-icons/fi";
-import { deleteSku, fetchOldSkuCodes } from "../functions/colors";
+import { FiCopy, FiEdit, FiTrash2 } from "react-icons/fi";
+import { deleteSku, editOldSku, fetchOldSkuCodes } from "../functions/colors";
 import { SiZincsearch } from "react-icons/si";
 
 const getBadgeColor = (typeCode = "") => {
@@ -36,6 +36,9 @@ const ShowSkuCodes = () => {
   const [deleteError, setDeleteError] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [skuToDelete, setSkuToDelete] = useState(null);
+
+  const [editIndex, setEditIndex] = useState(null);
+  const [editValue, setEditValue] = useState("");
 
   const isLoading =
     skus.length === 0 && oldSkus.length === 0 && types.length === 0;
@@ -108,6 +111,20 @@ const ShowSkuCodes = () => {
       .catch((err) => {
         console.error("Failed to copy text: ", err);
       });
+  };
+  const handleSaveEdit = async (sku) => {
+    try {
+      const updated = await editOldSku(sku._id, editValue);
+      setOldSkus((prev) =>
+        prev.map((item, i) =>
+          item._id === sku._id ? { ...item, code: updated.code } : item
+        )
+      );
+      setEditIndex(null);
+    } catch (err) {
+      console.error("Failed to edit SKU:", err.message);
+      alert("Failed to edit SKU. Please try again.");
+    }
   };
 
   const openDeleteModal = (skuCode) => {
@@ -231,28 +248,67 @@ const ShowSkuCodes = () => {
                     <span className="text-gray-500">{sku.color}</span>
                   </td>
                   <td className="text-center font-mono">
-                    <div className="flex items-center justify-center">
-                      {sku.skuCode || sku.code}
-                      <button
-                        onClick={() => handleCopy(sku, idx)}
-                        className="badge badge-sm ml-1 cursor-pointer"
-                        title="Copy to clipboard"
-                      >
-                        {copiedIndex === idx ? (
-                          <span className="text-success">Copied!</span>
-                        ) : (
-                          <FiCopy size={12} />
-                        )}
-                      </button>
-                      <button
-                        onClick={() => openDeleteModal(sku.skuCode || sku.code)}
-                        className="badge badge-sm ml-1 cursor-pointer text-red-700"
-                        title="Delete SKU"
-                      >
-                        <FiTrash2 size={12} />
-                      </button>
+                    <div className="flex items-center justify-center gap-2">
+                      {editIndex === idx ? (
+                        <>
+                          <input
+                            type="text"
+                            className="input input-sm input-bordered w-32"
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                          />
+                          <button
+                            className="btn btn-xs btn-success"
+                            onClick={() => handleSaveEdit(sku)}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className="btn btn-xs"
+                            onClick={() => setEditIndex(null)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {sku.skuCode || sku.code}
+                          <button
+                            onClick={() => handleCopy(sku, idx)}
+                            className="badge badge-sm ml-1 cursor-pointer"
+                            title="Copy to clipboard"
+                          >
+                            {copiedIndex === idx ? (
+                              <span className="text-success">Copied!</span>
+                            ) : (
+                              <FiCopy size={12} />
+                            )}
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setEditIndex(idx);
+                              setEditValue(sku.code || sku.skuCode); // or sku.skuCode if it's a new SKU
+                            }}
+                            className="badge badge-sm cursor-pointer text-yellow-500"
+                            title="Edit SKU"
+                          >
+                            <FiEdit size={12} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              openDeleteModal(sku.skuCode || sku.code)
+                            }
+                            className="badge badge-sm cursor-pointer text-red-700"
+                            title="Delete SKU"
+                          >
+                            <FiTrash2 size={12} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
+
                   <td className="text-center">
                     <span
                       className={`badge badge-sm ${getBadgeColor(

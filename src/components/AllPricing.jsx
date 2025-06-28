@@ -93,12 +93,20 @@ const AllPricing = forwardRef((props, ref) => {
           <tr className="text-center">
             <th>SKU Code</th>
             <th>Product Name - Inner Glaze</th>
-            <th>Making Price (excl GST)</th>
-            <th>Making Price (incl GST)</th>
+            <th>
+              Making Price <br /> (excl GST)
+            </th>
+            <th>
+              Making Price <br /> (incl GST)
+            </th>
             <th>Delivery</th>
             <th>Total Cost</th>
-            <th>Selling Price (excl GST)</th>
-            <th>Selling Price (incl GST)</th>
+            <th>
+              Selling Price <br /> (excl GST)
+            </th>
+            <th>
+              Selling Price <br /> (incl GST)
+            </th>
             {/* <th>GST Rate</th> */}
             <th>COGS</th>
             <th>Actions</th>

@@ -134,6 +134,30 @@ export const fetchOldSkuCodes = async () => {
   }
 };
 
+export const editOldSku = async (id, code) => {
+  try {
+    const response = await fetch(`${BASE_URI}/edit-sku/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ code })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to update SKU');
+    }
+
+    return result.data; // The updated SKU
+  } catch (error) {
+    console.error('Error editing SKU:', error.message);
+    throw error;
+  }
+};
+
+
 export const deleteSku = async (skuCode) => {
   try {
     const res = await axios.delete(`${BASE_URI}/del-sku`, { data: { skuCode } });
