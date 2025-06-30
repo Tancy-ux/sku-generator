@@ -17,26 +17,36 @@ const ProductDetails = () => {
   const parsedSp = parseFloat(sp) || 0;
 
   const [skuMap, setSkuMap] = useState({});
+  const [productList, setProductList] = useState([]);
+
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const loadSkus = async () => {
       const data = await fetchAllSkus();
-      setSkuMap(data); // expected format: { SKU123: { productName, ... } }
+      setSkuMap(data);
+      // Convert skuMap to array of { skuCode, productName }
+      const products = Object.entries(data).map(([sku, details]) => ({
+        skuCode: sku,
+        productName: details.productName,
+        color: details.color,
+      }));
+      setProductList(products);
     };
     loadSkus();
   }, []);
 
   // These calculations correctly use gstRate for makingInclGst
   const makingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
-  const sellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : ""; // This is hardcoded to 1.18
-
+  const sellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : "";
   const totalCost = cp && dc ? (parsedCp + dc).toFixed(2) : "";
   const cogs = cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
 
   const handleSave = async () => {
     // These calculations also correctly use gstRate for computedMakingInclGst
     const computedMakingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
-    const computedSellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : ""; // This is hardcoded to 1.18
+    const computedSellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : "";
     const computedTotalCost = cp ? (parsedCp + dc).toFixed(2) : "";
     const computedCogs =
       cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
@@ -66,8 +76,8 @@ const ProductDetails = () => {
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th className="text-center">SKU Code</th>
             <th className="text-center">Product Name</th>
+            <th className="text-center">SKU Code</th>
             <th className="text-center">GST Rate</th>
             <th className="text-center">
               Making Price <br />
@@ -89,22 +99,74 @@ const ProductDetails = () => {
         </thead>
         <tbody>
           <tr>
-            <td>
+            <td className="dropdown">
               <input
-                value={skuCode}
+                type="text"
+                value={productName}
                 onChange={(e) => {
-                  const code = e.target.value.toUpperCase();
-                  setSkuCode(code);
-                  const match = skuMap[code];
-                  setProductName(match ? match.productName : "");
+                  const value = e.target.value;
+                  setProductName(value);
+
+                  if (value.length > 0) {
+                    const search = value.toLowerCase();
+
+                    // 1. Products where name-color starts with search
+                    const startsWithMatches = productList.filter((p) =>
+                      `${p.productName} - ${p.color}`
+                        .toLowerCase()
+                        .startsWith(search)
+                    );
+
+                    // 2. Products where name-color includes search (but not starts with)
+                    const includesMatches = productList.filter(
+                      (p) =>
+                        `${p.productName} - ${p.color}`
+                          .toLowerCase()
+                          .includes(search) &&
+                        !`${p.productName} - ${p.color}`
+                          .toLowerCase()
+                          .startsWith(search)
+                    );
+
+                    // 3. Combine, remove duplicates, and limit to 15
+                    const combined = [
+                      ...startsWithMatches,
+                      ...includesMatches,
+                    ].slice(0, 15);
+
+                    setFilteredProducts(combined);
+                    setShowDropdown(true);
+                  } else {
+                    setFilteredProducts([]);
+                    setShowDropdown(false);
+                    setSkuCode("");
+                  }
                 }}
-                className="input input-bordered"
-                placeholder="SKU"
+                onBlur={() => setTimeout(() => setShowDropdown(false), 100)} // allow click
+                placeholder="Type product name"
+                className="input input-bordered w-xs text-xs"
               />
+              {showDropdown && filteredProducts.length > 0 && (
+                <ul className="dropdown-content menu bg-base-300 rounded-box z-1 w-xs p-2 shadow-sm">
+                  {filteredProducts.map((product) => (
+                    <li
+                      key={product.skuCode}
+                      onMouseDown={() => {
+                        setProductName(
+                          `${product.productName} - ${product.color}`
+                        );
+                        setSkuCode(product.skuCode);
+                        setShowDropdown(false);
+                      }}
+                      className="cursor-pointer hover:bg-base-100 p-2 text-base-content/80"
+                    >
+                      {product.productName} - {product.color}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </td>
-            <td>
-              <p>{productName}</p>
-            </td>
+            <td>{skuCode}</td>
             <td className="flex items-center gap-2 m-2">
               <select
                 className="select select-sm w-20"

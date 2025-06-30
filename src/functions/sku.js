@@ -6,16 +6,16 @@ export const fetchAllSkus = async () => {
     const [all, old] = await Promise.all([fetchAllCodes(), fetchOldSkuCodes()]);
     const combined = [...all, ...old];
 
-    const map = {};
+    const smap = {};
     combined.forEach((sku) => {
       const code = sku.skuCode || sku.code;
-      map[code] = {
+      smap[code] = {
         productName: sku.productName || sku.name || "Unknown",
         color: sku.color || sku.innerColor || sku.colour || "",
       };
     });
 
-    return map;
+    return smap;
   } catch (err) {
     console.error("Failed to fetch SKU metadata:", err);
     return {};
