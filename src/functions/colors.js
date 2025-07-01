@@ -214,7 +214,7 @@ export const deletePricing = async (id) => {
     const res = await axios.delete(`${BASE_URI}/del-price/${id}`);
     return res.data;
   } catch (error) {
-    toast.error("Error deleting pricing:", error);
+    toast.error(`Error deleting pricing: ${error.response?.data?.message || error.message}`);
     throw error;
   }
 };

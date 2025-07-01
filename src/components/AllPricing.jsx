@@ -1,7 +1,12 @@
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
-import { fetchPricing, updatePricing } from "../functions/colors.js";
+import {
+  deletePricing,
+  fetchPricing,
+  updatePricing,
+} from "../functions/colors.js";
 import toast from "react-hot-toast";
 import { fetchAllSkus } from "../functions/sku.js";
+import { FiTrash2 } from "react-icons/fi";
 
 const AllPricing = forwardRef((props, ref) => {
   const [pricingList, setPricingList] = useState([]);
@@ -76,6 +81,20 @@ const AllPricing = forwardRef((props, ref) => {
       setEditIndex(null);
     } catch (err) {
       toast.error("Error saving changes");
+    }
+  };
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this pricing entry?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deletePricing(id);
+      toast.success("Pricing entry deleted");
+      await loadPricing(); // refresh table
+    } catch (error) {
+      toast.error("Failed to delete entry");
     }
   };
 
@@ -265,12 +284,20 @@ const AllPricing = forwardRef((props, ref) => {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        className="btn btn-xs btn-success btn-soft"
-                        onClick={() => handleEditClick(index, item)}
-                      >
-                        Edit
-                      </button>
+                      <div className="flex gap-1 justify-center">
+                        <button
+                          className="btn btn-xs btn-success btn-soft"
+                          onClick={() => handleEditClick(index, item)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-xs btn-error btn-soft"
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          <FiTrash2 size={12} />
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
