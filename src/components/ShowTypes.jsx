@@ -15,7 +15,7 @@ const ShowTypes = () => {
         setTypes(data);
       } catch (err) {
         setError("Failed to load types");
-        console.error(err);
+        toast.error(err);
       } finally {
         setLoading(false);
       }

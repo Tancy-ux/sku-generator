@@ -60,7 +60,7 @@ const ShowProducts = () => {
         const data = await fetchProductsByType(category);
         setProducts(data.products);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        toast.error("Error fetching products:", error);
         setProducts([]);
       } finally {
         setIsLoading(false);
@@ -95,7 +95,6 @@ const ShowProducts = () => {
       toast.success("Product updated successfully!");
       setEditingProduct(null);
     } catch (error) {
-      console.error("Error updating product:", error);
       toast.error(
         error.message || "Something went wrong while updating product."
       );
@@ -113,7 +112,6 @@ const ShowProducts = () => {
       setProducts(products.filter((p) => p._id !== productToDeleteId));
       toast.success("Product deleted successfully!");
     } catch (error) {
-      console.error("Error deleting product:", error);
       toast.error(
         error.message || "Something went wrong while deleting product."
       );

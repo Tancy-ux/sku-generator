@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchMaterials } from "../functions/api";
 import Skeleton from "./common/Skeleton";
+import toast from "react-hot-toast";
 
 const ShowMaterial = () => {
   const [materials, setMaterials] = useState([]);
@@ -15,7 +16,7 @@ const ShowMaterial = () => {
         setMaterials(data);
       } catch (err) {
         setError("Failed to load materials");
-        console.error(err);
+        toast.error("Failed to load materials");
       } finally {
         setLoading(false);
       }

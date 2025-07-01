@@ -17,7 +17,7 @@ export const fetchAllSkus = async () => {
 
     return smap;
   } catch (err) {
-    console.error("Failed to fetch SKU metadata:", err);
+    toast.error("Failed to fetch SKU metadata:", err);
     return {};
   }
 };

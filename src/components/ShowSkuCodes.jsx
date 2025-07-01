@@ -3,6 +3,7 @@ import { fetchAllCodes, fetchTypes } from "../functions/api";
 import { FiCopy, FiEdit, FiTrash2 } from "react-icons/fi";
 import { deleteSku, editOldSku, fetchOldSkuCodes } from "../functions/colors";
 import { SiZincsearch } from "react-icons/si";
+import toast from "react-hot-toast";
 
 const getBadgeColor = (typeCode = "") => {
   if (!typeCode) return "text-gray-500 border-gray-500";
@@ -56,7 +57,7 @@ const ShowSkuCodes = () => {
         if (typeData) setTypes(typeData);
         if (oldSkuData) setOldSkus(oldSkuData);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        toast.error("Failed to fetch data:", error);
       }
     };
 
@@ -109,7 +110,7 @@ const ShowSkuCodes = () => {
         setTimeout(() => setCopiedIndex(null), 1000);
       })
       .catch((err) => {
-        console.error("Failed to copy text: ", err);
+        toast.error("Failed to copy text: ", err);
       });
   };
   const handleSaveEdit = async (sku) => {
@@ -122,8 +123,7 @@ const ShowSkuCodes = () => {
       );
       setEditIndex(null);
     } catch (err) {
-      console.error("Failed to edit SKU:", err.message);
-      alert("Failed to edit SKU. Please try again.");
+      toast.error("Failed to edit SKU:", err.message);
     }
   };
 
@@ -149,7 +149,7 @@ const ShowSkuCodes = () => {
         setOldSkus(updatedOldSkus);
         setDeleteError(null);
       } catch (error) {
-        console.error("Error deleting SKU:", error);
+        toast.error("Error deleting SKU:", error);
         setDeleteError("Failed to delete SKU. Please try again.");
       } finally {
         closeDeleteModal(); // Close the modal after the operation

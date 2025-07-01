@@ -15,13 +15,22 @@ const AllPricing = forwardRef((props, ref) => {
   const [skuMap, setSkuMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const loadPricing = async () => {
-    const [pricing, skuInfo] = await Promise.all([
-      fetchPricing(),
-      fetchAllSkus(),
-    ]);
-    setPricingList(pricing);
-    setSkuMap(skuInfo);
+    setIsLoading(true);
+    try {
+      const [pricing, skuInfo] = await Promise.all([
+        fetchPricing(),
+        fetchAllSkus(),
+      ]);
+      setPricingList(pricing);
+      setSkuMap(skuInfo);
+    } catch (err) {
+      toast.error("Error loading pricing data");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -31,6 +40,19 @@ const AllPricing = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     refresh: loadPricing,
   }));
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center mt-10">
+        <span className="loading loading-ring loading-xs"></span>
+        <span className="loading loading-ring loading-sm"></span>
+        <span className="loading loading-ring loading-md"></span>
+        <span className="loading loading-ring loading-lg"></span>
+        <span className="loading loading-ring loading-xl"></span>
+      </div>
+    );
+  }
+
   const handleEditClick = (index, item) => {
     setEditIndex(index);
     setEditData({
@@ -112,7 +134,7 @@ const AllPricing = forwardRef((props, ref) => {
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody className="text-center">
+        <tbody className="text-center text-base-content/85">
           {pricingList
             .filter((item) => {
               const productName =

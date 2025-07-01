@@ -61,7 +61,7 @@ export const getColorCode = async (outerColor, innerColor, rimColor) => {
     }
     return res.data.data;
   } catch (error) {
-    console.error(error);
+    toast.error(error);
     toast.error("Something went wrong");
   }
 };
@@ -77,13 +77,13 @@ export const getDesignCode = async (productName) => {
     });
 
     if (!res.data.success) { 
-      console.error(res.data.message || "Failed to get design code");
+      toast.error(res.data.message || "Failed to get design code");
       return null;
     }
     return res.data.designCode;
 
   } catch (error) {
-    console.error("Design code error:", error);
+    toast.error("Design code error:", error);
     toast.error("Something went wrong while fetching design code");    
     return null;
   }
@@ -107,7 +107,7 @@ export const fetchAllColorEntries = async () => {
     const res = await axios.get(`${BASE_URI}/color-entries`);
     return res.data;
   } catch (error) {
-    console.error(error);
+    toast.error(error);
   }
 }
 
@@ -116,7 +116,7 @@ export const fetchAllCodes = async () => {
     const res = await axios.get(`${BASE_URI}/all-codes`);
     return res.data.data;
   } catch (error) {
-    console.error(error);
+    toast.error(error);
   }
 }
 
@@ -148,7 +148,7 @@ export const getMaterialSku = async (material, color, typology, product) => {
     };
 
   } catch (error) {
-    console.error('getMaterialSku error:', error);
+    toast.error('getMaterialSku error:', error);
     // Return error information instead of string
     return {
       success: false,
@@ -194,7 +194,7 @@ export const generateSKU = async (
     };
 
   } catch (error) {
-    console.error('generateSKU error:', error);
+    toast.error('generateSKU error:', error);
     return {
       success: false,
       error: error.response?.data?.message || error.message,

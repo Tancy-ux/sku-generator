@@ -20,7 +20,6 @@ const ShowCeramic = () => {
           throw new Error("Unexpected data format from API");
         }
       } catch (error) {
-        console.error("Error loading colors:", error);
         setError(error.message);
         toast.error("Failed to load colors");
       } finally {

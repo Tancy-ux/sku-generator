@@ -2,10 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { savePricing } from "../functions/colors";
 import AllPricing from "../components/AllPricing";
 import { fetchAllSkus } from "../functions/sku";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const allPricingRef = useRef(null);
-  const [productName, setProductName] = useState(""); // to be filled later
+  const [productName, setProductName] = useState("");
 
   const [skuCode, setSkuCode] = useState("");
   const [cp, setCp] = useState(""); // Cost Price excl GST
@@ -16,17 +17,13 @@ const ProductDetails = () => {
   const parsedCp = parseFloat(cp) || 0;
   const parsedSp = parseFloat(sp) || 0;
 
-  const [skuMap, setSkuMap] = useState({});
   const [productList, setProductList] = useState([]);
-
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const loadSkus = async () => {
       const data = await fetchAllSkus();
-      setSkuMap(data);
-      // Convert skuMap to array of { skuCode, productName }
       const products = Object.entries(data).map(([sku, details]) => ({
         skuCode: sku,
         productName: details.productName,
@@ -44,22 +41,19 @@ const ProductDetails = () => {
   const cogs = cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
 
   const handleSave = async () => {
-    // These calculations also correctly use gstRate for computedMakingInclGst
-    const computedMakingInclGst = cp ? (parsedCp * gstRate).toFixed(2) : "";
-    const computedSellingInclGst = sp ? (parsedSp * gstRate).toFixed(2) : "";
-    const computedTotalCost = cp ? (parsedCp + dc).toFixed(2) : "";
-    const computedCogs =
-      cp && sp ? ((parsedCp / parsedSp) * 100).toFixed(2) : "";
-
+    if (!skuCode || !cp || !sp || !productName) {
+      toast.error("Please fill all fields");
+      return;
+    }
     await savePricing({
       skuCode,
       cp,
       dc,
       sp,
-      makingInclGst: computedMakingInclGst,
-      sellingInclGst: computedSellingInclGst,
-      totalCost: computedTotalCost,
-      cogs: computedCogs,
+      makingInclGst,
+      sellingInclGst,
+      totalCost,
+      cogs,
     });
     allPricingRef.current?.refresh();
 
@@ -75,30 +69,30 @@ const ProductDetails = () => {
       <h2 className="text-xl font-bold m-3">Add Pricing</h2>
       <table className="table table-zebra w-full">
         <thead>
-          <tr>
-            <th className="text-center">Product Name</th>
-            <th className="text-center">SKU Code</th>
-            <th className="text-center">GST Rate</th>
-            <th className="text-center">
+          <tr className="text-center">
+            <th>Product Name</th>
+            <th>SKU Code</th>
+            <th>GST Rate</th>
+            <th>
               Making Price <br />
               (excl gst)
             </th>
-            <th className="text-center">
+            <th>
               Making Price <br /> (incl gst)
             </th>
-            <th className="text-center">Delivery Charges</th>
-            <th className="text-center">Total Cost</th>
-            <th className="text-center">
+            <th>Delivery Charges</th>
+            <th>Total Cost</th>
+            <th>
               Selling Price <br /> (excl gst)
             </th>
-            <th className="text-center">
+            <th>
               Selling Price <br /> (incl gst)
             </th>
-            <th className="text-center">COGS</th>
+            <th>COGS</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr className="text-center">
             <td className="dropdown">
               <input
                 type="text"
@@ -144,10 +138,10 @@ const ProductDetails = () => {
                 }}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 100)} // allow click
                 placeholder="Type product name"
-                className="input input-bordered w-xs text-xs"
+                className="input input-bordered w-sm text-xs"
               />
               {showDropdown && filteredProducts.length > 0 && (
-                <ul className="dropdown-content menu bg-base-300 rounded-box z-1 w-xs p-2 shadow-sm">
+                <ul className="dropdown-content menu bg-base-300 border border-base-content/20 rounded-box z-1 w-sm p-2 shadow-sm">
                   {filteredProducts.map((product) => (
                     <li
                       key={product.skuCode}
@@ -183,7 +177,7 @@ const ProductDetails = () => {
                 value={cp}
                 onChange={(e) => setCp(e.target.value)}
                 placeholder="CP excl. GST"
-                className="input input-bordered"
+                className="input input-bordered w-36"
               />
             </td>
             <td>
@@ -198,7 +192,7 @@ const ProductDetails = () => {
                   setDeliveryCharges(parseFloat(e.target.value) || 0)
                 }
                 placeholder="Delivery charges"
-                className="input input-bordered"
+                className="input input-bordered w-36"
               />
             </td>
             <td>
@@ -210,7 +204,7 @@ const ProductDetails = () => {
                 value={sp}
                 onChange={(e) => setSp(e.target.value)}
                 placeholder="SP excl. GST"
-                className="input input-bordered"
+                className="input input-bordered w-36"
               />
             </td>
             <td>

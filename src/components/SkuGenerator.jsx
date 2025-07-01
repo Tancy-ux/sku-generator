@@ -59,10 +59,10 @@ export default function SKUGenerator() {
   useEffect(() => {
     fetchMaterials()
       .then(setMaterials)
-      .catch((e) => console.error("Failed to fetch materials", e));
+      .catch((e) => toast.error("Failed to fetch materials", e));
     fetchTypes()
       .then(setTypes)
-      .catch((e) => console.error("Failed to fetch types", e));
+      .catch((e) => toast.error("Failed to fetch types", e));
   }, []);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function SKUGenerator() {
       const dbCategory = typeToCategoryMap[selectedType];
 
       if (!dbCategory) {
-        console.error(`No DB category mapping for type: ${selectedType}`);
+        toast.error(`No DB category mapping for type: ${selectedType}`);
         toast.error(`Configuration error for type: ${selectedType}`);
         setIsLoadingProducts(false);
         return; // Stop if type is invalid
@@ -114,7 +114,7 @@ export default function SKUGenerator() {
           setProducts(Array.isArray(productList) ? productList : []);
         })
         .catch((e) => {
-          console.error("Error fetching products:", e);
+          toast.error("Error fetching products:", e);
           toast.error("Failed to load products");
           setProducts([]); // Ensure empty on error
         })
@@ -141,7 +141,7 @@ export default function SKUGenerator() {
       fetchColorsByMaterial(material)
         .then(setMaterialColors) // Expecting array of { color, code }
         .catch((e) => {
-          console.error("Error fetching colors by material:", e);
+          toast.error("Error fetching colors by material:", e);
           toast.error(`Failed to load ${material} colors`);
           setMaterialColors([]); // Ensure empty on error
         });
@@ -211,7 +211,7 @@ export default function SKUGenerator() {
       setSKU(generatedSkuCode);
       toast.success(`SKU Generated: ${generatedSkuCode}`);
     } catch (error) {
-      console.error("Error in handleGenerateSKU:", error);
+      toast.error("Error in handleGenerateSKU:", error);
       if (
         error.response?.data?.message?.includes("Color") ||
         error.message?.includes("Color") ||

@@ -152,7 +152,7 @@ export const editOldSku = async (id, code) => {
 
     return result.data; // The updated SKU
   } catch (error) {
-    console.error('Error editing SKU:', error.message);
+    toast.error('Error editing SKU:', error.message);
     throw error;
   }
 };
@@ -204,7 +204,7 @@ export const updatePricing = async (id, data) => {
     const res = await axios.put(`${BASE_URI}/update-price/${id}`, data);
     return res.data;
   } catch (error) {
-    console.error("Error updating pricing:", error);
+    toast.error("Error updating pricing:", error);
     throw error;
   }
 };
@@ -214,7 +214,7 @@ export const deletePricing = async (id) => {
     const res = await axios.delete(`${BASE_URI}/del-price/${id}`);
     return res.data;
   } catch (error) {
-    console.error("Error deleting pricing:", error);
+    toast.error("Error deleting pricing:", error);
     throw error;
   }
 };

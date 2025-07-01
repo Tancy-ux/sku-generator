@@ -17,7 +17,6 @@ const AddMaterial = () => {
       await addMaterial(material, code);
       toast.success("New Product added successfully.");
     } catch (error) {
-      console.log(error);
       toast.error("Something went wrong - can't add new product.");
     } finally {
       setIsLoading(false);
