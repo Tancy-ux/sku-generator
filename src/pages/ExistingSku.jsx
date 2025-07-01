@@ -1,4 +1,3 @@
-import React from "react";
 import ShowSkuCodes from "../components/ShowSkuCodes";
 
 const ExistingSku = () => {

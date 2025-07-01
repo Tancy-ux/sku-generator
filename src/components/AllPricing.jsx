@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { fetchPricing, updatePricing } from "../functions/colors.js";
 import toast from "react-hot-toast";
 import { fetchAllSkus } from "../functions/sku.js";

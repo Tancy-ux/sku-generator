@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchTypes } from "../functions/api";
 import Skeleton from "./common/Skeleton";
+import toast from "react-hot-toast";
 
 const ShowTypes = () => {
   const [types, setTypes] = useState([]);
