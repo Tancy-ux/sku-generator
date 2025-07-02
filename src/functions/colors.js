@@ -160,7 +160,7 @@ export const editOldSku = async (id, code) => {
 
 export const deleteSku = async (skuCode) => {
   try {
-    const res = await axios.delete(`${BASE_URI}/del-sku`, { data: { skuCode } });
+    const res = await axios.delete(`${BASE_URI}/del-sku/${skuCode}`);
     return res.data;
   } catch (error) {
     console.log(error);

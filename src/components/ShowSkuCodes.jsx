@@ -245,7 +245,13 @@ const ShowSkuCodes = () => {
                 <tr key={idx}>
                   <td className="text-center">
                     {sku.productName || sku.name}{" "}
-                    <span className="text-gray-500">{sku.color}</span>
+                    {sku.color ? (
+                      <span className="text-gray-500">{sku.color}</span>
+                    ) : (
+                      <span className="text-gray-500">
+                        {sku.color_i} | {sku.color_o} | {sku.color_r}
+                      </span>
+                    )}
                   </td>
                   <td className="text-center font-mono">
                     <div className="flex items-center justify-center gap-2">
