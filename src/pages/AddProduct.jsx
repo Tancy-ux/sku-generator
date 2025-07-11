@@ -26,11 +26,10 @@ const typeToCategoryMap = {
   "Trinket Set": "trinket_set",
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
-
-  // "Box": "boxes",
+  Box: "boxes",
+  Foam: "foamcuts",
   // "Bags": "bags",
   // "Stainless Steel": "stainless_steel",
-  // "Foam": "foamcuts",
   // "Envelopes": "envelopes",
   // "Ribbons": "ribbons"
 };

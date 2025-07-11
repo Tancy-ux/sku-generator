@@ -28,6 +28,8 @@ const typeToCategoryMap = {
   "Trinket Set": "trinket_set",
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
+  Box: "boxes",
+  Foam: "foamcuts",
 };
 
 const ShowProducts = () => {

@@ -31,6 +31,8 @@ const typeToCategoryMap = {
   "Trinket Set": "trinket_set",
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
+  Box: "boxes",
+  Foam: "foamcuts",
 };
 
 export default function SKUGenerator() {
@@ -56,6 +58,9 @@ export default function SKUGenerator() {
   const [isLoading, setIsLoading] = useState(false); // For SKU generation button
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
+  const noColorTypes = ["Box", "Foam"];
+  const showColorDropdowns = !noColorTypes.includes(selectedType);
+
   useEffect(() => {
     fetchMaterials()
       .then(setMaterials)
@@ -74,7 +79,10 @@ export default function SKUGenerator() {
           : Array.isArray(response)
           ? response
           : [];
-        setBaseColors(colors);
+        const sortedColors = colors.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+        setBaseColors(sortedColors);
       } catch (error) {
         toast.error("Failed to load base colors");
       }
@@ -87,13 +95,10 @@ export default function SKUGenerator() {
     // Clear dependent state
     setProducts([]);
     setSelectedProduct("");
-
-    // Reset colors relevant to the OTHER material type when type changes,
-    // as the material itself might not change but the required colors will.
     setOuterColor("");
     setInnerColor("");
     setRimColor("");
-    setMaterialColor(""); // Also clear specific material color selection
+    setMaterialColor("");
 
     if (selectedType && selectedType !== "Cutlery") {
       // Ignore Cutlery type if present in list
@@ -153,7 +158,6 @@ export default function SKUGenerator() {
     setIsLoading(true);
     await Promise.resolve();
 
-    // Validate inputs first (synchronous checks)
     if (!material || !selectedType || !selectedProduct) {
       setIsLoading(false);
       toast.error("Please select Material, Typology, and Product Name.");
@@ -170,44 +174,52 @@ export default function SKUGenerator() {
       material
     );
 
-    // Validate color selections
-    if (isMaterialSpecificColor && !materialColor) {
-      setIsLoading(false);
-      toast.error(`Please select a ${material} color.`);
-      return;
-    } else if (
-      !isMaterialSpecificColor &&
-      (!outerColor || !innerColor || !rimColor)
-    ) {
-      setIsLoading(false);
-      toast.error("Please select Outer, Inner, and Rim colors.");
-      return;
+    if (!noColorTypes.includes(selectedType)) {
+      if (isMaterialSpecificColor && !materialColor) {
+        setIsLoading(false);
+        toast.error(`Please select a ${material} color.`);
+        return;
+      } else if (
+        !isMaterialSpecificColor &&
+        (!outerColor || !innerColor || !rimColor)
+      ) {
+        setIsLoading(false);
+        toast.error("Please select Outer, Inner, and Rim colors.");
+        return;
+      }
     }
 
-    // Now perform the async operation
     try {
-      const response = isMaterialSpecificColor
-        ? await getMaterialSku(
-            material,
-            materialColor,
-            selectedType,
-            selectedProduct
-          )
-        : await generateSKU(
-            material,
-            outerColor,
-            innerColor,
-            rimColor,
-            selectedType,
-            selectedProduct
-          );
+      let response;
+      if (noColorTypes.includes(selectedType)) {
+        response = await getMaterialSku(
+          material,
+          "", // color
+          selectedType,
+          selectedProduct
+        );
+      } else if (isMaterialSpecificColor) {
+        response = await getMaterialSku(
+          material,
+          materialColor,
+          selectedType,
+          selectedProduct
+        );
+      } else {
+        response = await generateSKU(
+          material,
+          outerColor,
+          innerColor,
+          rimColor,
+          selectedType,
+          selectedProduct
+        );
+      }
 
       if (!response.success) {
         throw new Error(response.error || "Failed to generate SKU");
       }
-
       const generatedSkuCode = response.skuCode || response.newSKU?.skuCode;
-
       setSKU(generatedSkuCode);
       toast.success(`SKU Generated: ${generatedSkuCode}`);
     } catch (error) {
@@ -259,11 +271,13 @@ export default function SKUGenerator() {
           className="border rounded-2xl px-2 py-1 w-50"
         >
           <option value="">Select Material</option>
-          {materials.map((mat, idx) => (
-            <option key={idx} value={mat.name}>
-              {mat.name} - {mat.code}
-            </option>
-          ))}
+          {materials
+            .sort((a, b) => a.name.localeCompare(b.name)) // Sort materials alphabetically
+            .map((mat, idx) => (
+              <option key={idx} value={mat.name}>
+                {mat.name} - {mat.code}
+              </option>
+            ))}
         </select>
       </div>
       {/* Typology and Product Dropdowns */}
@@ -279,7 +293,8 @@ export default function SKUGenerator() {
           >
             <option value="">Select Type</option>
             {types
-              .filter((type) => type.name !== "Cutlery") // Filter out Cutlery from options
+              .filter((type) => type.name !== "Cutlery")
+              .sort((a, b) => a.name.localeCompare(b.name)) // Filter out Cutlery from options
               .map((type, idx) => (
                 <option key={idx} value={type.name}>
                   {type.name} - {type.code}
@@ -326,81 +341,85 @@ export default function SKUGenerator() {
       {/* Show only if material and type are selected, and type is not Cutlery */}
       {material && selectedType && selectedType !== "Cutlery" && (
         <>
-          <h2 className="font-bold italic text-lg">
-            {isMaterialSpecificColor ? `${material} Colour` : "Product Colours"}
-          </h2>
-
-          {isMaterialSpecificColor ? (
-            // --- Marble/Cement Color Picker ---
-            <div className="mb-4">
-              <label>{material} Color: </label>
-              <select
-                value={materialColor}
-                onChange={(e) => setMaterialColor(e.target.value)}
-                className="border rounded-2xl px-2 py-1 w-60"
-              >
-                <option value="">Select {material} Color</option>
-                {materialColors.map((colorObj, idx) => (
-                  <option key={idx} value={colorObj.color}>
-                    {" "}
-                    {/* Value is the color name */}
-                    {colorObj.color} - {colorObj.code}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            // --- Ceramic/Other Color Pickers ---
-            <div className="flex gap-5 items-center flex-wrap">
-              {" "}
-              {/* Added flex-wrap */}
-              <div>
-                <label>Inner Glaze: </label>
-                <select
-                  value={innerColor}
-                  onChange={(e) => setInnerColor(e.target.value)}
-                  className="border rounded-2xl px-2 py-1"
-                >
-                  <option value="">Select Inner Color</option>
-                  {baseColors.map((col, idx) => (
-                    <option key={idx} value={col.name}>
-                      {col.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label>Outer Glaze: </label>
-                <select
-                  value={outerColor}
-                  onChange={(e) => setOuterColor(e.target.value)}
-                  className="border rounded-2xl px-2 py-1"
-                >
-                  <option value="">Select Outer Color</option>
-                  {baseColors.map((col, idx) => (
-                    <option key={idx} value={col.name}>
-                      {col.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label>Rim Color: </label>
-                <select
-                  value={rimColor}
-                  onChange={(e) => setRimColor(e.target.value)}
-                  className="border rounded-2xl px-2 py-1"
-                >
-                  <option value="">Select Rim Color</option>
-                  {baseColors.map((col, idx) => (
-                    <option key={idx} value={col.name}>
-                      {col.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+          {showColorDropdowns && (
+            <h2 className="font-bold italic text-lg">
+              {isMaterialSpecificColor
+                ? `${material} Colour`
+                : "Product Colours"}
+            </h2>
           )}
+          {showColorDropdowns &&
+            (isMaterialSpecificColor ? (
+              // --- Marble/Cement Color Picker ---
+              <div className="mb-4">
+                <label>{material} Color: </label>
+                <select
+                  value={materialColor}
+                  onChange={(e) => setMaterialColor(e.target.value)}
+                  className="border rounded-2xl px-2 py-1 w-60"
+                >
+                  <option value="">Select {material} Color</option>
+                  {materialColors.map((colorObj, idx) => (
+                    <option key={idx} value={colorObj.color}>
+                      {" "}
+                      {/* Value is the color name */}
+                      {colorObj.color} - {colorObj.code}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              // --- Ceramic/Other Color Pickers ---
+              <div className="flex gap-5 items-center flex-wrap">
+                {" "}
+                {/* Added flex-wrap */}
+                <div>
+                  <label>Inner Glaze: </label>
+                  <select
+                    value={innerColor}
+                    onChange={(e) => setInnerColor(e.target.value)}
+                    className="border rounded-2xl px-2 py-1"
+                  >
+                    <option value="">Select Inner Color</option>
+                    {baseColors.map((col, idx) => (
+                      <option key={idx} value={col.name}>
+                        {col.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label>Outer Glaze: </label>
+                  <select
+                    value={outerColor}
+                    onChange={(e) => setOuterColor(e.target.value)}
+                    className="border rounded-2xl px-2 py-1"
+                  >
+                    <option value="">Select Outer Color</option>
+                    {baseColors.map((col, idx) => (
+                      <option key={idx} value={col.name}>
+                        {col.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label>Rim Color: </label>
+                  <select
+                    value={rimColor}
+                    onChange={(e) => setRimColor(e.target.value)}
+                    className="border rounded-2xl px-2 py-1"
+                  >
+                    <option value="">Select Rim Color</option>
+                    {baseColors.map((col, idx) => (
+                      <option key={idx} value={col.name}>
+                        {col.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
         </>
       )}{" "}
       {/* End Conditional Color Selection */}
@@ -415,11 +434,12 @@ export default function SKUGenerator() {
             !selectedType ||
             !selectedProduct ||
             selectedType === "Cutlery" || // Disable if Cutlery selected
-            (isMaterialSpecificColor && !materialColor) || // Disable if Marble/Cement color missing
-            (!isMaterialSpecificColor &&
-              (!outerColor || !innerColor || !rimColor)) // Disable if Ceramic colors missing
+            (showColorDropdowns &&
+              ((isMaterialSpecificColor && !materialColor) || // Disable if Marble/Cement color missing
+                (!isMaterialSpecificColor &&
+                  (!outerColor || !innerColor || !rimColor))))
           }
-          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 disabled:opacity-70 disabled:cursor-not-allowed" // Added padding/rounding/hover/disabled styles
+          className="bg-green-700 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-800 disabled:opacity-70 disabled:cursor-not-allowed" // Added padding/rounding/hover/disabled styles
         >
           {isLoading ? "Generating..." : "Generate SKU"}
         </button>
