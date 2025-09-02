@@ -59,7 +59,7 @@ export default function SKUGenerator() {
   const [isLoading, setIsLoading] = useState(false); // For SKU generation button
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  const noColorTypes = ["Box", "Foam"];
+  const noColorTypes = ["Box", "Foam", "Wax"];
   const showColorDropdowns = !noColorTypes.includes(selectedType);
 
   useEffect(() => {
