@@ -28,6 +28,7 @@ const typeToCategoryMap = {
   Cutlery: "cutlery",
   Box: "boxes",
   Foam: "foamcuts",
+  Wax: "wax",
   // "Bags": "bags",
   // "Stainless Steel": "stainless_steel",
   // "Envelopes": "envelopes",

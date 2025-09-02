@@ -29,6 +29,7 @@ const typeToCategoryMap = {
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
   Box: "boxes",
+  Wax: "wax",
   Foam: "foamcuts",
 };
 
@@ -142,11 +143,13 @@ const ShowProducts = () => {
           <option value="" className="text-center">
             -- Select a Type --
           </option>
-          {types.map((type, idx) => (
-            <option key={idx} value={type.name}>
-              {type.name} - {type.code}
-            </option>
-          ))}
+          {types
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((type, idx) => (
+              <option className="text-sm" key={idx} value={type.name}>
+                {type.name} - {type.code}
+              </option>
+            ))}
         </select>
       </div>
 
