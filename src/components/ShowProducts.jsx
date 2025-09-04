@@ -10,6 +10,8 @@ const typeToCategoryMap = {
   Accessories: "Accessories",
   "Accessories Set": "accessories_set",
   Bowls: "Bowls",
+  "Bowl & Lid": "bowl_lid",
+  "Cup & Saucer": "cup_saucers",
   "Bowls Set": "bowls_set",
   "Cups / Mugs": "cups",
   "Cups / Mugs Set": "cups_set",
