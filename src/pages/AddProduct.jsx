@@ -30,6 +30,7 @@ const typeToCategoryMap = {
   Cutlery: "cutlery",
   Box: "boxes",
   "Candle Kit": "candlekits",
+  Etchings: "etchings",
   Foam: "foamcuts",
   Wax: "wax",
   // "Bags": "bags",
@@ -85,11 +86,13 @@ const AddProduct = () => {
               className="border rounded-lg px-2 py-1 w-64"
             >
               <option value="">Select Type of Product</option>
-              {types.map((type, idx) => (
-                <option key={idx} value={type.name}>
-                  {type.name} - {type.code}
-                </option>
-              ))}
+              {types
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((type, idx) => (
+                  <option key={idx} value={type.name}>
+                    {type.name} - {type.code}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="flex gap-2 items-center">

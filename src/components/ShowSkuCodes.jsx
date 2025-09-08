@@ -204,11 +204,13 @@ const ShowSkuCodes = () => {
               className="select select-bordered select-sm w-40"
             >
               <option value="all">All Types</option>
-              {types.map((type, idx) => (
-                <option key={idx} value={type.code}>
-                  {type.name}
-                </option>
-              ))}
+              {types
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((type, idx) => (
+                  <option key={idx} value={type.code}>
+                    {type.name}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
