@@ -31,6 +31,7 @@ const typeToCategoryMap = {
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
   Box: "boxes",
+  "Candle Kit": "candlekits",
   Wax: "wax",
   Foam: "foamcuts",
 };

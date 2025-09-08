@@ -65,22 +65,26 @@ const ShowTypes = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-400 text-base-content text-center">
-                {types.map((m, index) => (
-                  <tr
-                    key={index}
-                    className={index % 2 === 0 ? "bg-base-200" : ""}
-                  >
-                    {/* Table cells remain the same */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-sm">{m.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-sm font-semibold text-pink-400">
-                        {m.code}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {types
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((m, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? "bg-base-200" : ""}
+                    >
+                      {/* Table cells remain the same */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center text-sm">
+                          {m.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center text-sm font-semibold text-pink-400">
+                          {m.code}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

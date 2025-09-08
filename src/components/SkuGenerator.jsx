@@ -34,6 +34,7 @@ const typeToCategoryMap = {
   "Tissue Box": "tissuebox",
   Cutlery: "cutlery",
   Box: "boxes",
+  "Candle Kit": "candlekits",
   Wax: "wax",
   Foam: "foamcuts",
 };
@@ -61,7 +62,7 @@ export default function SKUGenerator() {
   const [isLoading, setIsLoading] = useState(false); // For SKU generation button
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  const noColorTypes = ["Box", "Foam", "Wax"];
+  const noColorTypes = ["Box", "Foam", "Wax", "Candle Kit"];
   const showColorDropdowns = !noColorTypes.includes(selectedType);
 
   useEffect(() => {
