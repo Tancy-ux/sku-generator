@@ -22,6 +22,7 @@ const typeToCategoryMap = {
   "Plates Set": "plates_set",
   Platter: "platter",
   "Platter Sets": "platter_sets",
+  Table: "table",
   "Table Linens": "tablinen",
   "Table Linens Set": "table_linens_set",
   "Table Settings": "table_settings",
