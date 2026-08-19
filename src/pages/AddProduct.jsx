@@ -2,43 +2,7 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { addProduct, fetchTypes } from "../functions/api";
 import ShowProducts from "../components/ShowProducts";
-import AddMaterial from "../components/AddMaterial";
-
-const typeToCategoryMap = {
-  Accessories: "Accessories",
-  "Accessories Set": "accessories_set",
-  Bowls: "Bowls",
-  "Bowls Set": "bowls_set",
-  "Bowl & Lid": "bowl_lid",
-  "Cup & Saucer": "cup_saucers",
-  "Cups / Mugs": "cups",
-  "Cups / Mugs Set": "cups_set",
-  Plates: "Plates",
-  "Plates Set": "plates_set",
-  Platter: "platter",
-  "Platter Sets": "platter_sets",
-  Table: "table",
-  "Table Linens": "tablinen",
-  "Table Linens Set": "table_linens_set",
-  "Table Settings": "table_settings",
-  Vases: "vases",
-  "Vases Set": "vases_set",
-  "Candle Stand": "candlestand",
-  "Candle Stand Set": "candle_stand_set",
-  Trinket: "trinket",
-  "Trinket Set": "trinket_set",
-  "Tissue Box": "tissuebox",
-  Cutlery: "cutlery",
-  Box: "boxes",
-  "Candle Kit": "candlekits",
-  Etchings: "etchings",
-  Foam: "foamcuts",
-  Wax: "wax",
-  // "Bags": "bags",
-  // "Stainless Steel": "stainless_steel",
-  // "Envelopes": "envelopes",
-  // "Ribbons": "ribbons"
-};
+import { typeToCategoryMap } from "../functions/constants";
 
 const AddProduct = () => {
   const [types, setTypes] = useState([]);
@@ -143,7 +107,6 @@ const AddProduct = () => {
             </div>
           )}
         </div>
-        <AddMaterial />
       </div>
       <ShowProducts />
     </div>

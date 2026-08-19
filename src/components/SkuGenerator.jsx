@@ -8,38 +8,7 @@ import {
 } from "../functions/api.js";
 import toast from "react-hot-toast";
 import { fetchColorsByMaterial, getBaseColors } from "../functions/colors.js";
-
-const typeToCategoryMap = {
-  Accessories: "Accessories",
-  "Accessories Set": "accessories_set",
-  Bowls: "Bowls",
-  "Bowl & Lid": "bowl_lid",
-  "Cup & Saucer": "cup_saucers",
-  "Bowls Set": "bowls_set",
-  "Cups / Mugs": "cups",
-  "Cups / Mugs Set": "cups_set",
-  Plates: "Plates",
-  "Plates Set": "plates_set",
-  Platter: "platter",
-  "Platter Sets": "platter_sets",
-  Table: "table",
-  "Table Linens": "tablinen",
-  "Table Linens Set": "table_linens_set",
-  "Table Settings": "table_settings",
-  Vases: "vases",
-  "Vases Set": "vases_set",
-  "Candle Stand": "candlestand",
-  "Candle Stand Set": "candle_stand_set",
-  Trinket: "trinket",
-  "Trinket Set": "trinket_set",
-  "Tissue Box": "tissuebox",
-  Cutlery: "cutlery",
-  Box: "boxes",
-  "Candle Kit": "candlekits",
-  Etchings: "etchings",
-  Wax: "wax",
-  Foam: "foamcuts",
-};
+import { typeToCategoryMap } from "../functions/constants.js";
 
 export default function SKUGenerator() {
   // --- State ---

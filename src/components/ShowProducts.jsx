@@ -5,38 +5,7 @@ import { fetchProductsByType, fetchTypes } from "../functions/api";
 import { deleteProduct, updateProduct } from "../functions/colors";
 import Skeleton from "./common/Skeleton";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-
-const typeToCategoryMap = {
-  Accessories: "Accessories",
-  "Accessories Set": "accessories_set",
-  Bowls: "Bowls",
-  "Bowl & Lid": "bowl_lid",
-  "Cup & Saucer": "cup_saucers",
-  "Bowls Set": "bowls_set",
-  "Cups / Mugs": "cups",
-  "Cups / Mugs Set": "cups_set",
-  Plates: "Plates",
-  "Plates Set": "plates_set",
-  Platter: "platter",
-  "Platter Sets": "platter_sets",
-  Table: "table",
-  "Table Linens": "tablinen",
-  "Table Linens Set": "table_linens_set",
-  "Table Settings": "table_settings",
-  Vases: "vases",
-  "Vases Set": "vases_set",
-  "Candle Stand": "candlestand",
-  "Candle Stand Set": "candle_stand_set",
-  Trinket: "trinket",
-  "Trinket Set": "trinket_set",
-  "Tissue Box": "tissuebox",
-  Cutlery: "cutlery",
-  Box: "boxes",
-  "Candle Kit": "candlekits",
-  Etchings: "etchings",
-  Wax: "wax",
-  Foam: "foamcuts",
-};
+import { typeToCategoryMap } from "../functions/constants";
 
 const ShowProducts = () => {
   const [types, setTypes] = useState([]);

@@ -23,11 +23,11 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between font-mono items-center my-10 md:mx-2 text-[#009191] dark:text-teal-400">
+    <div className="flex justify-between font-mono items-center text-[#009191] dark:text-teal-400">
       <div className="flex items-center gap-3">
-        <a href="/" className="text-4xl font-semibold">
+        <Link to="/" className="text-4xl font-semibold">
           SKU Generator
-        </a>
+        </Link>
         <div className="flex items-center gap-1 ml-2 pl-3 border-l border-current/20 text-xs md:text-sm">
           <a
             href="https://ware-sku-studio.onrender.com"
@@ -40,46 +40,14 @@ const Navbar = () => {
           </span>
         </div>
       </div>
-      <div className="flex flex-row gap-3 lg:gap-10 items-center text-xs md:text-base">
-        <Link
-          to="/pdetails"
-          className="hover:text-teal-700  dark:hover:text-teal-500"
-        >
-          Product Details
-        </Link>
-        <Link
-          to="/viewall"
-          className="hover:text-teal-700  dark:hover:text-teal-500"
-        >
-          Abbreviations
-        </Link>
-        <Link
-          to="/skus"
-          className="hover:text-teal-700 dark:hover:text-teal-500"
-        >
-          View All SKUs
-        </Link>
-        <Link
-          to="/products"
-          className="hover:text-teal-700 dark:hover:text-teal-500"
-        >
-          Add Products | Add Materials
-        </Link>
-        <Link
-          to="/color"
-          className="hover:text-teal-700 dark:hover:text-teal-500"
-        >
-          Add Colour Combos
-        </Link>
-        {/* Theme Toggle Button */}
-        <button
-          onClick={toggleDarkMode}
-          className="p-2 rounded-full text-yellow-500 hover:bg-base-300 transition-colors"
-          aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-        >
-          {darkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
-        </button>
-      </div>
+      {/* Theme Toggle Button */}
+      <button
+        onClick={toggleDarkMode}
+        className="p-2 rounded-full text-yellow-500 hover:bg-base-300 transition-colors"
+        aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+      >
+        {darkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
+      </button>
     </div>
   );
 };
