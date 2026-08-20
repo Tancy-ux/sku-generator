@@ -47,6 +47,11 @@ const Sidebar = () => {
           </NavLink>
         </li>
         <li>
+          <NavLink to="/material-colors" className={linkClass}>
+            Add Material Colors
+          </NavLink>
+        </li>
+        <li>
           <NavLink to="/pdetails" className={linkClass}>
             Pricing
           </NavLink>
@@ -56,13 +61,13 @@ const Sidebar = () => {
           <span className={groupTitleClass}>Reference</span>
         </li>
         <li>
-          <NavLink to="/viewall" className={linkClass}>
-            Browse All
+          <NavLink to="/skus" className={linkClass}>
+            View All SKUs
           </NavLink>
         </li>
         <li>
-          <NavLink to="/skus" className={linkClass}>
-            View All SKUs
+          <NavLink to="/viewall" className={linkClass}>
+            Browse All
           </NavLink>
         </li>
       </ul>

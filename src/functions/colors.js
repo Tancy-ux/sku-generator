@@ -37,7 +37,7 @@ export const addCutleryColor = async (handle, finish) => {
 
 export const addColorByMaterial = async (material, color) => {
   try {
-    const res = await axios.post(`${BASE_URI}/colors`, { material, color });
+    const res = await axios.post(`${BASE_URI}/newcol`, { material, color });
     toast.success(`Added new ${material} color!`);
     return res.data;
   } catch (error) {

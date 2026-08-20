@@ -6,6 +6,7 @@ import AddProduct from "./pages/AddProduct";
 import { Route, Routes } from "react-router-dom";
 import AddColor from "./pages/AddColor";
 import AddBaseColor from "./pages/AddBaseColor";
+import AddMaterialColor from "./pages/AddMaterialColor";
 import AddMaterials from "./pages/AddMaterials";
 import Error from "./pages/Error";
 import ViewAll from "./pages/ViewAll";
@@ -27,6 +28,7 @@ function App() {
             <Route path="/materials" element={<AddMaterials />} />
             <Route path="/color" element={<AddColor />} />
             <Route path="/base-colors" element={<AddBaseColor />} />
+            <Route path="/material-colors" element={<AddMaterialColor />} />
             <Route path="/viewall" element={<ViewAll />} />
             <Route path="/skus" element={<ShowSkuCodes />} />
             <Route path="/pdetails" element={<ProductDetails />} />
