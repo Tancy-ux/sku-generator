@@ -220,30 +220,23 @@ export default function SKUGenerator() {
     material
   );
 
-  // if (isLoadingProducts || isLoading) {
-  //   return (
-  //     <div className="p-5 flex items-center justify-center mt-10">
-  //       <div className="text-center flex items-center justify-center gap-4">
-  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-  //         <p className="text-lg">Loading... </p>
-
-  //         <span className="loading loading-bars loading-xs"></span>
-  //         <span className="loading loading-bars loading-sm"></span>
-  //         <span className="loading loading-bars loading-md"></span>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
-    <div className="p-5 mt-20 flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
+      <div className="border-b border-base-300 pb-4">
+        <h1 className="text-2xl font-semibold">Generate SKU</h1>
+        <p className="text-sm text-base-content/60 mt-1">
+          Build a new product code from material, typology, and color.
+        </p>
+        <div className="h-0.5 w-8 bg-primary rounded-full mt-3"></div>
+      </div>
+      <div className="bg-base-100 border border-base-300 rounded-box p-6 flex flex-col gap-5">
       {/* Material Dropdown */}
       <div className="my-4">
         <label>Material: </label>
         <select
           value={material}
           onChange={(e) => setMaterial(e.target.value)}
-          className="border rounded-2xl px-2 py-1 w-50"
+          className="select select-bordered w-50"
         >
           <option value="">Select Material</option>
           {materials
@@ -264,7 +257,7 @@ export default function SKUGenerator() {
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="border rounded-2xl px-2 py-1 w-64"
+            className="select select-bordered w-64"
           >
             <option value="">Select Type</option>
             {types
@@ -282,7 +275,7 @@ export default function SKUGenerator() {
           <select
             value={selectedProduct}
             onChange={(e) => setSelectedProduct(e.target.value)}
-            className="border rounded-2xl px-2 py-1 w-80"
+            className="select select-bordered w-80"
             disabled={
               !selectedType ||
               isLoadingProducts ||
@@ -306,7 +299,7 @@ export default function SKUGenerator() {
             selectedType &&
             selectedType !== "Cutlery" &&
             products.length === 0 && (
-              <p className="text-sm text-red-600 ml-2">
+              <p className="text-sm text-error ml-2">
                 No products for "{selectedType}"
               </p>
             )}
@@ -331,7 +324,7 @@ export default function SKUGenerator() {
                 <select
                   value={materialColor}
                   onChange={(e) => setMaterialColor(e.target.value)}
-                  className="border rounded-2xl px-2 py-1 w-60"
+                  className="select select-bordered w-60"
                 >
                   <option value="">Select {material} Color</option>
                   {materialColors.map((colorObj, idx) => (
@@ -353,7 +346,7 @@ export default function SKUGenerator() {
                   <select
                     value={innerColor}
                     onChange={(e) => setInnerColor(e.target.value)}
-                    className="border rounded-2xl px-2 py-1"
+                    className="select select-bordered"
                   >
                     <option value="">Select Inner Color</option>
                     {baseColors.map((col, idx) => (
@@ -368,7 +361,7 @@ export default function SKUGenerator() {
                   <select
                     value={outerColor}
                     onChange={(e) => setOuterColor(e.target.value)}
-                    className="border rounded-2xl px-2 py-1"
+                    className="select select-bordered"
                   >
                     <option value="">Select Outer Color</option>
                     {baseColors.map((col, idx) => (
@@ -383,7 +376,7 @@ export default function SKUGenerator() {
                   <select
                     value={rimColor}
                     onChange={(e) => setRimColor(e.target.value)}
-                    className="border rounded-2xl px-2 py-1"
+                    className="select select-bordered"
                   >
                     <option value="">Select Rim Color</option>
                     {baseColors.map((col, idx) => (
@@ -414,15 +407,16 @@ export default function SKUGenerator() {
                 (!isMaterialSpecificColor &&
                   (!outerColor || !innerColor || !rimColor))))
           }
-          className="bg-green-700 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-800 disabled:opacity-70 disabled:cursor-not-allowed" // Added padding/rounding/hover/disabled styles
+          className="btn btn-primary"
         >
           {isLoading ? "Generating..." : "Generate SKU"}
         </button>
         {sku && (
           <p>
-            Generated SKU: <strong className="text-pink-300">{sku}</strong>
+            Generated SKU: <strong className="text-secondary">{sku}</strong>
           </p>
         )}
+      </div>
       </div>
     </div>
   );

@@ -43,12 +43,17 @@ const AddMaterialColor = () => {
   };
 
   return (
-    <div className="flex justify-around">
-      <div className="my-12 flex flex-col gap-5 items-center w-full max-w-lg">
-        <h3 className="text-2xl text-center font-bold mb-7">
-          Add Material Color
-        </h3>
-
+    <div className="flex flex-col gap-6">
+      <div className="border-b border-base-300 pb-4">
+        <h1 className="text-2xl font-semibold">Add Material Colors</h1>
+        <p className="text-sm text-base-content/60 mt-1">
+          Register a color for a material — the sequence code is assigned
+          automatically.
+        </p>
+        <div className="h-0.5 w-8 bg-primary rounded-full mt-3"></div>
+      </div>
+      <div className="bg-base-100 border border-base-300 rounded-box p-6 flex justify-around">
+      <div className="flex flex-col gap-5 items-center w-full max-w-lg">
         <form
           onSubmit={handleAddMaterialColor}
           className="flex flex-col gap-4 w-full"
@@ -58,12 +63,12 @@ const AddMaterialColor = () => {
             <select
               value={material}
               onChange={(e) => setMaterial(e.target.value)}
-              className="border rounded-lg px-2 py-1 flex-1"
+              className="select select-bordered flex-1"
               required
             >
               <option value="">Select material</option>
               {materials
-                .slice()
+                .filter((m) => m.name !== "Ceramic")
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((m, idx) => (
                   <option key={idx} value={m.name}>
@@ -79,14 +84,14 @@ const AddMaterialColor = () => {
               value={colorName}
               onChange={(e) => setColorName(e.target.value)}
               placeholder="e.g. Rose Pink"
-              className="border rounded-lg px-2 py-1 flex-1"
+              className="input input-bordered flex-1"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="btn btn-success btn-outline mt-4"
+            className="btn btn-primary btn-outline mt-4"
             disabled={isSubmitting || !material}
           >
             {isSubmitting ? "Adding..." : "Add Color"}
@@ -107,7 +112,7 @@ const AddMaterialColor = () => {
               {materialColors.map((c, index) => (
                 <div
                   key={index}
-                  className="badge badge-primary badge-outline gap-1"
+                  className="badge badge-secondary badge-outline gap-1"
                 >
                   {c.color} — {String(c.code).padStart(3, "0")}
                 </div>
@@ -115,6 +120,7 @@ const AddMaterialColor = () => {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

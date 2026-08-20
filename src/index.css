@@ -1,9 +1,94 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+    themes: false;
+}
+
+@plugin "daisyui/theme" {
+    name: "light";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    --color-base-100: #F6F3EE;
+    --color-base-200: #EFEAE1;
+    --color-base-300: #E3DDD0;
+    --color-base-content: #2B2E2C;
+
+    --color-primary: #4F7A6C;
+    --color-primary-content: #FFFFFF;
+    --color-secondary: #7C5B72;
+    --color-secondary-content: #FFFFFF;
+    --color-accent: #365147;
+    --color-accent-content: #FFFFFF;
+    --color-neutral: #55564F;
+    --color-neutral-content: #FFFFFF;
+
+    --color-info: #4C7A93;
+    --color-info-content: #2B2E2C;
+    --color-success: #74915B;
+    --color-success-content: #FFFFFF;
+    --color-warning: #B8863F;
+    --color-warning-content: #2B2E2C;
+    --color-error: #A65046;
+    --color-error-content: #FFFFFF;
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+    name: "dark";
+    default: false;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-base-100: #1E211D;
+    --color-base-200: #262924;
+    --color-base-300: #2E322C;
+    --color-base-content: #EDEAE3;
+
+    --color-primary: #85B39C;
+    --color-primary-content: #1E211D;
+    --color-secondary: #C298B7;
+    --color-secondary-content: #1E211D;
+    --color-accent: #A9CDB9;
+    --color-accent-content: #1E211D;
+    --color-neutral: #3A3D37;
+    --color-neutral-content: #EDEAE3;
+
+    --color-info: #7FAEC7;
+    --color-info-content: #EDEAE3;
+    --color-success: #9BBE7E;
+    --color-success-content: #1E211D;
+    --color-warning: #D9A85E;
+    --color-warning-content: #1E211D;
+    --color-error: #D98D80;
+    --color-error-content: #1E211D;
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* Insurance: the app drives theme entirely via data-theme (see Navbar's
+   toggle), not OS preference. Without this, dark: utilities silently bind
+   to prefers-color-scheme instead of the in-app toggle and never apply. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* In your global CSS */
 select {
-    @apply bg-base-100 border-amber-100;
+    @apply bg-base-100 border-base-300;
 }
 
 select option {
@@ -15,7 +100,7 @@ label {
 }
 
 .bg-img {
-    background-image: 
+    background-image:
         linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
         url("/bg2.jpg");
     background-size: cover;

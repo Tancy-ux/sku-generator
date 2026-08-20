@@ -23,9 +23,8 @@ const AddMaterial = () => {
     }
   };
   return (
-    <div>
-      <div className="flex flex-col my-4 gap-5 justify-center items-center">
-        <h3 className="text-2xl font-bold my-5">Add New Material & Code</h3>
+    <div className="bg-base-100 border border-base-300 rounded-box p-6">
+      <div className="flex flex-col gap-4 justify-center items-center">
         <div className="flex gap-2 items-center">
           <label>Material name: </label>
           <input
@@ -33,7 +32,7 @@ const AddMaterial = () => {
             value={material}
             placeholder="Glass"
             onChange={(e) => setMaterial(e.target.value)}
-            className="border rounded-lg px-2 py-1"
+            className="input input-bordered"
           />
         </div>
         <div className="flex gap-2 items-center">
@@ -43,14 +42,14 @@ const AddMaterial = () => {
             value={code}
             placeholder="GL"
             onChange={(e) => setCode(e.target.value)}
-            className="border rounded-lg px-2 py-1"
+            className="input input-bordered"
           />
         </div>
 
         <button
           disabled={isLoading}
           onClick={handleAddMaterial}
-          className="bg-green-700 text-white px-4 btn btn-sm my-2"
+          className="btn btn-primary btn-sm my-2"
         >
           {isLoading ? "Adding..." : "Add New Material"}
         </button>

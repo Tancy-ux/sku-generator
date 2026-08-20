@@ -143,7 +143,6 @@ const AllPricing = forwardRef((props, ref) => {
             <th>
               Selling Price <br /> (incl GST)
             </th>
-            {/* <th>GST Rate</th> */}
             <th>COGS</th>
             <th>Actions</th>
           </tr>
@@ -184,7 +183,7 @@ const AllPricing = forwardRef((props, ref) => {
                   <td>
                     <p>
                       {skuMap[item.skuCode]?.productName || "—"}{" "}
-                      <span className="text-gray-500 text-sm">
+                      <span className="text-base-content/60 text-sm">
                         {skuMap[item.skuCode]?.color || ""}
                       </span>
                     </p>
@@ -244,34 +243,13 @@ const AllPricing = forwardRef((props, ref) => {
 
                   <td>{Math.round(item.sellingPriceInclGst)}</td>
 
-                  {/* <td>
-                  {isEditing ? (
-                    <select
-                      className="select select-xs"
-                      // @ts-ignore
-                      value={editData.gstRate}
-                      onChange={(e) =>
-                        setEditData({
-                          ...editData,
-                          gstRate: parseFloat(e.target.value),
-                        })
-                      }
-                    >
-                      <option value={1.12}>12%</option>
-                      <option value={1.18}>18%</option>
-                    </select>
-                  ) : (
-                    `${((gstRate - 1) * 100).toFixed(0)}%`
-                  )}
-                </td> */}
-
                   <td>{calc.cogs(cp, sp)}%</td>
 
                   <td>
                     {isEditing ? (
                       <div className="flex gap-1">
                         <button
-                          className="btn btn-xs btn-success"
+                          className="btn btn-xs btn-primary"
                           onClick={handleSave}
                         >
                           Save

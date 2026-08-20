@@ -65,8 +65,15 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="overflow-x-auto border border-base-content/5 bg-base-100">
-      <h2 className="text-xl font-bold m-3">Add Pricing</h2>
+    <div className="flex flex-col gap-6">
+      <div className="border-b border-base-300 pb-4">
+        <h1 className="text-2xl font-semibold">Pricing</h1>
+        <p className="text-sm text-base-content/60 mt-1">
+          Set cost and selling price for a SKU, including GST.
+        </p>
+        <div className="h-0.5 w-8 bg-primary rounded-full mt-3"></div>
+      </div>
+      <div className="overflow-x-auto border border-base-300 rounded-box bg-base-100">
       <table className="table table-zebra w-full">
         <thead>
           <tr className="text-center">
@@ -225,6 +232,7 @@ const ProductDetails = () => {
         </tbody>
       </table>
       <AllPricing ref={allPricingRef} />
+      </div>
     </div>
   );
 };

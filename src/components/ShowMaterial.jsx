@@ -43,7 +43,7 @@ const ShowMaterial = () => {
         <h3 className="text-2xl font-bold mb-4">Materials</h3>
         <button
           onClick={toggleTable}
-          className="px-6 text-sm py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition-colors"
+          className="btn btn-primary btn-sm"
         >
           {showTable ? "Hide Materials" : "Show Materials"}
         </button>
@@ -52,18 +52,18 @@ const ShowMaterial = () => {
       {showTable && (
         <div className="p-6 mx-auto">
           <div className="overflow-x-auto">
-            <table className="min-w-full border border-gray-600">
+            <table className="min-w-full border border-base-300">
               <thead className="text-center">
                 <tr>
-                  <th className="px-6 py-3 text-left font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left font-medium text-base-content/60 uppercase tracking-wider">
                     Material
                   </th>
-                  <th className="px-6 py-3 text-left font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left font-medium text-base-content/60 uppercase tracking-wider">
                     Code
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-400 text-base-content text-center">
+              <tbody className="divide-y divide-base-300 text-base-content text-center">
                 {materials.map((m, index) => (
                   <tr
                     key={index}
@@ -75,7 +75,7 @@ const ShowMaterial = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-sm font-semibold text-pink-400">
+                      <div className="flex items-center text-sm font-semibold text-secondary">
                         {m.code}
                       </div>
                     </td>

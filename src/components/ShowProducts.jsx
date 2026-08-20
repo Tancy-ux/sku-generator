@@ -112,7 +112,7 @@ const ShowProducts = () => {
         <select
           value={selectedType}
           onChange={(e) => setSelectedType(e.target.value)}
-          className="border rounded-lg mt-2 px-2 py-1"
+          className="select select-bordered mt-2"
         >
           <option value="" className="text-center">
             -- Select a Type --
@@ -131,7 +131,7 @@ const ShowProducts = () => {
         {products.map((prod, idx) => (
           <div
             key={idx}
-            className="border border-gray-500 p-4 rounded shadow flex flex-col justify-between"
+            className="border border-base-300 bg-base-100 p-4 rounded-box shadow-sm flex flex-col justify-between"
           >
             {editingProduct?._id === prod._id ? (
               <div className="flex flex-col gap-2">
@@ -139,12 +139,12 @@ const ShowProducts = () => {
                   type="text"
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
-                  className="border rounded px-2 py-1"
+                  className="input input-bordered input-sm"
                 />
                 <div className="flex gap-2 justify-end">
                   <button
                     onClick={handleSaveProduct}
-                    className="btn btn-sm btn-success"
+                    className="btn btn-sm btn-primary"
                   >
                     Save
                   </button>
@@ -160,7 +160,7 @@ const ShowProducts = () => {
               <div className="flex justify-between items-center gap-2">
                 <p>{prod.name}</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-green-400">{prod.design_code}</p>
+                  <p className="text-primary font-mono text-sm">{prod.design_code}</p>
                   <button
                     onClick={() => handleEditClick(prod)}
                     className="btn btn-sm btn-primary btn-outline"
@@ -181,7 +181,7 @@ const ShowProducts = () => {
       </div>
 
       {products.length === 0 && selectedType && (
-        <p className="text-gray-400 text-center text-lg mt-4">
+        <p className="text-base-content/60 text-center text-lg mt-4">
           No products found for this type.
         </p>
       )}

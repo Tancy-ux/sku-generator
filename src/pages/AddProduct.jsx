@@ -39,16 +39,22 @@ const AddProduct = () => {
     }
   };
   return (
-    <div>
-      <div className="flex justify-around">
-        <div className="flex flex-col my-4 gap-5 justify-center items-center">
-          <h3 className="text-2xl font-bold my-5">Add New Products</h3>
-          <div>
+    <div className="flex flex-col gap-6">
+      <div className="border-b border-base-300 pb-4">
+        <h1 className="text-2xl font-semibold">Add Products</h1>
+        <p className="text-sm text-base-content/60 mt-1">
+          Register a new product under a typology.
+        </p>
+        <div className="h-0.5 w-8 bg-primary rounded-full mt-3"></div>
+      </div>
+      <div className="bg-base-100 border border-base-300 rounded-box p-6">
+        <div className="flex flex-col gap-4 items-center max-w-md mx-auto">
+          <div className="w-full">
             <label>Typology: </label>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="border rounded-lg px-2 py-1 w-64"
+              className="select select-bordered w-full"
             >
               <option value="">Select Type of Product</option>
               {types
@@ -60,27 +66,27 @@ const AddProduct = () => {
                 ))}
             </select>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="w-full">
             <label>Product name: </label>
             <input
               type="text"
               value={product}
               onChange={(e) => setProduct(e.target.value)}
-              className="border rounded-lg px-2 py-1 w-60"
+              className="input input-bordered w-full"
             />
           </div>
 
           <button
             disabled={isLoading}
             onClick={confirmModal}
-            className="bg-green-700 text-white px-4 btn btn-sm my-2"
+            className="btn btn-primary btn-sm my-2"
           >
             {isLoading ? "Adding..." : "Add Product"}
           </button>
 
           {showModal && (
-            <div className="fixed inset-0 flex justify-center items-center z-50">
-              <div className="p-6 bg-gray-700 rounded-lg shadow-lg w-96">
+            <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/40">
+              <div className="p-6 bg-base-100 border border-base-300 rounded-box shadow-lg w-96">
                 <h2 className="text-lg  font-semibold mb-4">
                   Confirm Product Addition
                 </h2>

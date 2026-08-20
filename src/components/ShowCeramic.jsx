@@ -32,7 +32,7 @@ const ShowCeramic = () => {
 
   if (loading) return <Skeleton />;
   if (error)
-    return <div className="text-center py-10 text-red-500">{error}</div>;
+    return <div className="text-center py-10 text-error">{error}</div>;
   if (colors.length === 0)
     return <div className="text-center py-10">No color entries found</div>;
 
@@ -43,31 +43,29 @@ const ShowCeramic = () => {
       </h3>
       <div className="p-6 max-w-3xl mx-auto">
         <div className="overflow-x-auto">
-          <table className="min-w-full  border border-gray-600">
-            {/* Table headers remain the same */}
+          <table className="min-w-full  border border-base-300">
             <thead className="text-center">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
                   Outer Glaze
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
                   Inner Glaze
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
                   Rim Colour
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
                   Code
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-400 text-base-content text-center text-sm">
+            <tbody className="divide-y divide-base-300 text-base-content text-center text-sm">
               {colors.map((color, index) => (
                 <tr
                   key={index}
                   className={index % 2 === 0 ? "bg-base-200" : ""}
                 >
-                  {/* Table cells remain the same */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-center">
                       {color.outerColor}
@@ -83,7 +81,7 @@ const ShowCeramic = () => {
                       {color.rimColor}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-pink-400 font-mono font-bold">
+                  <td className="px-6 py-4 whitespace-nowrap text-secondary font-mono font-bold">
                     {color.code}
                   </td>
                 </tr>

@@ -5,24 +5,6 @@ import { deleteSku, editOldSku, fetchOldSkuCodes } from "../functions/colors";
 import { SiZincsearch } from "react-icons/si";
 import toast from "react-hot-toast";
 
-const getBadgeColor = (typeCode = "") => {
-  if (!typeCode) return "text-gray-500 border-gray-500";
-  const hash = Array.from(typeCode).reduce(
-    (hash, char) => char.charCodeAt(0) + (hash << 5) - hash,
-    0
-  );
-  const colors = [
-    "text-blue-500 border-blue-500",
-    "text-yellow-500 border-yellow-500",
-    "text-purple-600 border-purple-600",
-    "text-pink-700 border-pink-700",
-    "text-green-700 border-green-700",
-    "text-indigo-500 border-indigo-500",
-  ];
-
-  return colors[Math.abs(hash) % colors.length];
-};
-
 const ShowSkuCodes = () => {
   const [skus, setSkus] = useState([]);
   const [oldSkus, setOldSkus] = useState([]);
@@ -159,13 +141,13 @@ const ShowSkuCodes = () => {
 
   return (
     <div className="p-6 w-full lg:w-4/5 mx-auto">
-      <div className="flex flex-col md:flex-row justify-between gap-8 items-center mb-8">
-        <h1 className="text-3xl font-semibold">Current SKU Codes</h1>
+      <div className="flex flex-col md:flex-row justify-between gap-8 items-center mb-8 pb-4 border-b border-base-300">
+        <h1 className="text-2xl font-semibold shrink-0">View All SKUs</h1>
         <div className="flex items-center">
           {/* Add search bar */}
           <div className="relative w-84">
             <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-3">
-              <SiZincsearch size={12} className="text-gray-500" />
+              <SiZincsearch size={12} className="text-base-content/60" />
             </div>
             <input
               type="text"
@@ -228,7 +210,7 @@ const ShowSkuCodes = () => {
           <tbody>
             {visibleSkus.length === 0 ? (
               <tr>
-                <td colSpan={3} className="text-center text-gray-500">
+                <td colSpan={3} className="text-center text-base-content/60">
                   {noResults ? (
                     "No results found"
                   ) : (
@@ -248,9 +230,9 @@ const ShowSkuCodes = () => {
                   <td className="text-center">
                     {sku.productName || sku.name}{" "}
                     {sku.color ? (
-                      <span className="text-gray-500">{sku.color}</span>
+                      <span className="text-base-content/60">{sku.color}</span>
                     ) : (
-                      <span className="text-gray-500">
+                      <span className="text-base-content/60">
                         {sku.color_i} | {sku.color_o} | {sku.color_r}
                       </span>
                     )}
@@ -271,7 +253,7 @@ const ShowSkuCodes = () => {
                             }}
                           />
                           <button
-                            className="btn btn-xs btn-success"
+                            className="btn btn-xs btn-primary"
                             onClick={() => handleSaveEdit(sku)}
                           >
                             Save
@@ -303,7 +285,7 @@ const ShowSkuCodes = () => {
                               setEditIndex(idx);
                               setEditValue(sku.code || sku.skuCode); // or sku.skuCode if it's a new SKU
                             }}
-                            className="badge badge-sm cursor-pointer text-yellow-500"
+                            className="badge badge-sm cursor-pointer text-warning"
                             title="Edit SKU"
                           >
                             <FiEdit size={12} />
@@ -312,7 +294,7 @@ const ShowSkuCodes = () => {
                             onClick={() =>
                               openDeleteModal(sku.skuCode || sku.code)
                             }
-                            className="badge badge-sm cursor-pointer text-red-700"
+                            className="badge badge-sm cursor-pointer text-error"
                             title="Delete SKU"
                           >
                             <FiTrash2 size={12} />
@@ -323,11 +305,7 @@ const ShowSkuCodes = () => {
                   </td>
 
                   <td className="text-center">
-                    <span
-                      className={`badge badge-sm ${getBadgeColor(
-                        sku.typeCode
-                      )}`}
-                    >
+                    <span className="badge badge-sm badge-outline badge-primary">
                       {types.find((t) => t.code === sku.typeCode)?.name ||
                         sku.typeCode}
                     </span>
@@ -364,7 +342,7 @@ const ShowSkuCodes = () => {
           </dialog>
         )}
         {deleteError && (
-          <div className="text-red-500 text-sm mt-2">{deleteError}</div>
+          <div className="text-error text-sm mt-2">{deleteError}</div>
         )}
 
         {filteredSkus.length > visibleCount && (

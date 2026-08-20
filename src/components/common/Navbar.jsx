@@ -23,19 +23,19 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between font-mono items-center text-[#009191] dark:text-teal-400">
+    <div className="flex justify-between font-mono items-center text-primary">
       <div className="flex items-center gap-3">
         <Link to="/" className="text-4xl font-semibold">
           SKU Generator
         </Link>
-        <div className="flex items-center gap-1 ml-2 pl-3 border-l border-current/20 text-xs md:text-sm">
+        <div className="flex items-center gap-1 ml-2 pl-3 border-l border-base-300 text-xs md:text-sm">
           <a
             href="https://ware-sku-studio.onrender.com"
-            className="px-3 py-1 rounded-full hover:bg-teal-700/10 dark:hover:bg-teal-400/10 transition-colors"
+            className="px-3 py-1 rounded-full hover:bg-primary/10 transition-colors"
           >
             Atelier
           </a>
-          <span className="px-3 py-1 rounded-full bg-[#009191] dark:bg-teal-400 text-white dark:text-gray-900 font-semibold">
+          <span className="px-3 py-1 rounded-full bg-primary text-primary-content font-semibold">
             ware
           </span>
         </div>
@@ -43,7 +43,7 @@ const Navbar = () => {
       {/* Theme Toggle Button */}
       <button
         onClick={toggleDarkMode}
-        className="p-2 rounded-full text-yellow-500 hover:bg-base-300 transition-colors"
+        className="p-2 rounded-full text-warning hover:bg-base-300 transition-colors"
         aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
       >
         {darkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
