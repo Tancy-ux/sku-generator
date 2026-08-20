@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { addNewColor, addBaseColor } from "../functions/colors";
 import { useBaseColors } from "../hooks/useBaseColors";
+import ShowCeramic from "../components/ShowCeramic";
 
 const AddCeramicColors = () => {
   const { baseColors, refreshBaseColors } = useBaseColors();
@@ -42,7 +43,7 @@ const AddCeramicColors = () => {
 
       if (response.message === "Color code already exists!") {
         toast.success(
-          `This combination already exists with code: ${response.data}`
+          `This combination already exists with code: ${response.data}`,
         );
         setGeneratedCode(response.data);
       } else {
@@ -75,10 +76,7 @@ const AddCeramicColors = () => {
         {/* Base Colors */}
         <div className="bg-base-100 border border-base-300 rounded-box p-6 flex flex-col gap-5">
           <h2 className="font-semibold text-lg">Base Colors</h2>
-          <form
-            onSubmit={handleAddBaseColor}
-            className="flex flex-col gap-4"
-          >
+          <form onSubmit={handleAddBaseColor} className="flex flex-col gap-4">
             <div className="flex gap-2 items-center">
               <label className="w-32 shrink-0">Color Name: </label>
               <input
@@ -102,7 +100,7 @@ const AddCeramicColors = () => {
             <h4 className="font-bold mb-2 text-sm text-base-content/60">
               Existing Base Colors ({baseColors.length}):
             </h4>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {baseColors.map((color, index) => (
                 <div
                   key={index}
@@ -118,10 +116,7 @@ const AddCeramicColors = () => {
         {/* Colour Combos */}
         <div className="bg-base-100 border border-base-300 rounded-box p-6 flex flex-col gap-5">
           <h2 className="font-semibold text-lg">Colour Combos</h2>
-          <form
-            onSubmit={handleAddCombination}
-            className="flex flex-col gap-4"
-          >
+          <form onSubmit={handleAddCombination} className="flex flex-col gap-4">
             <div className="flex gap-2 items-center">
               <label className="w-32 shrink-0">Outer Glaze: </label>
               <select
@@ -187,6 +182,8 @@ const AddCeramicColors = () => {
           )}
         </div>
       </div>
+
+      <ShowCeramic />
     </div>
   );
 };

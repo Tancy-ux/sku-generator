@@ -52,10 +52,10 @@ export default function SKUGenerator() {
         const colors = Array.isArray(response?.name)
           ? response.name
           : Array.isArray(response)
-          ? response
-          : [];
+            ? response
+            : [];
         const sortedColors = colors.sort((a, b) =>
-          a.name.localeCompare(b.name)
+          a.name.localeCompare(b.name),
         );
         setBaseColors(sortedColors);
       } catch (error) {
@@ -146,7 +146,7 @@ export default function SKUGenerator() {
     }
 
     const isMaterialSpecificColor = ["Marble", "Cork", "Cement"].includes(
-      material
+      material,
     );
 
     if (!noColorTypes.includes(selectedType)) {
@@ -171,14 +171,14 @@ export default function SKUGenerator() {
           material,
           "", // color
           selectedType,
-          selectedProduct
+          selectedProduct,
         );
       } else if (isMaterialSpecificColor) {
         response = await getMaterialSku(
           material,
           materialColor,
           selectedType,
-          selectedProduct
+          selectedProduct,
         );
       } else {
         response = await generateSKU(
@@ -187,7 +187,7 @@ export default function SKUGenerator() {
           innerColor,
           rimColor,
           selectedType,
-          selectedProduct
+          selectedProduct,
         );
       }
 
@@ -205,7 +205,7 @@ export default function SKUGenerator() {
         error.response?.status === 400
       ) {
         toast.error(
-          "Invalid color combination - please select different colors"
+          "Invalid color combination - please select different colors",
         );
       } else {
         toast.error("Failed to generate SKU");
@@ -217,7 +217,7 @@ export default function SKUGenerator() {
   };
   // --- JSX Return ---
   const isMaterialSpecificColor = ["Marble", "Cork", "Cement"].includes(
-    material
+    material,
   );
 
   return (
@@ -230,193 +230,193 @@ export default function SKUGenerator() {
         <div className="h-0.5 w-8 bg-primary rounded-full mt-3"></div>
       </div>
       <div className="bg-base-100 border border-base-300 rounded-box p-6 flex flex-col gap-5">
-      {/* Material Dropdown */}
-      <div className="my-4">
-        <label>Material: </label>
-        <select
-          value={material}
-          onChange={(e) => setMaterial(e.target.value)}
-          className="select select-bordered w-50"
-        >
-          <option value="">Select Material</option>
-          {materials
-            .sort((a, b) => a.name.localeCompare(b.name)) // Sort materials alphabetically
-            .map((mat, idx) => (
-              <option key={idx} value={mat.name}>
-                {mat.name} - {mat.code}
-              </option>
-            ))}
-        </select>
-      </div>
-      {/* Typology and Product Dropdowns */}
-      <div className="flex my-4 gap-5 items-center flex-wrap">
-        {" "}
-        {/* Added flex-wrap */}
-        <div>
-          <label>Typology: </label>
+        {/* Material Dropdown */}
+        <div className="my-4">
+          <label>Material: </label>
           <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="select select-bordered w-64"
+            value={material}
+            onChange={(e) => setMaterial(e.target.value)}
+            className="select select-bordered w-60"
           >
-            <option value="">Select Type</option>
-            {types
-              .filter((type) => type.name !== "Cutlery")
-              .sort((a, b) => a.name.localeCompare(b.name)) // Filter out Cutlery from options
-              .map((type, idx) => (
-                <option key={idx} value={type.name}>
-                  {type.name} - {type.code}
+            <option value="">Select Material</option>
+            {materials
+              .sort((a, b) => a.name.localeCompare(b.name)) // Sort materials alphabetically
+              .map((mat, idx) => (
+                <option key={idx} value={mat.name}>
+                  {mat.name} - {mat.code}
                 </option>
               ))}
           </select>
         </div>
-        <div className="flex gap-2 items-center">
-          <label>Product Name: </label>
-          <select
-            value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
-            className="select select-bordered w-80"
-            disabled={
-              !selectedType ||
-              isLoadingProducts ||
-              products.length === 0 ||
-              selectedType === "Cutlery"
-            }
-          >
-            <option value="">Select Product</option>
-            {isLoadingProducts ? (
-              <div>Loading...</div>
-            ) : (
-              products.map((product, idx) => (
-                <option key={idx} value={product.name}>
-                  {product.name} - {product.design_code}
-                </option>
-              ))
-            )}
-          </select>
-          {/* Optional: Show 'No products' message */}
-          {!isLoadingProducts &&
-            selectedType &&
-            selectedType !== "Cutlery" &&
-            products.length === 0 && (
-              <p className="text-sm text-error ml-2">
-                No products for "{selectedType}"
-              </p>
-            )}
+        {/* Typology and Product Dropdowns */}
+        <div className="flex my-4 gap-5 items-center flex-wrap">
+          {" "}
+          {/* Added flex-wrap */}
+          <div>
+            <label>Typology: </label>
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="select select-bordered w-64"
+            >
+              <option value="">Select Type</option>
+              {types
+                .filter((type) => type.name !== "Cutlery")
+                .sort((a, b) => a.name.localeCompare(b.name)) // Filter out Cutlery from options
+                .map((type, idx) => (
+                  <option key={idx} value={type.name}>
+                    {type.name} - {type.code}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="flex gap-2 items-center">
+            <label>Product Name: </label>
+            <select
+              value={selectedProduct}
+              onChange={(e) => setSelectedProduct(e.target.value)}
+              className="select select-bordered w-80"
+              disabled={
+                !selectedType ||
+                isLoadingProducts ||
+                products.length === 0 ||
+                selectedType === "Cutlery"
+              }
+            >
+              <option value="">Select Product</option>
+              {isLoadingProducts ? (
+                <div>Loading...</div>
+              ) : (
+                products.map((product, idx) => (
+                  <option key={idx} value={product.name}>
+                    {product.name} - {product.design_code}
+                  </option>
+                ))
+              )}
+            </select>
+            {/* Optional: Show 'No products' message */}
+            {!isLoadingProducts &&
+              selectedType &&
+              selectedType !== "Cutlery" &&
+              products.length === 0 && (
+                <p className="text-sm text-error ml-2">
+                  No products for "{selectedType}"
+                </p>
+              )}
+          </div>
         </div>
-      </div>
-      {/* --- Conditional Color Selection --- */}
-      {/* Show only if material and type are selected, and type is not Cutlery */}
-      {material && selectedType && selectedType !== "Cutlery" && (
-        <>
-          {showColorDropdowns && (
-            <h2 className="font-bold italic text-lg">
-              {isMaterialSpecificColor
-                ? `${material} Colour`
-                : "Product Colours"}
-            </h2>
+        {/* --- Conditional Color Selection --- */}
+        {/* Show only if material and type are selected, and type is not Cutlery */}
+        {material && selectedType && selectedType !== "Cutlery" && (
+          <>
+            {showColorDropdowns && (
+              <h2 className="font-bold italic text-lg">
+                {isMaterialSpecificColor
+                  ? `${material} Colour`
+                  : "Product Colours"}
+              </h2>
+            )}
+            {showColorDropdowns &&
+              (isMaterialSpecificColor ? (
+                // --- Marble/Cement Color Picker ---
+                <div className="mb-4">
+                  <label>{material} Color: </label>
+                  <select
+                    value={materialColor}
+                    onChange={(e) => setMaterialColor(e.target.value)}
+                    className="select select-bordered w-60"
+                  >
+                    <option value="">Select {material} Color</option>
+                    {materialColors.map((colorObj, idx) => (
+                      <option key={idx} value={colorObj.color}>
+                        {" "}
+                        {/* Value is the color name */}
+                        {colorObj.color} - {colorObj.code}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                // --- Ceramic/Other Color Pickers ---
+                <div className="flex gap-5 items-center flex-wrap">
+                  {" "}
+                  {/* Added flex-wrap */}
+                  <div>
+                    <label>Inner Glaze: </label>
+                    <select
+                      value={innerColor}
+                      onChange={(e) => setInnerColor(e.target.value)}
+                      className="select select-bordered"
+                    >
+                      <option value="">Select Inner Color</option>
+                      {baseColors.map((col, idx) => (
+                        <option key={idx} value={col.name}>
+                          {col.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label>Outer Glaze: </label>
+                    <select
+                      value={outerColor}
+                      onChange={(e) => setOuterColor(e.target.value)}
+                      className="select select-bordered"
+                    >
+                      <option value="">Select Outer Color</option>
+                      {baseColors.map((col, idx) => (
+                        <option key={idx} value={col.name}>
+                          {col.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label>Rim Color: </label>
+                    <select
+                      value={rimColor}
+                      onChange={(e) => setRimColor(e.target.value)}
+                      className="select select-bordered"
+                    >
+                      <option value="">Select Rim Color</option>
+                      {baseColors.map((col, idx) => (
+                        <option key={idx} value={col.name}>
+                          {col.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ))}
+          </>
+        )}{" "}
+        {/* End Conditional Color Selection */}
+        {/* Generate Button and SKU Display */}
+        <div className="my-4 flex gap-2 items-center">
+          <button
+            onClick={handleGenerateSKU}
+            // Disable button if loading OR if required fields for the current path aren't met
+            disabled={
+              isLoading ||
+              !material ||
+              !selectedType ||
+              !selectedProduct ||
+              selectedType === "Cutlery" || // Disable if Cutlery selected
+              (showColorDropdowns &&
+                ((isMaterialSpecificColor && !materialColor) || // Disable if Marble/Cement color missing
+                  (!isMaterialSpecificColor &&
+                    (!outerColor || !innerColor || !rimColor))))
+            }
+            className="btn btn-primary"
+          >
+            {isLoading ? "Generating..." : "Generate SKU"}
+          </button>
+          {sku && (
+            <p>
+              Generated SKU: <strong className="text-secondary">{sku}</strong>
+            </p>
           )}
-          {showColorDropdowns &&
-            (isMaterialSpecificColor ? (
-              // --- Marble/Cement Color Picker ---
-              <div className="mb-4">
-                <label>{material} Color: </label>
-                <select
-                  value={materialColor}
-                  onChange={(e) => setMaterialColor(e.target.value)}
-                  className="select select-bordered w-60"
-                >
-                  <option value="">Select {material} Color</option>
-                  {materialColors.map((colorObj, idx) => (
-                    <option key={idx} value={colorObj.color}>
-                      {" "}
-                      {/* Value is the color name */}
-                      {colorObj.color} - {colorObj.code}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : (
-              // --- Ceramic/Other Color Pickers ---
-              <div className="flex gap-5 items-center flex-wrap">
-                {" "}
-                {/* Added flex-wrap */}
-                <div>
-                  <label>Inner Glaze: </label>
-                  <select
-                    value={innerColor}
-                    onChange={(e) => setInnerColor(e.target.value)}
-                    className="select select-bordered"
-                  >
-                    <option value="">Select Inner Color</option>
-                    {baseColors.map((col, idx) => (
-                      <option key={idx} value={col.name}>
-                        {col.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label>Outer Glaze: </label>
-                  <select
-                    value={outerColor}
-                    onChange={(e) => setOuterColor(e.target.value)}
-                    className="select select-bordered"
-                  >
-                    <option value="">Select Outer Color</option>
-                    {baseColors.map((col, idx) => (
-                      <option key={idx} value={col.name}>
-                        {col.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label>Rim Color: </label>
-                  <select
-                    value={rimColor}
-                    onChange={(e) => setRimColor(e.target.value)}
-                    className="select select-bordered"
-                  >
-                    <option value="">Select Rim Color</option>
-                    {baseColors.map((col, idx) => (
-                      <option key={idx} value={col.name}>
-                        {col.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            ))}
-        </>
-      )}{" "}
-      {/* End Conditional Color Selection */}
-      {/* Generate Button and SKU Display */}
-      <div className="my-4 flex gap-2 items-center">
-        <button
-          onClick={handleGenerateSKU}
-          // Disable button if loading OR if required fields for the current path aren't met
-          disabled={
-            isLoading ||
-            !material ||
-            !selectedType ||
-            !selectedProduct ||
-            selectedType === "Cutlery" || // Disable if Cutlery selected
-            (showColorDropdowns &&
-              ((isMaterialSpecificColor && !materialColor) || // Disable if Marble/Cement color missing
-                (!isMaterialSpecificColor &&
-                  (!outerColor || !innerColor || !rimColor))))
-          }
-          className="btn btn-primary"
-        >
-          {isLoading ? "Generating..." : "Generate SKU"}
-        </button>
-        {sku && (
-          <p>
-            Generated SKU: <strong className="text-secondary">{sku}</strong>
-          </p>
-        )}
-      </div>
+        </div>
       </div>
     </div>
   );
