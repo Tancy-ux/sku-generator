@@ -5,7 +5,6 @@ import SKUGenerator from "./components/SkuGenerator";
 import AddProduct from "./pages/AddProduct";
 import { Route, Routes } from "react-router-dom";
 import AddCeramicColors from "./pages/AddCeramicColors";
-import AddMaterialColor from "./pages/AddMaterialColor";
 import AddMaterials from "./pages/AddMaterials";
 import Error from "./pages/Error";
 import ViewAll from "./pages/ViewAll";
@@ -26,7 +25,6 @@ function App() {
             <Route path="/products" element={<AddProduct />} />
             <Route path="/materials" element={<AddMaterials />} />
             <Route path="/color" element={<AddCeramicColors />} />
-            <Route path="/material-colors" element={<AddMaterialColor />} />
             <Route path="/viewall" element={<ViewAll />} />
             <Route path="/skus" element={<ShowSkuCodes />} />
             <Route path="/pdetails" element={<ProductDetails />} />

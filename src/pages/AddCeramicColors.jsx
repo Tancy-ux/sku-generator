@@ -1,11 +1,19 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { FiAlertTriangle, FiCopy } from "react-icons/fi";
 import { addNewColor, addBaseColor } from "../functions/colors";
 import { useBaseColors } from "../hooks/useBaseColors";
+import { useCeramicCombos } from "../hooks/useCeramicCombos";
 import ShowCeramic from "../components/ShowCeramic";
 
 const AddCeramicColors = () => {
   const { baseColors, refreshBaseColors } = useBaseColors();
+  const {
+    combos,
+    loading: combosLoading,
+    error: combosError,
+    refreshCombos,
+  } = useCeramicCombos();
 
   // Base color state
   const [newBaseColor, setNewBaseColor] = useState("");
@@ -17,6 +25,16 @@ const AddCeramicColors = () => {
   const [rimColor, setRimColor] = useState("");
   const [generatedCode, setGeneratedCode] = useState(null);
   const [isAddingCombo, setIsAddingCombo] = useState(false);
+
+  const existingMatch = useMemo(() => {
+    if (!outerColor || !innerColor || !rimColor) return null;
+    return combos.find(
+      (c) =>
+        c.outerColor === outerColor &&
+        c.innerColor === innerColor &&
+        c.rimColor === rimColor,
+    );
+  }, [combos, outerColor, innerColor, rimColor]);
 
   const handleAddBaseColor = async (e) => {
     e.preventDefault();
@@ -54,11 +72,18 @@ const AddCeramicColors = () => {
       setOuterColor("");
       setInnerColor("");
       setRimColor("");
+      await refreshCombos();
     } catch (error) {
       toast.error("Failed to add color combination: " + error.message);
     } finally {
       setIsAddingCombo(false);
     }
+  };
+
+  const handleCopyCode = () => {
+    if (!generatedCode) return;
+    navigator.clipboard.writeText(generatedCode);
+    toast.success("Code copied!");
   };
 
   return (
@@ -75,96 +100,138 @@ const AddCeramicColors = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Base Colors */}
         <div className="bg-base-100 border border-base-300 rounded-box p-6 flex flex-col gap-5">
-          <h2 className="font-semibold text-lg">Base Colors</h2>
-          <form onSubmit={handleAddBaseColor} className="flex flex-col gap-4">
-            <div className="flex gap-2 items-center">
-              <label className="w-32 shrink-0">Color Name: </label>
-              <input
-                type="text"
-                value={newBaseColor}
-                onChange={(e) => setNewBaseColor(e.target.value)}
-                className="input input-bordered flex-1"
-                required
-              />
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-lg">Base Colors</h2>
+            <span className="badge badge-neutral badge-outline">
+              {baseColors.length}
+            </span>
+          </div>
+          <form
+            onSubmit={handleAddBaseColor}
+            className="flex gap-2 items-center"
+          >
+            <input
+              type="text"
+              value={newBaseColor}
+              onChange={(e) => setNewBaseColor(e.target.value)}
+              placeholder="e.g. Matte Black"
+              className="input input-bordered flex-1"
+              required
+            />
             <button
               type="submit"
-              className="btn btn-primary btn-outline self-start"
+              className="btn btn-primary btn-outline"
               disabled={isAddingBase}
             >
-              {isAddingBase ? "Adding..." : "Add Base Color"}
+              {isAddingBase ? "Adding..." : "Add"}
             </button>
           </form>
 
-          <div>
-            <h4 className="font-bold mb-2 text-sm text-base-content/60">
-              Existing Base Colors ({baseColors.length}):
+          <div className="flex flex-col gap-2">
+            <h4 className="text-xs font-medium text-base-content/60 uppercase tracking-wider">
+              Existing base colors
             </h4>
-            <div className="grid grid-cols-3 gap-2">
-              {baseColors.map((color, index) => (
-                <div
-                  key={index}
-                  className="badge badge-secondary badge-outline h-auto py-1.5 whitespace-normal text-center"
-                >
-                  {color.name}
-                </div>
-              ))}
-            </div>
+            {baseColors.length === 0 ? (
+              <p className="text-sm text-base-content/50">
+                No base colors yet — add one above.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {[...baseColors]
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((color, index) => (
+                    <div
+                      key={index}
+                      className="badge badge-secondary badge-outline h-auto py-1.5"
+                    >
+                      {color.name}
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Colour Combos */}
         <div className="bg-base-100 border border-base-300 rounded-box p-6 flex flex-col gap-5">
-          <h2 className="font-semibold text-lg">Colour Combos</h2>
-          <form onSubmit={handleAddCombination} className="flex flex-col gap-4">
-            <div className="flex gap-2 items-center">
-              <label className="w-32 shrink-0">Outer Glaze: </label>
-              <select
-                value={outerColor}
-                onChange={(e) => setOuterColor(e.target.value)}
-                className="select select-bordered flex-1"
-                required
-              >
-                <option value="">Select color</option>
-                {baseColors.map((color, index) => (
-                  <option key={index} value={color.name}>
-                    {color.name}
-                  </option>
-                ))}
-              </select>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-lg">Colour Combos</h2>
+            <span className="badge badge-neutral badge-outline">
+              {combos.length}
+            </span>
+          </div>
+          <form
+            onSubmit={handleAddCombination}
+            className="flex flex-col gap-4"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-base-content/60">
+                  Outer Glaze
+                </label>
+                <select
+                  value={outerColor}
+                  onChange={(e) => setOuterColor(e.target.value)}
+                  className="select select-bordered w-full"
+                  required
+                >
+                  <option value="">Select</option>
+                  {baseColors.map((color, index) => (
+                    <option key={index} value={color.name}>
+                      {color.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-base-content/60">
+                  Inner Glaze
+                </label>
+                <select
+                  value={innerColor}
+                  onChange={(e) => setInnerColor(e.target.value)}
+                  className="select select-bordered w-full"
+                  required
+                >
+                  <option value="">Select</option>
+                  {baseColors.map((color, index) => (
+                    <option key={index} value={color.name}>
+                      {color.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-base-content/60">
+                  Rim Colour
+                </label>
+                <select
+                  value={rimColor}
+                  onChange={(e) => setRimColor(e.target.value)}
+                  className="select select-bordered w-full"
+                  required
+                >
+                  <option value="">Select</option>
+                  {baseColors.map((color, index) => (
+                    <option key={index} value={color.name}>
+                      {color.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div className="flex gap-2 items-center">
-              <label className="w-32 shrink-0">Inner Glaze: </label>
-              <select
-                value={innerColor}
-                onChange={(e) => setInnerColor(e.target.value)}
-                className="select select-bordered flex-1"
-                required
-              >
-                <option value="">Select color</option>
-                {baseColors.map((color, index) => (
-                  <option key={index} value={color.name}>
-                    {color.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex gap-2 items-center">
-              <label className="w-32 shrink-0">Rim Colour: </label>
-              <select
-                value={rimColor}
-                onChange={(e) => setRimColor(e.target.value)}
-                className="select select-bordered flex-1"
-                required
-              >
-                <option value="">Select color</option>
-                {baseColors.map((color, index) => (
-                  <option key={index} value={color.name}>
-                    {color.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+
+            {existingMatch && (
+              <div className="alert alert-warning py-2 text-sm">
+                <FiAlertTriangle size={16} />
+                <span>
+                  This combo already exists — code{" "}
+                  <span className="font-mono font-bold">
+                    {existingMatch.code}
+                  </span>
+                </span>
+              </div>
+            )}
 
             <button
               type="submit"
@@ -176,14 +243,30 @@ const AddCeramicColors = () => {
           </form>
 
           {generatedCode && (
-            <div className="p-3 bg-base-200 border border-base-300 rounded-box">
-              <p className="font-bold">Generated Code: {generatedCode}</p>
+            <div className="alert alert-success py-3 text-sm">
+              <span>
+                Code: <span className="font-mono font-bold">{generatedCode}</span>
+              </span>
+              <button
+                onClick={handleCopyCode}
+                className="btn btn-xs btn-ghost ml-auto"
+                title="Copy code"
+                type="button"
+              >
+                <FiCopy size={14} />
+              </button>
             </div>
           )}
         </div>
       </div>
 
-      <ShowCeramic />
+      <div className="bg-base-100 border border-base-300 rounded-box p-6">
+        <ShowCeramic
+          combos={combos}
+          loading={combosLoading}
+          error={combosError}
+        />
+      </div>
     </div>
   );
 };

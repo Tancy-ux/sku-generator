@@ -7,85 +7,53 @@ const ShowTypes = () => {
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showTable, setShowTable] = useState(false);
 
   useEffect(() => {
-    const loadMaterials = async () => {
+    const loadTypes = async () => {
       try {
         const data = await fetchTypes();
         setTypes(data);
-      } catch (err) {
+      } catch {
         setError("Failed to load types");
-        toast.error(err);
+        toast.error("Failed to load types");
       } finally {
         setLoading(false);
       }
     };
 
-    loadMaterials();
+    loadTypes();
   }, []);
 
-  const toggleTable = () => {
-    setShowTable(!showTable);
-  };
-
-  if (loading) {
-    return <Skeleton />;
-  }
-
+  if (loading) return <Skeleton />;
   if (error) {
-    return <div className="error">{error}</div>;
+    return <div className="text-center py-10 text-error">{error}</div>;
   }
 
   return (
-    <div className="materials-container">
-      <div className="flex flex-col items-center mt-10 mb-5">
-        <h3 className="text-2xl font-bold mb-4">Typology</h3>
-        <button
-          onClick={toggleTable}
-          className="btn btn-primary btn-sm"
-        >
-          {showTable ? "Hide Typology" : "Show Typology"}
-        </button>
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-semibold">Typology</h3>
+        <span className="badge badge-neutral badge-outline">
+          {types.length}
+        </span>
       </div>
-      {showTable && (
-        <div className="p-6 mx-auto">
-          <div className="overflow-x-auto">
-            <table className="min-w-full border border-base-300">
-              <thead className="text-center">
-                <tr>
-                  <th className="px-6 py-3 text-left font-medium text-base-content/60 bg-base-100 uppercase tracking-wider">
-                    Typology
-                  </th>
-
-                  <th className="px-6 py-3 text-left font-medium text-base-content/60 uppercase tracking-wider">
-                    Code
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-base-300 text-base-content text-center">
-                {types
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((m, index) => (
-                    <tr
-                      key={index}
-                      className={index % 2 === 0 ? "bg-base-200" : ""}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center text-sm">
-                          {m.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center text-sm font-semibold text-secondary">
-                          {m.code}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+      {types.length === 0 ? (
+        <p className="text-sm text-base-content/50">No typologies found.</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {types
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((t, index) => (
+              <div
+                key={t._id || index}
+                className="badge badge-secondary badge-outline h-auto py-1.5"
+              >
+                {t.name}
+                <span className="ml-1 font-mono text-xs opacity-70">
+                  {t.code}
+                </span>
+              </div>
+            ))}
         </div>
       )}
     </div>

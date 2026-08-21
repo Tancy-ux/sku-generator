@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { fetchProductsByType, fetchTypes } from "../functions/api";
 import { deleteProduct, updateProduct } from "../functions/colors";
@@ -9,43 +9,49 @@ import { typeToCategoryMap } from "../functions/constants";
 
 const ShowProducts = () => {
   const [types, setTypes] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [productsByType, setProductsByType] = useState({});
   const [selectedType, setSelectedType] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
   const [editedName, setEditedName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDeleteId, setProductToDeleteId] = useState(null);
 
   useEffect(() => {
-    fetchTypes().then(setTypes);
-  }, []);
-
-  useEffect(() => {
-    const fetch = async () => {
+    const loadAll = async () => {
       setIsLoading(true);
-
-      if (!selectedType) {
-        setProducts([]);
-        setIsLoading(false);
-        return;
-      }
-
       try {
-        const category = typeToCategoryMap[selectedType];
-        const data = await fetchProductsByType(category);
-        setProducts(data.products);
+        const typeData = await fetchTypes();
+        setTypes(typeData);
+
+        const entries = await Promise.all(
+          typeData.map(async (type) => {
+            const category = typeToCategoryMap[type.name];
+            const data = await fetchProductsByType(category);
+            return [type.name, data.products || []];
+          }),
+        );
+        setProductsByType(Object.fromEntries(entries));
       } catch (error) {
         toast.error("Error fetching products:", error);
-        setProducts([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetch();
-  }, [selectedType]);
+    loadAll();
+  }, []);
+
+  const typesWithProducts = useMemo(
+    () =>
+      types
+        .filter((type) => (productsByType[type.name] || []).length > 0)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [types, productsByType],
+  );
+
+  const products = selectedType ? productsByType[selectedType] || [] : [];
 
   if (isLoading) {
     return <Skeleton />;
@@ -64,16 +70,17 @@ const ShowProducts = () => {
   const handleSaveProduct = async () => {
     try {
       await updateProduct(editingProduct._id, editedName);
-      setProducts(
-        products.map((p) =>
-          p._id === editingProduct._id ? { ...p, name: editedName } : p
-        )
-      );
+      setProductsByType((prev) => ({
+        ...prev,
+        [selectedType]: prev[selectedType].map((p) =>
+          p._id === editingProduct._id ? { ...p, name: editedName } : p,
+        ),
+      }));
       toast.success("Product updated successfully!");
       setEditingProduct(null);
     } catch (error) {
       toast.error(
-        error.message || "Something went wrong while updating product."
+        error.message || "Something went wrong while updating product.",
       );
     }
   };
@@ -86,11 +93,16 @@ const ShowProducts = () => {
   const confirmDelete = async () => {
     try {
       await deleteProduct(productToDeleteId);
-      setProducts(products.filter((p) => p._id !== productToDeleteId));
+      setProductsByType((prev) => ({
+        ...prev,
+        [selectedType]: prev[selectedType].filter(
+          (p) => p._id !== productToDeleteId,
+        ),
+      }));
       toast.success("Product deleted successfully!");
     } catch (error) {
       toast.error(
-        error.message || "Something went wrong while deleting product."
+        error.message || "Something went wrong while deleting product.",
       );
     } finally {
       setShowDeleteModal(false);
@@ -105,26 +117,34 @@ const ShowProducts = () => {
 
   return (
     <div>
-      <div className="my-10 text-center">
-        <label className="mr-4 mb-10 text-2xl font-semibold">
-          View All Products by Typology:
-        </label>
-        <select
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
-          className="select select-bordered mt-2"
-        >
-          <option value="" className="text-center">
-            -- Select a Type --
-          </option>
-          {types
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((type, idx) => (
-              <option className="text-sm" key={idx} value={type.name}>
-                {type.name} - {type.code}
-              </option>
+      <div className="my-10">
+        <h2 className="text-2xl font-semibold text-center mb-4">
+          View All Products by Typology
+        </h2>
+        {typesWithProducts.length === 0 ? (
+          <p className="text-center text-base-content/60">
+            No products found yet.
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-2 justify-center">
+            {typesWithProducts.map((type, idx) => (
+              <button
+                key={type._id || idx}
+                type="button"
+                onClick={() =>
+                  setSelectedType(selectedType === type.name ? "" : type.name)
+                }
+                className={`badge badge-lg cursor-pointer transition-colors ${
+                  selectedType === type.name
+                    ? "badge-primary"
+                    : "badge-outline hover:border-primary hover:text-primary"
+                }`}
+              >
+                {type.name}
+              </button>
             ))}
-        </select>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

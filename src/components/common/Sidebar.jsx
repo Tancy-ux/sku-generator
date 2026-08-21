@@ -32,13 +32,8 @@ const Sidebar = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/material-colors" className={linkClass}>
-            Add Material Colors
-          </NavLink>
-        </li>
-        <li>
           <NavLink to="/materials" className={linkClass}>
-            Add Materials
+            Materials & Colors
           </NavLink>
         </li>
         <li>

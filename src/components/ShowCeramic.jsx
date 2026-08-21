@@ -1,95 +1,102 @@
-import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
-import { fetchAllColorEntries } from "../functions/api";
+import { useMemo, useState } from "react";
+import { SiZincsearch } from "react-icons/si";
+import { useCeramicCombos } from "../hooks/useCeramicCombos";
 import Skeleton from "./common/Skeleton";
 
-const ShowCeramic = () => {
-  const [colors, setColors] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+/**
+ * @param {{
+ *   combos?: Array<{outerColor: string, innerColor: string, rimColor: string, code: string, _id?: string}>,
+ *   loading?: boolean,
+ *   error?: string | null,
+ * }} props
+ */
+const ShowCeramic = ({
+  combos: combosProp,
+  loading: loadingProp,
+  error: errorProp,
+}) => {
+  const isControlled = combosProp !== undefined;
+  const internal = useCeramicCombos(!isControlled);
 
-  useEffect(() => {
-    const loadColors = async () => {
-      try {
-        const response = await fetchAllColorEntries();
-        // Handle different API response structures
-        const data = response.data || response.data.data || response;
-        if (Array.isArray(data)) {
-          setColors(data);
-        } else {
-          throw new Error("Unexpected data format from API");
-        }
-      } catch (error) {
-        setError(error.message);
-        toast.error("Failed to load colors");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const combos = isControlled ? combosProp : internal.combos;
+  const loading = isControlled ? loadingProp : internal.loading;
+  const error = isControlled ? errorProp : internal.error;
 
-    loadColors();
-  }, []);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredCombos = useMemo(() => {
+    const txt = searchTerm.trim().toLowerCase();
+    if (!txt) return combos;
+    return combos.filter((combo) =>
+      [combo.outerColor, combo.innerColor, combo.rimColor, combo.code]
+        .map((v) => String(v ?? "").toLowerCase())
+        .some((v) => v.includes(txt)),
+    );
+  }, [combos, searchTerm]);
 
   if (loading) return <Skeleton />;
-  if (error)
+  if (error) {
     return <div className="text-center py-10 text-error">{error}</div>;
-  if (colors.length === 0)
-    return <div className="text-center py-10">No color entries found</div>;
+  }
 
   return (
     <div>
-      <h3 className="text-2xl text-center font-bold mt-10 mb-5">
-        All Ceramic Colours
-      </h3>
-      <div className="p-6 max-w-3xl mx-auto">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 pb-4 border-b border-base-300">
+        <div>
+          <h3 className="text-xl font-semibold">All Ceramic Colours</h3>
+          <p className="text-sm text-base-content/60 mt-0.5">
+            {combos.length} combination{combos.length !== 1 ? "s" : ""} on
+            record — search before adding a new one
+          </p>
+        </div>
+        <div className="relative w-full md:w-72 shrink-0">
+          <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-3">
+            <SiZincsearch size={12} className="text-base-content/60" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search by colour or code..."
+            className="input input-bordered input-sm w-full pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {combos.length === 0 ? (
+        <div className="text-center py-10 text-base-content/60">
+          No color entries found
+        </div>
+      ) : filteredCombos.length === 0 ? (
+        <div className="text-center py-10 text-base-content/60">
+          No combinations match &quot;{searchTerm}&quot;
+        </div>
+      ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full  border border-base-300">
-            <thead className="text-center">
+          <table className="table table-zebra w-full">
+            <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
-                  Outer Glaze
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
-                  Inner Glaze
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
-                  Rim Colour
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
-                  Code
-                </th>
+                <th className="text-center">Outer Glaze</th>
+                <th className="text-center">Inner Glaze</th>
+                <th className="text-center">Rim Colour</th>
+                <th className="text-center">Code</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-base-300 text-base-content text-center text-sm">
-              {colors.map((color, index) => (
-                <tr
-                  key={index}
-                  className={index % 2 === 0 ? "bg-base-200" : ""}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-center">
-                      {color.outerColor}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-center">
-                      {color.innerColor}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-center">
-                      {color.rimColor}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-secondary font-mono font-bold">
-                    {color.code}
+            <tbody>
+              {filteredCombos.map((combo, index) => (
+                <tr key={combo._id || index}>
+                  <td className="text-center">{combo.outerColor}</td>
+                  <td className="text-center">{combo.innerColor}</td>
+                  <td className="text-center">{combo.rimColor}</td>
+                  <td className="text-center font-mono font-bold text-secondary">
+                    {combo.code}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      )}
     </div>
   );
 };
