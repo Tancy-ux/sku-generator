@@ -1,7 +1,11 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const BASE_URI = "https://product-db-c5u9.onrender.com/api/sku";
+// Set VITE_API_BASE_URL in frontend/.env.local to point at a local backend
+// (e.g. http://localhost:3001/api/sku). Falls back to the deployed API.
+const BASE_URI =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://product-db-c5u9.onrender.com/api/sku";
 
 export const fetchCutleryColors = async () => {
   try {
