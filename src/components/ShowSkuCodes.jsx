@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchAllCodes, fetchTypes } from "../functions/api";
+import { createShopifyProduct, fetchAllCodes, fetchTypes } from "../functions/api";
 import { FiCopy, FiEdit, FiTrash2 } from "react-icons/fi";
+import { FaShopify } from "react-icons/fa";
 import { deleteSku, editOldSku, fetchOldSkuCodes } from "../functions/colors";
 import { SiZincsearch } from "react-icons/si";
 import toast from "react-hot-toast";
@@ -23,6 +24,9 @@ const ShowSkuCodes = () => {
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
 
+  // skuCode -> "pending" while the request is in flight, admin URL once pushed
+  const [shopifyState, setShopifyState] = useState({});
+
   const isLoading =
     skus.length === 0 && oldSkus.length === 0 && types.length === 0;
 
@@ -38,6 +42,14 @@ const ShowSkuCodes = () => {
         if (skuData) setSkus(skuData);
         if (typeData) setTypes(typeData);
         if (oldSkuData) setOldSkus(oldSkuData);
+
+        const alreadyPushed = {};
+        [...(skuData || []), ...(oldSkuData || [])].forEach((s) => {
+          if (s.shopifyProductId) {
+            alreadyPushed[s.skuCode || s.code] = s.shopifyAdminUrl || true;
+          }
+        });
+        setShopifyState(alreadyPushed);
       } catch (error) {
         toast.error("Failed to fetch data:", error);
       }
@@ -95,6 +107,35 @@ const ShowSkuCodes = () => {
         toast.error("Failed to copy text: ", err);
       });
   };
+  const handlePushToShopify = async (sku) => {
+    const code = sku.skuCode || sku.code;
+    if (!code || shopifyState[code]) return;
+
+    setShopifyState((prev) => ({ ...prev, [code]: "pending" }));
+
+    const res = await createShopifyProduct(code);
+
+    if (!res.success) {
+      setShopifyState((prev) => {
+        const next = { ...prev };
+        delete next[code];
+        return next;
+      });
+      toast.error(res.error || "Failed to create Shopify product");
+      return;
+    }
+
+    setShopifyState((prev) => ({ ...prev, [code]: res.data?.adminUrl || true }));
+
+    if (res.alreadyExists) {
+      toast(`${code} already exists on Shopify`);
+    } else if (res.missingPrice) {
+      toast.success(`${code} created on Shopify — no pricing found, price set to 0`);
+    } else {
+      toast.success(`${code} created on Shopify (POS only)`);
+    }
+  };
+
   const handleSaveEdit = async (sku) => {
     try {
       const updated = await editOldSku(sku._id, editValue);
@@ -205,12 +246,13 @@ const ShowSkuCodes = () => {
               <th className="text-center">Product Name - Inner Glaze</th>
               <th className="text-center">SKU Code</th>
               <th className="text-center">Type</th>
+              <th className="text-center">Shopify</th>
             </tr>
           </thead>
           <tbody>
             {visibleSkus.length === 0 ? (
               <tr>
-                <td colSpan={3} className="text-center text-base-content/60">
+                <td colSpan={4} className="text-center text-base-content/60">
                   {noResults ? (
                     "No results found"
                   ) : (
@@ -309,6 +351,49 @@ const ShowSkuCodes = () => {
                       {types.find((t) => t.code === sku.typeCode)?.name ||
                         sku.typeCode}
                     </span>
+                  </td>
+
+                  <td className="text-center">
+                    {(() => {
+                      const code = sku.skuCode || sku.code;
+                      const state = shopifyState[code];
+
+                      if (state === "pending") {
+                        return (
+                          <button className="btn btn-xs btn-outline" disabled>
+                            <span className="loading loading-spinner loading-xs" />
+                          </button>
+                        );
+                      }
+
+                      if (state) {
+                        return typeof state === "string" ? (
+                          <a
+                            href={state}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="btn btn-xs btn-success btn-outline"
+                            title="Open in Shopify admin"
+                          >
+                            <FaShopify size={12} /> Listed
+                          </a>
+                        ) : (
+                          <span className="btn btn-xs btn-success btn-outline no-animation">
+                            <FaShopify size={12} /> Listed
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <button
+                          onClick={() => handlePushToShopify(sku)}
+                          className="btn btn-xs btn-outline btn-primary"
+                          title="Create an ACTIVE Shopify product published to POS only"
+                        >
+                          <FaShopify size={12} /> Create
+                        </button>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))

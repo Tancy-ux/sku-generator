@@ -202,3 +202,16 @@ export const generateSKU = async (
     };
   }
 };
+export const createShopifyProduct = async (skuCode) => {
+  try {
+    const res = await axios.post(`${BASE_URI}/shopify/create-product`, {
+      skuCode,
+    });
+    return { success: true, ...res.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message,
+    };
+  }
+};
