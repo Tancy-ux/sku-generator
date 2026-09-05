@@ -22,7 +22,14 @@ const Sidebar = () => {
             SKU Generator
           </NavLink>
         </li>
-
+        <li>
+          <span className={groupTitleClass}>Reference</span>
+        </li>
+        <li>
+          <NavLink to="/skus" className={linkClass}>
+            View All SKUs
+          </NavLink>
+        </li>
         <li>
           <span className={groupTitleClass}>Manage</span>
         </li>
@@ -45,15 +52,6 @@ const Sidebar = () => {
         <li>
           <NavLink to="/pdetails" className={linkClass}>
             Pricing
-          </NavLink>
-        </li>
-
-        <li>
-          <span className={groupTitleClass}>Reference</span>
-        </li>
-        <li>
-          <NavLink to="/skus" className={linkClass}>
-            View All SKUs
           </NavLink>
         </li>
         <li>

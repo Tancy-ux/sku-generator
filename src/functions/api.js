@@ -70,6 +70,21 @@ export const getColorCode = async (outerColor, innerColor, rimColor) => {
   }
 };
 
+// Silent variant of getColorCode for live "does this combo exist yet" checks —
+// a combo not existing is an expected, common state here, not an error to toast.
+export const checkColorCombo = async (outerColor, innerColor, rimColor) => {
+  try {
+    const res = await axios.post(`${BASE_URI}/get-color-code`, {
+      outerColor,
+      innerColor,
+      rimColor,
+    });
+    return { exists: !!res.data.exists, code: res.data.data ?? null };
+  } catch {
+    return { exists: false, code: null };
+  }
+};
+
 export const getDesignCode = async (productName) => {
   try {
     if (!productName) {

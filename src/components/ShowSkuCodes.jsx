@@ -346,14 +346,14 @@ const ShowSkuCodes = () => {
                     </div>
                   </td>
 
-                  <td className="text-center">
-                    <span className="badge badge-sm badge-outline badge-primary">
+                  <td className="text-center whitespace-nowrap">
+                    <span className="badge badge-sm badge-outline badge-primary whitespace-nowrap">
                       {types.find((t) => t.code === sku.typeCode)?.name ||
                         sku.typeCode}
                     </span>
                   </td>
 
-                  <td className="text-center">
+                  <td className="text-center whitespace-nowrap">
                     {(() => {
                       const code = sku.skuCode || sku.code;
                       const state = shopifyState[code];
@@ -372,14 +372,14 @@ const ShowSkuCodes = () => {
                             href={state}
                             target="_blank"
                             rel="noreferrer"
-                            className="btn btn-xs btn-success btn-outline"
+                            className="btn btn-xs btn-success btn-outline whitespace-nowrap"
                             title="Open in Shopify admin"
                           >
-                            <FaShopify size={12} /> Listed
+                            <FaShopify size={12} /> Listed in Shopify
                           </a>
                         ) : (
-                          <span className="btn btn-xs btn-success btn-outline no-animation">
-                            <FaShopify size={12} /> Listed
+                          <span className="btn btn-xs btn-success btn-outline no-animation whitespace-nowrap">
+                            <FaShopify size={12} /> Listed in Shopify
                           </span>
                         );
                       }
@@ -387,10 +387,10 @@ const ShowSkuCodes = () => {
                       return (
                         <button
                           onClick={() => handlePushToShopify(sku)}
-                          className="btn btn-xs btn-outline btn-primary"
+                          className="btn btn-xs btn-outline btn-primary whitespace-nowrap"
                           title="Create an ACTIVE Shopify product published to POS only"
                         >
-                          <FaShopify size={12} /> Create
+                          <FaShopify size={12} /> Create Listing
                         </button>
                       );
                     })()}
