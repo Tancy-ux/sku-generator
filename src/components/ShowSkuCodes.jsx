@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createShopifyProduct,
   fetchAllCodes,
@@ -81,6 +81,21 @@ const ShowSkuCodes = () => {
 
   // skuCode -> "pending" while the request is in flight, admin URL once pushed
   const [shopifyState, setShopifyState] = useState({});
+
+  // Measures the sticky title/search/filter block so the table's header row
+  // can stick right below it (instead of overlapping it) as the page scrolls.
+  const stickyHeaderRef = useRef(null);
+  const [stickyHeaderHeight, setStickyHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const el = stickyHeaderRef.current;
+    if (!el) return;
+    const update = () => setStickyHeaderHeight(el.getBoundingClientRect().height);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const isLoading =
     skus.length === 0 && oldSkus.length === 0 && types.length === 0;
@@ -276,7 +291,10 @@ const ShowSkuCodes = () => {
 
   return (
     <div className="p-6 w-full lg:w-4/5 mx-auto">
-      <div className="flex flex-col md:flex-row justify-between gap-8 items-center mb-8 pb-4 border-b border-base-300">
+      <div
+        ref={stickyHeaderRef}
+        className="sticky top-0 z-20 bg-base-100 flex flex-col md:flex-row justify-between gap-8 items-center mb-8 pb-4 border-b border-base-300"
+      >
         <h1 className="text-2xl font-semibold shrink-0">View All SKUs</h1>
         <div className="flex items-center">
           {/* Add search bar */}
@@ -357,9 +375,12 @@ const ShowSkuCodes = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div>
         <table className="table table-zebra w-full">
-          <thead>
+          <thead
+            className="sticky z-10 bg-base-100"
+            style={{ top: stickyHeaderHeight }}
+          >
             <tr>
               <th className="text-center">Product Name - Inner Glaze</th>
               <th className="text-center">SKU Code</th>

@@ -34,29 +34,8 @@ const Sidebar = () => {
           <span className={groupTitleClass}>Manage</span>
         </li>
         <li>
-          <NavLink to="/products" className={linkClass}>
-            Add Products
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/materials" className={linkClass}>
-            Materials & Colors
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/color" className={linkClass}>
-            Add Ceramic Colors
-          </NavLink>
-        </li>
-
-        <li>
-          <NavLink to="/pdetails" className={linkClass}>
-            Pricing
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/viewall" className={linkClass}>
-            Browse All
+          <NavLink to="/manage" className={linkClass}>
+            Manage
           </NavLink>
         </li>
       </ul>

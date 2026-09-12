@@ -108,3 +108,13 @@ label {
     background-position: center;
     min-height: 100vh;
 }
+
+/* Keeps scrolling but hides the visible scrollbar track/thumb. */
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
