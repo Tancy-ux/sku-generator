@@ -117,12 +117,15 @@ const ShowProducts = () => {
 
   return (
     <div>
-      <div className="my-10">
-        <h2 className="text-2xl font-semibold text-center mb-4">
-          View All Products by Typology
-        </h2>
+      <div className="bg-base-100 border border-base-300 rounded-box p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Products by Typology</h2>
+          <span className="badge badge-neutral badge-outline">
+            {typesWithProducts.length}
+          </span>
+        </div>
         {typesWithProducts.length === 0 ? (
-          <p className="text-center text-base-content/60">
+          <p className="text-sm text-base-content/50">
             No products found yet.
           </p>
         ) : (

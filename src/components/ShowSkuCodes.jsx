@@ -90,7 +90,8 @@ const ShowSkuCodes = () => {
   useEffect(() => {
     const el = stickyHeaderRef.current;
     if (!el) return;
-    const update = () => setStickyHeaderHeight(el.getBoundingClientRect().height);
+    const update = () =>
+      setStickyHeaderHeight(el.getBoundingClientRect().height);
     update();
     const observer = new ResizeObserver(update);
     observer.observe(el);
@@ -150,18 +151,20 @@ const ShowSkuCodes = () => {
     }
 
     if (!newlyListed && !newlyDelisted) {
-      toast(`Checked ${res.checked} SKU${res.checked === 1 ? "" : "s"} — no changes`);
+      toast(
+        `Checked ${res.checked} SKU${res.checked === 1 ? "" : "s"} — no changes`,
+      );
       return;
     }
 
     if (newlyListed) {
       toast.success(
-        `Found ${newlyListed} already-listed product${newlyListed === 1 ? "" : "s"} on Shopify`
+        `Found ${newlyListed} already-listed product${newlyListed === 1 ? "" : "s"} on Shopify`,
       );
     }
     if (newlyDelisted) {
       toast(
-        `${newlyDelisted} product${newlyDelisted === 1 ? "" : "s"} no longer found on Shopify — marked Unlisted`
+        `${newlyDelisted} product${newlyDelisted === 1 ? "" : "s"} no longer found on Shopify — marked Unlisted`,
       );
     }
   };
@@ -175,7 +178,7 @@ const ShowSkuCodes = () => {
       activeSearch && txt
         ? all
         : all.filter(
-            (s) => selectedType === "all" || s.typeCode === selectedType
+            (s) => selectedType === "all" || s.typeCode === selectedType,
           );
 
     return source
@@ -198,7 +201,15 @@ const ShowSkuCodes = () => {
         const nameB = (b.productName || b.name || "").toLowerCase();
         return nameA.localeCompare(nameB);
       });
-  }, [searchTerm, activeSearch, selectedType, shopifyFilter, shopifyState, skus, oldSkus]);
+  }, [
+    searchTerm,
+    activeSearch,
+    selectedType,
+    shopifyFilter,
+    shopifyState,
+    skus,
+    oldSkus,
+  ]);
 
   const visibleSkus = filteredSkus.slice(0, visibleCount);
 
@@ -234,12 +245,17 @@ const ShowSkuCodes = () => {
       return;
     }
 
-    setShopifyState((prev) => ({ ...prev, [code]: res.data?.adminUrl || true }));
+    setShopifyState((prev) => ({
+      ...prev,
+      [code]: res.data?.adminUrl || true,
+    }));
 
     if (res.alreadyExists) {
       toast(`${code} already exists on Shopify`);
     } else if (res.missingPrice) {
-      toast.success(`${code} created on Shopify — no pricing found, price set to 0`);
+      toast.success(
+        `${code} created on Shopify — no pricing found, price set to 0`,
+      );
     } else {
       toast.success(`${code} created on Shopify (POS only)`);
     }
@@ -250,8 +266,8 @@ const ShowSkuCodes = () => {
       const updated = await editOldSku(sku._id, editValue);
       setOldSkus((prev) =>
         prev.map((item, i) =>
-          item._id === sku._id ? { ...item, code: updated.code } : item
-        )
+          item._id === sku._id ? { ...item, code: updated.code } : item,
+        ),
       );
       setEditIndex(null);
     } catch (err) {
@@ -275,7 +291,7 @@ const ShowSkuCodes = () => {
         await deleteSku(skuToDelete);
         const updatedSkus = skus.filter((sku) => sku.skuCode !== skuToDelete);
         const updatedOldSkus = oldSkus.filter(
-          (sku) => sku.code !== skuToDelete
+          (sku) => sku.code !== skuToDelete,
         );
         setSkus(updatedSkus);
         setOldSkus(updatedOldSkus);
@@ -330,7 +346,7 @@ const ShowSkuCodes = () => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <label htmlFor="type-filter" className="text-sm font-medium">
-              Filter by Type:
+              Filter:
             </label>
             <select
               id="type-filter"
@@ -369,7 +385,10 @@ const ShowSkuCodes = () => {
             className="btn btn-sm btn-outline whitespace-nowrap"
             title="Read-only: checks which SKUs already exist on Shopify and updates their Listed/Unlisted status here. Never creates, edits, or deletes anything on Shopify."
           >
-            <FiRefreshCw size={12} className={isSyncing ? "animate-spin" : ""} />
+            <FiRefreshCw
+              size={12}
+              className={isSyncing ? "animate-spin" : ""}
+            />
             {isSyncing ? "Checking..." : "Check Shopify Status"}
           </button>
         </div>
@@ -399,8 +418,8 @@ const ShowSkuCodes = () => {
                       {isLoading
                         ? "Loading…"
                         : noResults
-                        ? "No results found"
-                        : `No current SKUs found for selected type.`}
+                          ? "No results found"
+                          : `No current SKUs found for selected type.`}
                     </p>
                   )}
                 </td>
@@ -414,7 +433,11 @@ const ShowSkuCodes = () => {
                       <span className="text-base-content/60">{sku.color}</span>
                     ) : (
                       <span className="text-base-content/60">
-                        {formatGlazeCombo(sku.color_i, sku.color_o, sku.color_r)}
+                        {formatGlazeCombo(
+                          sku.color_i,
+                          sku.color_o,
+                          sku.color_r,
+                        )}
                       </span>
                     )}
                   </td>
