@@ -1,17 +1,72 @@
 import { useEffect, useMemo, useState } from "react";
-import { createShopifyProduct, fetchAllCodes, fetchTypes } from "../functions/api";
-import { FiCopy, FiEdit, FiTrash2 } from "react-icons/fi";
+import {
+  createShopifyProduct,
+  fetchAllCodes,
+  fetchTypes,
+  syncShopifyStatus,
+} from "../functions/api";
+import { FiCopy, FiEdit, FiRefreshCw, FiTrash2 } from "react-icons/fi";
 import { FaShopify } from "react-icons/fa";
 import { deleteSku, editOldSku, fetchOldSkuCodes } from "../functions/colors";
 import { SiZincsearch } from "react-icons/si";
 import toast from "react-hot-toast";
+
+const isUnglazed = (color) =>
+  typeof color === "string" && color.trim().toLowerCase() === "unglazed";
+
+/**
+ * Collapses a glaze trio into a readable label instead of always spelling
+ * out all three:
+ *   - all three match -> one color name.
+ *   - Inner or Outer is the odd one out (i.e. Rim matches whichever of the
+ *     other two it shares a color with) -> plain "Inner | Outer" naming,
+ *     same convention as when all three differ.
+ *   - only the Rim differs -> "{Inner/Outer color} with {Rim color} Rim".
+ *   - all three differ -> full "Inner | Outer | Rim" breakdown.
+ * An "Unglazed" minority slot (e.g. a dip plate's bare rim) is dropped
+ * entirely rather than called out — it's not a color choice.
+ */
+const formatGlazeCombo = (colorI, colorO, colorR) => {
+  if (colorI === colorO && colorO === colorR) return colorI;
+
+  const positions = [
+    ["Inner", colorI],
+    ["Outer", colorO],
+    ["Rim", colorR],
+  ];
+  const groups = new Map();
+  positions.forEach(([label, color]) => {
+    if (!groups.has(color)) groups.set(color, []);
+    groups.get(color).push(label);
+  });
+
+  if (groups.size === 2) {
+    const entries = [...groups.entries()];
+    const majority = entries.find(([, labels]) => labels.length === 2);
+    const minority = entries.find(([, labels]) => labels.length === 1);
+    if (majority && minority) {
+      const [majorColor] = majority;
+      const [minorColor, minorLabels] = minority;
+      if (isUnglazed(minorColor)) return majorColor;
+      if (minorLabels[0] === "Rim") {
+        return `${majorColor} with ${minorColor} Rim`;
+      }
+      // Inner or Outer is the odd one out — name it the plain way instead.
+      return `${colorI} | ${colorO}`;
+    }
+  }
+
+  return `${colorI} | ${colorO} | ${colorR}`;
+};
 
 const ShowSkuCodes = () => {
   const [skus, setSkus] = useState([]);
   const [oldSkus, setOldSkus] = useState([]);
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState("all");
+  const [shopifyFilter, setShopifyFilter] = useState("all"); // all | listed | unlisted
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSearch, setActiveSearch] = useState(false);
@@ -30,37 +85,71 @@ const ShowSkuCodes = () => {
   const isLoading =
     skus.length === 0 && oldSkus.length === 0 && types.length === 0;
 
+  const loadData = async () => {
+    try {
+      const [skuData, typeData, oldSkuData] = await Promise.all([
+        fetchAllCodes(),
+        fetchTypes(),
+        fetchOldSkuCodes(),
+      ]);
+
+      if (skuData) setSkus(skuData);
+      if (typeData) setTypes(typeData);
+      if (oldSkuData) setOldSkus(oldSkuData);
+
+      const alreadyPushed = {};
+      [...(skuData || []), ...(oldSkuData || [])].forEach((s) => {
+        if (s.shopifyProductId) {
+          alreadyPushed[s.skuCode || s.code] = s.shopifyAdminUrl || true;
+        }
+      });
+      setShopifyState(alreadyPushed);
+    } catch (error) {
+      toast.error("Failed to fetch data:", error);
+    }
+  };
+
   useEffect(() => {
-    const getInitialData = async () => {
-      try {
-        const [skuData, typeData, oldSkuData] = await Promise.all([
-          fetchAllCodes(),
-          fetchTypes(),
-          fetchOldSkuCodes(),
-        ]);
-
-        if (skuData) setSkus(skuData);
-        if (typeData) setTypes(typeData);
-        if (oldSkuData) setOldSkus(oldSkuData);
-
-        const alreadyPushed = {};
-        [...(skuData || []), ...(oldSkuData || [])].forEach((s) => {
-          if (s.shopifyProductId) {
-            alreadyPushed[s.skuCode || s.code] = s.shopifyAdminUrl || true;
-          }
-        });
-        setShopifyState(alreadyPushed);
-      } catch (error) {
-        toast.error("Failed to fetch data:", error);
-      }
-    };
-
-    getInitialData();
+    loadData();
   }, []);
 
   useEffect(() => {
     setVisibleCount(15);
-  }, [searchTerm, activeSearch, selectedType]);
+  }, [searchTerm, activeSearch, selectedType, shopifyFilter]);
+
+  const handleSyncWithShopify = async () => {
+    setIsSyncing(true);
+    const res = await syncShopifyStatus();
+    setIsSyncing(false);
+
+    if (!res.success) {
+      toast.error(res.error || "Failed to check Shopify status");
+      return;
+    }
+
+    const newlyListed = res.listed?.length || 0;
+    const newlyDelisted = res.delisted?.length || 0;
+
+    if (newlyListed || newlyDelisted) {
+      await loadData();
+    }
+
+    if (!newlyListed && !newlyDelisted) {
+      toast(`Checked ${res.checked} SKU${res.checked === 1 ? "" : "s"} — no changes`);
+      return;
+    }
+
+    if (newlyListed) {
+      toast.success(
+        `Found ${newlyListed} already-listed product${newlyListed === 1 ? "" : "s"} on Shopify`
+      );
+    }
+    if (newlyDelisted) {
+      toast(
+        `${newlyDelisted} product${newlyDelisted === 1 ? "" : "s"} no longer found on Shopify — marked Unlisted`
+      );
+    }
+  };
 
   // Modified filter logic
 
@@ -84,12 +173,17 @@ const ShowSkuCodes = () => {
         ].map((str) => (str || "").toLowerCase());
         return hay.some((part) => part.includes(txt));
       })
+      .filter((sku) => {
+        if (shopifyFilter === "all") return true;
+        const isListed = Boolean(shopifyState[sku.skuCode || sku.code]);
+        return shopifyFilter === "listed" ? isListed : !isListed;
+      })
       .sort((a, b) => {
         const nameA = (a.productName || a.name || "").toLowerCase();
         const nameB = (b.productName || b.name || "").toLowerCase();
         return nameA.localeCompare(nameB);
       });
-  }, [searchTerm, activeSearch, selectedType, skus, oldSkus]);
+  }, [searchTerm, activeSearch, selectedType, shopifyFilter, shopifyState, skus, oldSkus]);
 
   const visibleSkus = filteredSkus.slice(0, visibleCount);
 
@@ -236,6 +330,30 @@ const ShowSkuCodes = () => {
                 ))}
             </select>
           </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="shopify-filter" className="text-sm font-medium">
+              Shopify:
+            </label>
+            <select
+              id="shopify-filter"
+              value={shopifyFilter}
+              onChange={(e) => setShopifyFilter(e.target.value)}
+              className="select select-bordered select-sm w-32"
+            >
+              <option value="all">All</option>
+              <option value="listed">Listed</option>
+              <option value="unlisted">Unlisted</option>
+            </select>
+          </div>
+          <button
+            onClick={handleSyncWithShopify}
+            disabled={isSyncing}
+            className="btn btn-sm btn-outline whitespace-nowrap"
+            title="Read-only: checks which SKUs already exist on Shopify and updates their Listed/Unlisted status here. Never creates, edits, or deletes anything on Shopify."
+          >
+            <FiRefreshCw size={12} className={isSyncing ? "animate-spin" : ""} />
+            {isSyncing ? "Checking..." : "Check Shopify Status"}
+          </button>
         </div>
       </div>
 
@@ -275,7 +393,7 @@ const ShowSkuCodes = () => {
                       <span className="text-base-content/60">{sku.color}</span>
                     ) : (
                       <span className="text-base-content/60">
-                        {sku.color_i} | {sku.color_o} | {sku.color_r}
+                        {formatGlazeCombo(sku.color_i, sku.color_o, sku.color_r)}
                       </span>
                     )}
                   </td>

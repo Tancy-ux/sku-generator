@@ -234,3 +234,15 @@ export const createShopifyProduct = async (skuCode) => {
     };
   }
 };
+
+export const syncShopifyStatus = async () => {
+  try {
+    const res = await axios.post(`${BASE_URI}/shopify/sync-status`);
+    return { success: true, ...res.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message,
+    };
+  }
+};

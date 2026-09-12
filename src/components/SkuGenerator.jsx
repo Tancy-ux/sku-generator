@@ -9,6 +9,7 @@ import {
   addProduct,
   checkColorCombo,
   fetchAllCodes,
+  createShopifyProduct,
 } from "../functions/api.js";
 import toast from "react-hot-toast";
 import {
@@ -20,6 +21,7 @@ import {
 } from "../functions/colors.js";
 import { typeToCategoryMap } from "../functions/constants.js";
 import { FiPlus, FiCopy } from "react-icons/fi";
+import { FaShopify } from "react-icons/fa";
 
 export default function SKUGenerator() {
   // --- State ---
@@ -47,6 +49,9 @@ export default function SKUGenerator() {
 
   const [isRegisteringCombo, setIsRegisteringCombo] = useState(false);
   const [comboLookup, setComboLookup] = useState({ status: "idle", code: null });
+
+  // "idle" | "pending" | admin URL string | true (pushed, no URL)
+  const [shopifyState, setShopifyState] = useState("idle");
 
   // Inline "+ New" quick-add — collapsed by default, expanded via the "+" buttons
   const [showAddMaterial, setShowAddMaterial] = useState(false);
@@ -251,6 +256,7 @@ export default function SKUGenerator() {
       }
       const generatedSkuCode = response.skuCode || response.newSKU?.skuCode;
       setSKU(generatedSkuCode);
+      setShopifyState("idle");
       toast.success(`SKU Generated: ${generatedSkuCode}`);
     } catch (error) {
       toast.error("Error in handleGenerateSKU:", error);
@@ -372,6 +378,29 @@ export default function SKUGenerator() {
     if (!sku) return;
     navigator.clipboard.writeText(sku);
     toast.success("Code copied!");
+  };
+
+  const handlePushToShopify = async () => {
+    if (!sku || shopifyState !== "idle") return;
+    setShopifyState("pending");
+
+    const res = await createShopifyProduct(sku);
+
+    if (!res.success) {
+      setShopifyState("idle");
+      toast.error(res.error || "Failed to create Shopify product");
+      return;
+    }
+
+    setShopifyState(res.data?.adminUrl || true);
+
+    if (res.alreadyExists) {
+      toast(`${sku} already exists on Shopify`);
+    } else if (res.missingPrice) {
+      toast.success(`${sku} created on Shopify — no pricing found, price set to 0`);
+    } else {
+      toast.success(`${sku} created on Shopify (POS only)`);
+    }
   };
 
   // --- Derived display values ---
@@ -834,6 +863,41 @@ export default function SKUGenerator() {
               >
                 {isLoading ? "Generating..." : "Generate SKU"}
               </button>
+              {shopifyState === "pending" ? (
+                <button className="btn btn-sm btn-outline" disabled>
+                  <span className="loading loading-spinner loading-xs" />
+                </button>
+              ) : shopifyState !== "idle" ? (
+                typeof shopifyState === "string" ? (
+                  <a
+                    href={shopifyState}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-sm btn-success btn-outline"
+                    title="Open in Shopify admin"
+                  >
+                    <FaShopify size={14} /> Listed in Shopify
+                  </a>
+                ) : (
+                  <span className="btn btn-sm btn-success btn-outline no-animation">
+                    <FaShopify size={14} /> Listed in Shopify
+                  </span>
+                )
+              ) : (
+                <button
+                  type="button"
+                  onClick={handlePushToShopify}
+                  disabled={!sku}
+                  className="btn btn-sm btn-outline btn-primary"
+                  title={
+                    sku
+                      ? "Create an ACTIVE Shopify product published to POS only"
+                      : "Generate the SKU first"
+                  }
+                >
+                  <FaShopify size={14} /> Create Listing
+                </button>
+              )}
             </div>
           </div>
         )}
